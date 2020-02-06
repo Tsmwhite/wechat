@@ -44,7 +44,7 @@
 
 <script>
     export default {
-        name:"header",
+        name:"headerassembly",
         data() {
             return {
                 activeIndex: '1',

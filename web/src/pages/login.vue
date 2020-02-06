@@ -20,7 +20,9 @@
 
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">登录</el-button>
-                    <el-button>没有账户去注册</el-button>
+                    <el-button>
+                        <router-link to="/register" style="color: #888888;text-decoration:none">没有账户去注册</router-link>
+                    </el-button>
                 </el-form-item>
             </el-form>
         </el-container>

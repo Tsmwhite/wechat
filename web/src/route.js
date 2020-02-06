@@ -14,7 +14,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-    //mode:"history",
+    //model:"history",
     routes // (缩写) 相当于 routes: routes
 })
 

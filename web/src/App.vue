@@ -5,14 +5,14 @@
 </template>
 
 <script>
-  import Ws from "./socket";
+  //import Ws from "./socket";
   export default {
     name: 'app',
     components: {
 
     },
     created() {
-      Ws.Init("theSmallWhiteMe")
+      //Ws.Init("theSmallWhiteMe")
     }
 
   }

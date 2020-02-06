@@ -25,7 +25,9 @@
 
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">注册</el-button>
-                    <el-button>已有账户去登录</el-button>
+                    <el-button>
+                        <router-link to="/login" style="color: #888888;text-decoration:none">已有账户去登录</router-link>
+                    </el-button>
                 </el-form-item>
             </el-form>
         </el-container>

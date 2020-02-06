@@ -1,18 +1,18 @@
 <template>
    <div>
-       <Header></Header>
+       <HeaderAssembly></HeaderAssembly>
        <Chat></Chat>
    </div>
 </template>
 
 <script>
-    import Header from "../components/header"
+    import HeaderAssembly from "../components/headerassembly"
     import Chat   from "../components/chat"
 
     export default {
         name: 'index',
         components: {
-            Header,
+            HeaderAssembly,
             Chat
         }
     }
