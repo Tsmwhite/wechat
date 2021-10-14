@@ -1,0 +1,124 @@
+import {Chat} from "../message/chat"
+
+export const WEB_SOCKET = {
+    Error: "",
+    MessageHandleCallback: null,
+    _token: "",
+    _socket: null,
+    _heartTimeout: 8000, // 心跳间隔
+    _heartTimer: null, // 保持心跳
+    _closeTimer: null, // 延时关闭
+    _closeFlag: false, // 主动关闭
+    _reConnMax: 1,    // 重连限制
+    _reConnCounter: 0, // 重连计数
+    Socket() {
+        if (this._socket === null) {
+            this.WsInit()
+        }
+        return this._socket
+    },
+    Init(token) {
+        if (!this.Func.isSupportWs()) {
+            return false
+        }
+        this._token = token
+        this.WsFuncInit()
+        this.WsInit()
+        return this
+    },
+    Func: {
+        isSupportWs() {
+            if (typeof (WebSocket) != "function") {
+                this.setError("不支持 websocket 通信协议")
+                return false
+            }
+            return true
+        },
+        setError(err) {
+            this.Error = err
+        },
+        getError() {
+            return this.Error
+        },
+    },
+    WsInit() {
+        let _this = this
+        this._closeFlag = false
+        this._socket = new WebSocket("ws://127.0.0.1:8011/ws", this._token)
+        this._socket.onopen = function (e) {
+            _this._OPEN(e)
+        }
+        this._socket.onclose = function (e) {
+            _this._CLOSE(e)
+        }
+        this._socket.onmessage = function (e) {
+            _this._MESSAGE(e)
+        }
+        this._socket.onerror = function (e) {
+            _this._ERROR(e)
+        }
+    },
+    WsFuncInit() {
+        this._OPEN = (e) => {
+            console.log('OPEN', e)
+            this._reConnCounter = 0
+            this.heart()
+        }
+        this._CLOSE = (e) => {
+            console.log('CLOSE', e)
+            !this._closeFlag && this.reconnect()
+        }
+        this._MESSAGE = (e) => {
+            if (typeof this.MessageHandleCallback === "function") {
+                return this.MessageHandleCallback(JSON.parse(e.data))
+            }
+            //clearTimeout(this._closeTimer)
+        }
+
+        this._ERROR = (e) => {
+            console.log('ERROR', e)
+            this.Func.setError(e)
+        }
+        this.heart = () => {
+            this._heartTimer = setInterval(() => {
+                this.send(Chat.ping())
+                // this._closeTimer = setTimeout(() => {
+                //     this.close()
+                // }, this._heartTimeout)
+            }, this._heartTimeout)
+        }
+        this.reconnect = () => {
+            this._reConnCounter++
+            if (this._reConnCounter > this._reConnMax) {
+                return
+            }
+            clearInterval(this._heartTimer)
+            this.WsInit()
+        }
+        this.send = (message) => {
+            message = JSON.stringify(message)
+            switch (this.Socket().readyState) {
+                case WebSocket.OPEN:
+                    this.Socket().send(message)
+                    break
+                case WebSocket.CONNECTING:
+                    setTimeout(() => {
+                        this.Socket().send(message)
+                    }, 3000)
+                    break
+                case WebSocket.CLOSED:
+                case WebSocket.CLOSING:
+                    this.Socket().close()
+                    break
+                default:
+            }
+        }
+        this.close = () => {
+            //clearTimeout(this._closeTimer)
+            clearInterval(this._heartTimer)
+            this._closeFlag = true
+            this._socket.close()
+            this._socket = null
+        }
+    }
+}
