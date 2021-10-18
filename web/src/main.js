@@ -1,18 +1,21 @@
+// The Vue build version to load with the `import` command
+// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-import App from './App.vue'
-import router from "./route"
-
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
+import App from './App'
+import router from './router'
+import Vant from 'vant';
+import 'vant/lib/index.css';
 import {WEB_SOCKET} from "@/library/socket/web-socket";
+import {Message} from "./library/message/type";
 
-Vue.config.productionTip = false
-
-Vue.use(ElementUI)
+Vue.use(Vant);
 Vue.prototype.$WebSocket = WEB_SOCKET
-
+Vue.prototype.$MsgType = Message
+Vue.config.productionTip = false
+/* eslint-disable no-new */
 new Vue({
-    render: h => h(App),
-    router
-}).$mount('#app')
-
+    el: '#app',
+    router,
+    components: {App},
+    template: '<App/>'
+})

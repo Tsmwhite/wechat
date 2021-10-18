@@ -1,21 +1,29 @@
 <template>
-  <div id="app">
-    <router-view></router-view>
-  </div>
+    <div id="app">
+        <router-view/>
+<!--        <main-tab></main-tab>-->
+    </div>
 </template>
 
 <script>
-export default {
-  name: 'app',
-  components: {},
-  created() {
+import MainTab from "./components/base/main-tab";
 
-  }
+export default {
+    name: 'App',
+    components: {MainTab}
 }
 </script>
 
 <style>
-#app {
+body {
+    background: #f7f7f7;
+}
 
+#app {
+    font-family: PingFang SC, 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
 }
 </style>
