@@ -24,22 +24,37 @@ func NewUser() *User {
 	return new(User)
 }
 
+func GetUserByAccount(account string) *User {
+	user := NewUser()
+	DB.Raw("SELECT * FROM `users` WHERE `mobile` = ?", account).Scan(user)
+	return user
+}
+
 func (u *User) CheckMemberByUuid(uuid string) bool {
 	DB.Raw("SELECT * FROM `users` WHERE `uuid` = ?", uuid).Scan(u)
 	return u.Uuid == uuid
 }
+
 func (u *User) GetUuid() string {
 	return u.Uuid
 }
+
 func (u *User) GetMemberKey() int {
 	return int(u.Id)
 }
+
 func (u *User) GetName() string {
 	return u.Name
 }
+
 func (u *User) GetInfo() map[string]string {
 	return nil
 }
+
 func (u *User) Update(map[string]string) {
 
+}
+
+func (u *User) Exist() bool {
+	return u.Id > 0
 }
