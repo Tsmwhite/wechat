@@ -1,16 +1,12 @@
 package model
 
 type User struct {
+	ShowAppUser
 	Id           int64  `json:"id"`
 	Uuid         string `json:"uuid"`
-	Name         string `json:"name"`
-	Mobile       string `json:"mobile"`
-	Mail         string `json:"mail"`
 	Salt         string `json:"salt"`
 	Password     string `json:"password"`
 	Passlook     string `json:"passlook"`
-	Headimg      string `json:"headimg"`
-	RoleId       int64  `json:"role_id"`
 	IsHid        int64  `json:"is_hid"`
 	IsDel        int64  `json:"is_del"`
 	RegisterTime string `json:"register_time"`
@@ -18,6 +14,15 @@ type User struct {
 	UpdateTime   string `json:"update_time"`
 	RegisterIp   string `json:"register_ip"`
 	LoginIp      string `json:"login_ip"`
+}
+
+type ShowAppUser struct {
+	Name   string `json:"name"`
+	Mobile string `json:"mobile"`
+	Mail   string `json:"mail"`
+	Avatar string `json:"Avatar"`
+	RoleId int64  `json:"role_id"`
+	Token  string
 }
 
 func NewUser() *User {

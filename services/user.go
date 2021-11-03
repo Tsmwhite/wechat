@@ -3,6 +3,7 @@ package services
 import (
 	"wechat/app/res"
 	"wechat/lib/encrypt"
+	"wechat/lib/encrypt/token"
 	model "wechat/models"
 )
 
@@ -16,7 +17,7 @@ type RegisterRequest struct {
 	VerifyCode      string
 }
 
-func LoginVerify(req *LoginRequest) (error, *model.User) {
+func Login(req *LoginRequest) (error, *model.ShowAppUser) {
 	user := model.GetUserByAccount(req.Account)
 	if !user.Exist() {
 		return res.GetTip(res.TipNotExistAccount), nil
@@ -26,10 +27,13 @@ func LoginVerify(req *LoginRequest) (error, *model.User) {
 		return res.GetTip(res.TipPasswordErr), nil
 	}
 	// ok
-	return nil, user
+	data := user.ShowAppUser
+	t := token.New(user.GetUuid())
+	data.Token = string(t)
+	return nil, &user.ShowAppUser
 }
 
-func RegisterVerify(req *LoginRequest) (bool, error) {
+func Register(req *RegisterRequest) (error, *model.ShowAppUser) {
 
-	return true, nil
+	return nil, nil
 }
