@@ -37,6 +37,7 @@ export default {
     name: "index",
     data() {
         return {
+            value: "",
             loading: true,
             finished: false,
             data: [],

@@ -1,8 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Index from '@/views/Index'
-import Chat from '@/components/chat/chat-box'
-
 Vue.use(Router)
 
 export default new Router({
@@ -10,12 +7,17 @@ export default new Router({
         {
             path: '/',
             name: 'index',
-            component: Index
+            component: () => import ('@/views/Index'),
+        },
+        {
+            path: '/login',
+            name: 'login',
+            component: () => import('@/views/login.vue'),
         },
         {
             path: '/chat',
             name: 'chat',
-            component: Chat
+            component: () => import('@/components/chat/chat-box'),
         }
     ]
 })
