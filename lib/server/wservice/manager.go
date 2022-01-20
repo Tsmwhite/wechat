@@ -29,9 +29,9 @@ type ClientManager struct {
 
 func NewManager() *ClientManager {
 	return &ClientManager{
-		broadcast:  make(chan message.Messenger),
-		register:   make(chan *client.WsClient),
-		unregister: make(chan *client.WsClient),
+		broadcast:  make(chan message.Messenger, 1000),
+		register:   make(chan *client.WsClient, 100),
+		unregister: make(chan *client.WsClient, 100),
 		clients:    make(map[string]*client.WsClient),
 	}
 }

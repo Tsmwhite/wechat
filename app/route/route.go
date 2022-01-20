@@ -1,9 +1,9 @@
-package app
+package route
 
 import (
 	"github.com/gin-gonic/gin"
-	"wechat/http/api"
-	"wechat/http/middleware"
+	"wechat/app/api/user"
+	"wechat/app/middleware"
 )
 
 var ginEngine *gin.Engine
@@ -12,8 +12,8 @@ func init() {
 	ginEngine = gin.Default()
 	ginEngine.Use(middleware.AccessLog)
 
-	ginEngine.POST("/register", api.Register)
-	ginEngine.POST("/login", api.Login)
+	ginEngine.POST("/register", user.Register)
+	ginEngine.POST("/login", user.Login)
 
 	ginEngine.Group("/chat", middleware.Authorization)
 	{
@@ -21,6 +21,6 @@ func init() {
 	}
 }
 
-func Run() {
-	ginEngine.Run(":8099")
+func Run() error {
+	return ginEngine.Run(":8099")
 }

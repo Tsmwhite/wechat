@@ -10,6 +10,7 @@ const (
 	TipNotExistAccount
 	TipPasswordErr
 	TipAccountOrPassErr
+	TipAccountNameExist
 )
 
 var tipsMap = map[int]string{
@@ -20,6 +21,7 @@ var tipsMap = map[int]string{
 	TipNotExistAccount:         "账户不存在",
 	TipPasswordErr:             "密码不正确",
 	TipAccountOrPassErr:        "账户或密码不正确",
+	TipAccountNameExist:        "账户名已存在",
 }
 
 func GetTip(code int) error {

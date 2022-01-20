@@ -15,6 +15,7 @@ type Messenger interface {
 }
 
 type Message struct {
+	Id 			int
 	Uuid        string
 	Sender      string
 	Recipient   string

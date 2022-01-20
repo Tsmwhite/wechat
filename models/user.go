@@ -1,17 +1,21 @@
 package model
 
 type User struct {
-	ShowAppUser
 	Id           int64  `json:"id"`
 	Uuid         string `json:"uuid"`
+	Name         string `json:"name"`
+	Mobile       string `json:"mobile"`
+	Mail         string `json:"mail"`
+	Avatar       string `json:"Avatar"`
+	RoleId       int64  `json:"role_id"`
 	Salt         string `json:"salt"`
 	Password     string `json:"password"`
-	Passlook     string `json:"passlook"`
-	IsHid        int64  `json:"is_hid"`
+	PassLook     string `json:"pass_look"`
+	Status       int64  `json:"status"`
 	IsDel        int64  `json:"is_del"`
-	RegisterTime string `json:"register_time"`
-	LoginTime    string `json:"login_time"`
-	UpdateTime   string `json:"update_time"`
+	RegisterTime int64  `json:"register_time"`
+	LoginTime    int64  `json:"login_time"`
+	UpdateTime   int64  `json:"update_time"`
 	RegisterIp   string `json:"register_ip"`
 	LoginIp      string `json:"login_ip"`
 }
@@ -22,11 +26,28 @@ type ShowAppUser struct {
 	Mail   string `json:"mail"`
 	Avatar string `json:"Avatar"`
 	RoleId int64  `json:"role_id"`
-	Token  string
+	Token  string `json:"token"`
 }
 
 func NewUser() *User {
 	return new(User)
+}
+
+func (u *User) ShowAppUser() *ShowAppUser {
+	res := new(ShowAppUser)
+	res.Name = u.Name
+	res.Mobile = u.Mobile
+	res.Avatar = u.Avatar
+	res.RoleId = u.RoleId
+	return res
+}
+
+func (u *User) Create() error {
+	res := DB.Create(&u)
+	if res.Error != nil {
+		return res.Error
+	}
+	return nil
 }
 
 func GetUserByAccount(account string) *User {
@@ -61,5 +82,5 @@ func (u *User) Update(map[string]string) {
 }
 
 func (u *User) Exist() bool {
-	return u.Id > 0
+	return u.Id > 0 && u.IsDel == IsNoDel
 }

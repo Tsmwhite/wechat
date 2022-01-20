@@ -2,7 +2,7 @@ package roomer
 
 import (
 	"errors"
-	uuid "github.com/satori/go.uuid"
+	"wechat/lib/encrypt"
 	"wechat/lib/member"
 )
 
@@ -18,16 +18,18 @@ const (
 )
 
 type Room struct {
-	Uuid    string
-	Title   string
-	Type    int
-	Members map[string]bool
-	Creator string
+	Uuid        string
+	Title       string
+	Type        int
+	Members     map[string]bool
+	Creator     string
+	Description string
+	CreateTime  int
 }
 
 func New(title string, creator member.Member, members map[string]bool, _type int) *Room {
 	return &Room{
-		Uuid:    uuid.NewV4().String(),
+		Uuid:    encrypt.CreateUuid(),
 		Title:   title,
 		Type:    _type,
 		Members: members,

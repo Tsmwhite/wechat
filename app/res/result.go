@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	ErrorCodeNormal = iota
+	ErrorCodeNormal = 1
 	ErrorCodeAuthErr
 )
 
@@ -14,23 +14,30 @@ type ErrOption struct {
 	ErrorCode int
 }
 
-func ErrCode(c *gin.Context, msg int) {
-	Error(c, GetTip(msg))
-}
-
-func Success(c *gin.Context, res interface{}) {
+func Success(c *gin.Context, res interface{}, message ...string) {
+	resMsg := ""
+	if len(message) > 0 {
+		resMsg = message[0]
+	}
 	c.JSON(200, gin.H{
-		"ok":   true,
-		"data": res,
+		"ok":       true,
+		"data":     res,
+		"msg":      resMsg,
+		"err_code": 0,
+		"err_msg":  "",
 	})
 	c.Abort()
 }
 
-func Error(c *gin.Context, err error) {
+func Error(c *gin.Context, err error, code ...int) {
+	resCode := ErrorCodeNormal
+	if len(code) > 0 {
+		resCode = code[0]
+	}
 	c.JSON(200, gin.H{
 		"ok":       false,
-		"msg":      err,
-		"err_code": ErrorCodeNormal,
+		"err_msg":  err.Error(),
+		"err_code": resCode,
 	})
 	c.Abort()
 }

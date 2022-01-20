@@ -2,7 +2,7 @@
     <div class="loginApp">
         <img class="bgImage" :src="Bg"/>
         <div class="form-box">
-            <h3>来啊，尬聊啊！兄嘚！</h3>
+            <h3>尬聊啊！兄嘚！</h3>
             <van-form @submit="onSubmit">
                 <van-field v-model="form.phone"
                            type="number"
@@ -61,7 +61,6 @@ export default {
             if (this.form.verifyCode === "") {
                 return this.$toast.fail("请输入验证码")
             }
-
         },
     }
 }

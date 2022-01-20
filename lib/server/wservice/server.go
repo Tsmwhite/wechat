@@ -40,7 +40,7 @@ var _config = &Config{
 	port:   config.CONFIG.Server.Port,
 }
 
-func RunServer(option *Option) {
+func Run(option *Option) {
 	_option = option
 	_manager = option.ClientManage
 	_config = option.Config
