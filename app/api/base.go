@@ -2,10 +2,12 @@ package api
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
 func VerifyParams(ctx *gin.Context, paramKeys []string, tips map[string]string) (error, map[string]string) {
+	fmt.Println(ctx.Request.Form)
 	resParams := make(map[string]string)
 	temp := ""
 	for _, key := range paramKeys {

@@ -5,7 +5,7 @@ import (
 	"github.com/gorilla/websocket"
 	"net/http"
 	"wechat/config"
-	wsClient "wechat/lib/client"
+	wsClient "wechat/core/client"
 )
 
 type Config struct {

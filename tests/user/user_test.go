@@ -39,7 +39,7 @@ func TestRegister(t *testing.T) {
 	}
 	data := make(map[string]string)
 	err = json.Unmarshal(body, &data)
-	if data["err_msg"] != "" {
+	if data["err_code"] != "0" {
 		t.Error("Request Error:", data["err_msg"])
 	}
 }
@@ -69,7 +69,7 @@ func TestLogin(t *testing.T) {
 	}
 	data := make(map[string]string)
 	err = json.Unmarshal(body, &data)
-	if data["err_msg"] != "" {
+	if data["err_code"] != "0" {
 		t.Error("Request Error:", data["err_msg"])
 	}
 }

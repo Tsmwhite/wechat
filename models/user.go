@@ -6,7 +6,7 @@ type User struct {
 	Name         string `json:"name"`
 	Mobile       string `json:"mobile"`
 	Mail         string `json:"mail"`
-	Avatar       string `json:"Avatar"`
+	Avatar       string `json:"avatar"`
 	RoleId       int64  `json:"role_id"`
 	Salt         string `json:"salt"`
 	Password     string `json:"password"`
@@ -24,7 +24,7 @@ type ShowAppUser struct {
 	Name   string `json:"name"`
 	Mobile string `json:"mobile"`
 	Mail   string `json:"mail"`
-	Avatar string `json:"Avatar"`
+	Avatar string `json:"avatar"`
 	RoleId int64  `json:"role_id"`
 	Token  string `json:"token"`
 }

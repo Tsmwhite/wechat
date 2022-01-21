@@ -1,7 +1,7 @@
 package message
 
 import (
-	"wechat/lib/roomer"
+	"wechat/core/roomer"
 )
 
 type Messenger interface {

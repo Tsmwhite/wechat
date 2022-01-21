@@ -2,7 +2,7 @@ package model
 
 import (
 	"gorm.io/gorm"
-	"wechat/lib/database"
+	"wechat/core/database"
 )
 
 const IsNoDel = 0

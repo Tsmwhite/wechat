@@ -3,8 +3,8 @@ package usersrv
 import (
 	"time"
 	"wechat/app/res"
-	"wechat/lib/encrypt"
-	"wechat/lib/encrypt/token"
+	"wechat/core/encrypt"
+	"wechat/core/encrypt/token"
 	model "wechat/models"
 )
 

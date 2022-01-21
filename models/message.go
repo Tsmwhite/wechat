@@ -1,6 +1,6 @@
 package model
 
-import "wechat/lib/message"
+import "wechat/core/message"
 
 type Message struct {
 	message.Message

@@ -2,8 +2,8 @@ package roomer
 
 import (
 	"errors"
-	"wechat/lib/encrypt"
-	"wechat/lib/member"
+	"wechat/core/encrypt"
+	"wechat/core/member"
 )
 
 type Roomer interface {

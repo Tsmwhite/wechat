@@ -2,8 +2,8 @@ package wservice
 
 import (
 	"fmt"
-	"wechat/lib/client"
-	"wechat/lib/message"
+	"wechat/core/client"
+	"wechat/core/message"
 )
 
 type Manager interface {

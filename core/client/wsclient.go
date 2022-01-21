@@ -2,8 +2,8 @@ package client
 
 import (
 	"github.com/gorilla/websocket"
-	"wechat/lib/log"
-	"wechat/lib/message"
+	"wechat/core/log"
+	"wechat/core/message"
 )
 
 func NewClient(conn *websocket.Conn, id string, msgChan chan message.Messenger) *WsClient {

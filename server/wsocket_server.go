@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"wechat/lib/encrypt/token"
-	"wechat/lib/server/wservice"
+	"wechat/core/encrypt/token"
+	"wechat/core/server/wservice"
 	model "wechat/models"
 )
 

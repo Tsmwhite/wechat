@@ -1,7 +1,7 @@
 package model
 
 import (
-	"wechat/lib/roomer"
+	"wechat/core/roomer"
 )
 
 type Room struct {

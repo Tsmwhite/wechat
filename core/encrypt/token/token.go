@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	"wechat/lib/encrypt"
-	"wechat/lib/member"
+	"wechat/core/encrypt"
+	"wechat/core/member"
 )
 
 const tokenKey = "c2db2d1e0d8d0753d8878818da213721"

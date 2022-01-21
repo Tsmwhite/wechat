@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	ErrorCodeNormal = 1
+	ErrorCodeNormal = iota + 1
 	ErrorCodeAuthErr
 )
 
