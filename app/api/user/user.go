@@ -28,18 +28,13 @@ var tipsMap = map[int]string{
 }
 
 func Register(ctx *gin.Context) {
-	params := []string{"account", "password", "passwordConfirm", "verifyCode"}
 	tipCode := make(map[string]string)
-	tipCode["account"] = tipsMap[TipNotInputAccount]
-	tipCode["password"] = tipsMap[TipNotInputPassword]
-	tipCode["passwordConfirm"] = tipsMap[TipNotInputPasswordConfirm]
-	tipCode["verifyCode"] = tipsMap[TipNotInputCode]
-	if err, data := api.VerifyParams(ctx, params, tipCode); err == nil {
-		req := &usersrv.RegisterRequest{}
-		req.Account = data["account"]
-		req.Password = data["password"]
-		req.PasswordConfirm = data["passwordConfirm"]
-		req.VerifyCode = data["verifyCode"]
+	tipCode["Account"] = tipsMap[TipNotInputAccount]
+	tipCode["Password"] = tipsMap[TipNotInputPassword]
+	tipCode["PasswordConfirm"] = tipsMap[TipNotInputPasswordConfirm]
+	tipCode["VerifyCode"] = tipsMap[TipNotInputCode]
+	req := &usersrv.RegisterRequest{}
+	if err := api.VerifyParams(ctx, req, tipCode); err == nil {
 		if err, user := usersrv.Register(req); err == nil {
 			res.Success(ctx, user)
 		} else {
@@ -51,15 +46,11 @@ func Register(ctx *gin.Context) {
 }
 
 func Login(ctx *gin.Context) {
-	params := []string{"account", "password", "passwordConfirm", "verifyCode"}
 	tipCode := make(map[string]string)
-	tipCode["account"] = tipsMap[TipNotInputAccount]
-	tipCode["password"] = tipsMap[TipNotInputPassword]
-	if err, data := api.VerifyParams(ctx, params, tipCode); err == nil {
-		req := &usersrv.LoginRequest{
-			Account:  data["account"],
-			Password: data["password"],
-		}
+	tipCode["Account"] = tipsMap[TipNotInputAccount]
+	tipCode["Password"] = tipsMap[TipNotInputPassword]
+	req := &usersrv.LoginRequest{}
+	if err := api.VerifyParams(ctx, req, tipCode); err == nil {
 		if err, user := usersrv.Login(req); err == nil {
 			res.Success(ctx, user)
 		} else {

@@ -9,13 +9,15 @@ import (
 )
 
 type LoginRequest struct {
-	Account, Password string
+	Account,
+	Password string
 }
 
 type RegisterRequest struct {
-	LoginRequest
-	PasswordConfirm string
-	VerifyCode      string
+	Account,
+	Password,
+	PasswordConfirm,
+	VerifyCode string
 }
 
 func Login(req *LoginRequest) (error, *model.ShowAppUser) {

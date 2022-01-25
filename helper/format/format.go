@@ -1,4 +1,4 @@
-package helper
+package format
 
 import (
 	"strings"
@@ -19,7 +19,7 @@ func Camel2Case(name string) string {
 			resRune = append(resRune, r)
 		}
 	}
-	return string(runeStr)
+	return string(resRune)
 }
 
 // Case2Camel 下划线写法转为驼峰写法
