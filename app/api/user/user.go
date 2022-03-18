@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"wechat/app/api"
 	"wechat/app/res"
@@ -15,6 +16,7 @@ const (
 	TipNotExistAccount
 	TipPasswordErr
 	TipAccountOrPassErr
+	TipPasswordConfirmErr
 )
 
 var tipsMap = map[int]string{
@@ -25,6 +27,7 @@ var tipsMap = map[int]string{
 	TipNotExistAccount:         "账户不存在",
 	TipPasswordErr:             "密码不正确",
 	TipAccountOrPassErr:        "账户或密码不正确",
+	TipPasswordConfirmErr:      "密码确认不一致",
 }
 
 func Register(ctx *gin.Context) {
@@ -35,6 +38,10 @@ func Register(ctx *gin.Context) {
 	tipCode["VerifyCode"] = tipsMap[TipNotInputCode]
 	req := &usersrv.RegisterRequest{}
 	if err := api.VerifyParams(ctx, req, tipCode); err == nil {
+		if req.Password != req.PasswordConfirm {
+			res.Error(ctx, errors.New(tipsMap[TipPasswordConfirmErr]))
+			return
+		}
 		if err, user := usersrv.Register(req); err == nil {
 			res.Success(ctx, user)
 		} else {

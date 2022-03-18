@@ -2,6 +2,7 @@ package route
 
 import (
 	"github.com/gin-gonic/gin"
+	"wechat/app/api/contact"
 	"wechat/app/api/user"
 	"wechat/app/middleware"
 )
@@ -17,7 +18,7 @@ func init() {
 
 	ginEngine.Group("/chat", middleware.Authorization)
 	{
-
+		ginEngine.POST("/addContact", contact.AddContact)
 	}
 }
 

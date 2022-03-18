@@ -41,3 +41,16 @@ func Error(c *gin.Context, err error, code ...int) {
 	})
 	c.Abort()
 }
+
+func ErrorStr(c *gin.Context, err string, code ...int) {
+	resCode := ErrorCodeNormal
+	if len(code) > 0 {
+		resCode = code[0]
+	}
+	c.JSON(200, gin.H{
+		"ok":       false,
+		"err_msg":  err,
+		"err_code": resCode,
+	})
+	c.Abort()
+}
