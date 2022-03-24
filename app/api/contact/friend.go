@@ -7,16 +7,16 @@ import (
 	"wechat/app/services/contactsrv"
 )
 
-func AddContact(ctx *gin.Context) {
+func AddFriend(ctx *gin.Context) {
 
 }
 
-func ContactsList(ctx *gin.Context) {
-	req := &contactsrv.GetContactsRequest{}
+func FriendsList(ctx *gin.Context) {
+	req := &contactsrv.FriendsRequest{}
 	if err := api.VerifyParams(ctx, req, nil); err != nil {
 		res.Error(ctx, err)
 		return
 	}
-	list := contactsrv.GetContacts(req, api.GetCurrentUser(ctx))
+	list := contactsrv.GetFriends(req, api.GetCurrentUser(ctx))
 	res.Success(ctx, list)
 }

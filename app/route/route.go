@@ -16,9 +16,12 @@ func init() {
 	ginEngine.POST("/register", user.Register)
 	ginEngine.POST("/login", user.Login)
 
-	ginEngine.Group("/chat", middleware.Authorization)
+	chatApi := ginEngine.Group("/chat", middleware.Authorization)
 	{
-		ginEngine.POST("/addContact", contact.AddContact)
+		chatApi.POST("/addFriends", contact.AddFriend)
+		chatApi.POST("/friends", contact.FriendsList)
+		chatApi.POST("/addContact", contact.AddContact)
+		chatApi.POST("/contacts", contact.ContactsList)
 	}
 }
 

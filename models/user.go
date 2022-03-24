@@ -12,12 +12,12 @@ type User struct {
 	Password     string `json:"password"`
 	PassLook     string `json:"pass_look"`
 	Status       int64  `json:"status"`
-	IsDel        int64  `json:"is_del"`
 	RegisterTime int64  `json:"register_time"`
 	LoginTime    int64  `json:"login_time"`
 	UpdateTime   int64  `json:"update_time"`
 	RegisterIp   string `json:"register_ip"`
 	LoginIp      string `json:"login_ip"`
+	IsDel        int64  `json:"is_del"`
 }
 
 type ShowAppUser struct {
@@ -31,6 +31,10 @@ type ShowAppUser struct {
 
 func NewUser() *User {
 	return new(User)
+}
+
+func GetUsers(c *Condition) {
+
 }
 
 func (u *User) ShowAppUser() *ShowAppUser {

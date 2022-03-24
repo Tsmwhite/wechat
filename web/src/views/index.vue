@@ -28,11 +28,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import {Lazyload} from 'vant';
-
-Vue.use(Lazyload);
-
+import api from "../api/common"
 export default {
     name: "index",
     data() {
@@ -44,11 +40,19 @@ export default {
         }
     },
     mounted() {
+        let token = this.$route.query.token
+        this.$WebSocket.Init(token)
         this.init()
     },
     methods: {
         init() {
+            this.loadContacts()
             this.loadData()
+        },
+        loadContacts() {
+            api.getContacts().then(res => {
+
+            })
         },
         loadData() {
             setTimeout(() => {

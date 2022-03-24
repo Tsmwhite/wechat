@@ -4,23 +4,20 @@ import (
 	"github.com/gin-gonic/gin"
 	"wechat/app/res"
 	"wechat/core/encrypt/token"
+	"wechat/env"
 	model "wechat/models"
 )
 
-const AuthTokenKey = "authorization"
-const CurrentUserKey = "current-user"
-const TokenError = "token错误"
-const TokenErrorCode = 10004
-
 func Authorization(ctx *gin.Context) {
-	authToken := token.Token(ctx.Request.Header.Get(AuthTokenKey))
+	authToken := token.Token(ctx.Request.Header.Get(env.AppAuthTokenKey))
 	user := &model.User{}
 	if authToken.Check(user) {
-		ctx.Set(AuthTokenKey, authToken)
-		ctx.Set(CurrentUserKey, user)
+		ctx.Set(env.AppAuthTokenKey, authToken)
+		ctx.Set(env.AppCurrentUserKey, user)
 		ctx.Next()
 	} else {
-		res.ErrorStr(ctx, TokenError, TokenErrorCode)
+		//ctx.Data(http.StatusForbidden, "text/html", []byte("<h1>403 Forbidden</h1>"))
+		res.ErrorStr(ctx, env.AppTokenError, env.AppTokenErrorCode)
 		ctx.Abort()
 	}
 }

@@ -6,18 +6,15 @@ import (
 	model "wechat/models"
 )
 
-type AddContactRequest struct {
-	Contact string
-	Type    int
-}
-
-type GetContactsRequest struct {
+type FriendsRequest struct {
 	Keyword string `validate:"noRequired & filter"`
 }
 
-func GetContacts(req *GetContactsRequest, user *model.User) []map[string]interface{} {
+type FriendsResponse struct{}
+
+func GetFriends(req *FriendsRequest, user *model.User) []map[string]interface{} {
 	condition := &model.Condition{
-		Table: "contacts",
+		Table: "friends",
 	}
 	condition.Where = map[string]interface{}{
 		"user": user.Uuid,

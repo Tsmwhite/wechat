@@ -4,6 +4,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"time"
+	"wechat/env"
 )
 
 var _DB_ *gorm.DB
@@ -20,6 +21,9 @@ func init() {
 	if err != nil {
 		//TODO
 		panic("db error")
+	}
+	if env.Debug {
+		_DB_ = _DB_.Debug()
 	}
 	// 设置空闲连接池中连接的最大数量
 	sqlDB.SetMaxIdleConns(10)

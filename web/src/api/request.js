@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Qs from 'qs'
 import {Toast} from 'vant';
-import {GetlocalStorage, RemovelocalStorage} from "./sessionStorage";
+import {GetlocalStorage, RemovelocalStorage} from "../utis/sessionStorage";
 
 const request = axios.create({
     headers: {
@@ -26,8 +26,9 @@ request.interceptors.request.use(
         // 后台根据携带的token判断用户的登录情况，并返回给我们对应的状态码
         // 而后我们可以在响应拦截器中，根据状态码进行一些统一的操作。
         const token = GetlocalStorage('token');
-        config.headers["auth-token"] = "abc"
-        token && (config.data.token = token);
+        if (token) {
+            config.headers["authorization"] = token
+        }
         return config;
     },
     error => Promise.error(error)

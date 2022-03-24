@@ -12,6 +12,8 @@ import (
 const TagKey = "validate"
 const RuleMultipleSep = " & "
 const RuleAssignSep = "="
+
+// 验证类型
 const (
 	Required   = "required" //默认都是必须值，非必须值用 NoRequired 标记
 	NoRequired = "noRequired"
@@ -22,6 +24,12 @@ const (
 	MaxLen     = "maxLen"
 	MinLen     = "minLen"
 	In         = "in"
+)
+
+// 方法类型
+const (
+	Trim   = "trim"
+	Filter = "filter"
 )
 
 type Rule struct {
@@ -40,17 +48,9 @@ type TestStruct struct {
 	Number    int    `validate:"max=100 & min=20"`
 	Subscribe string `validate:"maxLen=5"`
 	Sex       int    `validate:"in=0,1,2"`
+	Keyword   string `validate:"filter"`
 }
 
-/**
-map[string]string{
-	"MobileIsMobile":"手机号码格式不正确",
-	"EmailIsMail": "邮箱格式不正确",
-	"EmailMaxLen": "输入邮箱最多50个字符",
-	"NumberMax": "数量不得超过100",
-	"NumberMin": "数量不少于20",
-}
-**/
 var errorMessages map[string]string
 
 var defaultErrorMessage = map[string]string{
@@ -67,7 +67,12 @@ var defaultErrorMessage = map[string]string{
 func Validate(carrier interface{}, message map[string]string, getParam func(string) string) (err error) {
 	defer func() {
 		if e := recover(); e != nil {
-			err = e.(error)
+			switch e.(type) {
+			case error:
+				err = e.(error)
+			default:
+				//TODO
+			}
 		}
 	}()
 	errorMessages = message
@@ -168,7 +173,6 @@ func verify(ruleModels []RuleModel, params map[string]string) error {
 				}
 			case In:
 				arr := strings.Split(rule.Limit, ",")
-				fmt.Println("rule.Limit", rule.Limit)
 				ok := func() bool {
 					for i := 0; i < len(arr); i++ {
 						if arr[i] == value {
@@ -180,6 +184,10 @@ func verify(ruleModels []RuleModel, params map[string]string) error {
 				if !ok {
 					return getErrorMsg(field, In, rule.Limit)
 				}
+			case Filter:
+				params[field] = InputContentFilter(value)
+			case Trim:
+				params[field] = TrimAll(value)
 			}
 		}
 	}

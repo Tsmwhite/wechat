@@ -17,7 +17,7 @@ export default new Router({
         {
             path: '/chat',
             name: 'chat',
-            component: () => import('@/components/chat/chat-box'),
+            component: () => import('@/views/chat-box'),
         }
     ]
 })

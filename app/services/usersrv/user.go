@@ -9,15 +9,15 @@ import (
 )
 
 type LoginRequest struct {
-	Account,
-	Password string
+	Account  string `validate:"isMobile"`
+	Password string `validate:"trim"`
 }
 
 type RegisterRequest struct {
-	Account,
-	Password,
-	PasswordConfirm,
-	VerifyCode string
+	Account         string `validate:"isMobile"`
+	Password        string `validate:"trim & maxLen=20"`
+	PasswordConfirm string `validate:"trim"`
+	VerifyCode      string `validate:"trim"`
 }
 
 func Login(req *LoginRequest) (error, *model.ShowAppUser) {

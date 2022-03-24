@@ -3,14 +3,23 @@ package user
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"testing"
+	"wechat/core/encrypt/token"
 )
 
 var account = flag.String("acc", "", "用户账户")
 var password = flag.String("pwd", "123456", "用户密码")
+var uuid =  flag.String("uuid", "", "uuid")
+
+func TestGetToken(t *testing.T)  {
+	flag.Parse()
+	fmt.Println("uuid",*uuid)
+	fmt.Println(token.New(*uuid))
+}
 
 func TestRegister(t *testing.T) {
 	flag.Parse()
