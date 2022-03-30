@@ -16,9 +16,8 @@ type GetContactsRequest struct {
 }
 
 func GetContacts(req *GetContactsRequest, user *model.User) []map[string]interface{} {
-	condition := &model.Condition{
-		Table: "contacts",
-	}
+	condition := model.NewCondition()
+	condition.Table = "contacts"
 	condition.Where = map[string]interface{}{
 		"user": user.Uuid,
 	}

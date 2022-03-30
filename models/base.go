@@ -16,6 +16,9 @@ func init() {
 	DB = database.GetDB()
 }
 
+const RecordDel = 1
+const RecordNoDel = 0
+
 type Condition struct {
 	Table    string
 	Fields   []string
@@ -28,6 +31,13 @@ type Condition struct {
 	Offset   int
 	Distinct []string
 	Joins    []string
+	NoDel    bool
+}
+
+func NewCondition() *Condition {
+	return &Condition{
+		NoDel: true,
+	}
 }
 
 func FindAll(option *Condition, dest interface{}) {
@@ -35,6 +45,10 @@ func FindAll(option *Condition, dest interface{}) {
 }
 
 func (option *Condition) Parse(db *gorm.DB) *gorm.DB {
+	// 查询未删除数据
+	if option.NoDel {
+		db = db.Where("is_del = ?", RecordNoDel)
+	}
 	if option.Table != "" {
 		db = db.Table(option.Table)
 	}

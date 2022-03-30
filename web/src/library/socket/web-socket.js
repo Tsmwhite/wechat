@@ -1,6 +1,6 @@
 import {Chat} from "../message/chat"
 
-export const WEB_SOCKET = {
+const WEB_SOCKET = {
     Error: "",
     MessageHandleCallback: null,
     _token: "",
@@ -18,11 +18,13 @@ export const WEB_SOCKET = {
         return this._socket
     },
     Init(token) {
+        if (this._socket !== null) {
+            return
+        }
         if (!this.Func.isSupportWs()) {
             return false
         }
         this._token = token
-        this.WsFuncInit()
         this.WsInit()
         return this
     },
@@ -122,3 +124,7 @@ export const WEB_SOCKET = {
         }
     }
 }
+
+WEB_SOCKET.WsFuncInit()
+
+export default WEB_SOCKET

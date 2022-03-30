@@ -69,11 +69,12 @@ func (m *ClientManager) Run() {
 			}
 		case msg := <-m.broadcast:
 			fmt.Println("msg", msg.GetContent())
-			var wsc *client.WsClient
 			for _, mem := range msg.GetRecipientsUuid() {
 				if mem != msg.GetSenderUuid() {
-					wsc = m.clients[mem]
-					wsc.Send <- msg
+					wsc, ok := m.clients[mem]
+					if ok {
+						wsc.Send <- msg
+					}
 				}
 			}
 		}

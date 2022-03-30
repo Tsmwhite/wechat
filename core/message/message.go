@@ -1,6 +1,7 @@
 package message
 
 import (
+	"strings"
 	"wechat/core/roomer"
 )
 
@@ -15,7 +16,7 @@ type Messenger interface {
 }
 
 type Message struct {
-	Id 			int
+	Id          int
 	Uuid        string
 	Sender      string
 	Recipient   string
@@ -49,10 +50,7 @@ func (m Message) GetStatus() int {
 }
 
 func (m Message) GetRecipientsUuid() []string {
-	return []string{
-		"40b49936db52488e8a110058fdeebd11",
-		"65dcd20109ab4458b1ec6e859f8de6c6",
-	}
+	return strings.Split(m.Recipient, ",")
 }
 
 func (m Message) GetSenderUuid() string {

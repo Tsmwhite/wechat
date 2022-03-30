@@ -6,6 +6,7 @@
                   @load="loadData">
             <div class="contact-option"
                  v-for="(item,index) in data"
+                 @click="openChat(item)"
                  :key="index">
                 <div class="left">
                     <div :class="['avatar',{unread:item.unreadCount > 0},{'only-tip':item.onlyTip}]"
@@ -15,7 +16,7 @@
                 </div>
                 <div class="right">
                     <div class="info">
-                        <div class="nickname">{{ item.title }}</div>
+                        <div class="nickname">{{ item.name }}</div>
                         <div class="last-msg">{{ item.lastMsg }}</div>
                     </div>
                     <div class="extra">
@@ -29,6 +30,7 @@
 
 <script>
 import api from "../api/common"
+import {SetToken} from "../api/request";
 export default {
     name: "index",
     data() {
@@ -42,55 +44,28 @@ export default {
     mounted() {
         let token = this.$route.query.token
         this.$WebSocket.Init(token)
+        SetToken(token)
         this.init()
     },
     methods: {
         init() {
-            this.loadContacts()
             this.loadData()
         },
-        loadContacts() {
-            api.getContacts().then(res => {
-
-            })
-        },
         loadData() {
-            setTimeout(() => {
-                this.data = [
-                    {
-                        title: "芝麻微客",
-                        lastMsg: "你好，我是芝麻微客我是芝麻微客我是芝麻微客我是芝麻微客我是芝麻微客我是芝麻微客我是芝麻微客我是芝麻微客我是芝麻微客",
-                        lastTime: "下午 2:55",
-                        unreadCount: 99,
-                        avatar: "https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png",
-                    },
-                    {
-                        title: "芝麻微客助手",
-                        lastMsg: "你好，芝麻微客助手",
-                        unreadCount: 9,
-                        onlyTip: true,
-                        lastTime: "下午 2:09",
-                        avatar: "https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png",
-                    },
-                    {
-                        title: "芝麻小客服",
-                        lastMsg: "你好，芝麻小客服",
-                        unreadCount: 1,
-                        lastTime: "昨天",
-                        avatar: "https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png",
-                    },
-                    {
-                        title: "芝麻",
-                        lastMsg: "你好，芝麻",
-                        unreadCount: 123,
-                        lastTime: "星期三",
-                        avatar: "https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png",
-                    }
-                ]
+            api.getContacts().then(res => {
+                this.data = res.data
                 this.loading = false
                 this.finished = true
-            }, 1200)
-        }
+            })
+        },
+        openChat(item) {
+            this.$router.push({
+                path: "/chat",
+                query: {
+                    friend: item['object']
+                }
+            })
+        },
     }
 }
 </script>

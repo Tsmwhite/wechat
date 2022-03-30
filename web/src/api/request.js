@@ -3,6 +3,11 @@ import Qs from 'qs'
 import {Toast} from 'vant';
 import {GetlocalStorage, RemovelocalStorage} from "../utis/sessionStorage";
 
+let _token
+export const SetToken = (token) => {
+    _token = token
+}
+
 const request = axios.create({
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -25,9 +30,9 @@ request.interceptors.request.use(
         // 但是即使token存在，也有可能token是过期的，所以在每次的请求头中携带token
         // 后台根据携带的token判断用户的登录情况，并返回给我们对应的状态码
         // 而后我们可以在响应拦截器中，根据状态码进行一些统一的操作。
-        const token = GetlocalStorage('token');
-        if (token) {
-            config.headers["authorization"] = token
+        //const token = GetlocalStorage('token');
+        if (_token) {
+            config.headers["authorization"] = _token
         }
         return config;
     },
@@ -43,15 +48,13 @@ request.interceptors.response.use(
             case 200:
             case 201:
                 // 内层switch@start
-                switch (res.res) {
+                switch (res.err_code) {
                     case 0:
                         return Promise.resolve(res)
-                        break;
                     case -9:
                         //当错误需要强提醒时
                         Toast('错误');
                         return Promise.reject(res)
-                        break;
                     case 401://登录态失效
                         Toast('请重新登录');
                         RemovelocalStorage("login");

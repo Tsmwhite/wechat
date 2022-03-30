@@ -1,16 +1,33 @@
 <template>
     <div class="chat-header">
-        <div class="left"><van-icon class="icon" name="arrow-left" /></div>
+        <div class="left">
+            <van-icon class="icon" name="arrow-left" @click="back"/>
+        </div>
         <div class="center">
             <div class="title">芝麻微克</div>
         </div>
-        <div class="right"><van-icon class="icon" name="ellipsis" /></div>
+        <div class="right">
+            <van-icon class="icon" name="ellipsis"/>
+        </div>
     </div>
 </template>
 
 <script>
 export default {
-    name: "chat-header"
+    name: "chat-header",
+    data() {
+        return {
+            friendUuid: "",
+        }
+    },
+    mounted() {
+        this.friendUuid = this.$route.query.user
+    },
+    methods: {
+        back() {
+            this.$router.go(-1)
+        }
+    }
 }
 </script>
 
@@ -27,17 +44,21 @@ export default {
     justify-content: space-between;
     padding: 12px 0;
     border-bottom: 1px solid #d7d8d9;
+
     .icon {
         font-weight: bold;
         font-size: 16px;
         color: #666666
     }
+
     .left {
         margin-left: 12px;
     }
+
     .right {
         margin-right: 12px;
     }
+
     .center {
         .title {
             font-weight: 500;

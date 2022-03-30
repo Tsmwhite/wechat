@@ -42,6 +42,9 @@ func (c *WsClient) read() {
 		if err != nil {
 			return
 		}
+		if msg.Recipient == "" || msg.Content == "" {
+			continue
+		}
 		switch msg.Type {
 		case message.TypeHeartbeat:
 			if err = c.conn.WriteMessage(websocket.PongMessage, nil); err != nil {

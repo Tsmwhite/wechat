@@ -1,14 +1,16 @@
-let Recipient = "" // 消息接收者
 const time = () => {
-    return (new Date()).getTime() / 1000
+    return Math.ceil((new Date()).getTime() / 1000)
 }
-const setRecipient = (recipient) => {
-    Recipient = recipient
-}
+
 const commonStruct = {
-    Recipient: Recipient,
+    Recipient: "",
     SendTime: time()
 }
+
+export const setRecipient = (recipient) => {
+    commonStruct.Recipient = recipient
+}
+
 export const Chat = {
     ping() {
         return {
@@ -32,9 +34,4 @@ export const Chat = {
             ...commonStruct
         }
     },
-}
-
-export default {
-    setRecipient,
-    Chat,
 }

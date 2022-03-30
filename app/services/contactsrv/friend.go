@@ -13,9 +13,8 @@ type FriendsRequest struct {
 type FriendsResponse struct{}
 
 func GetFriends(req *FriendsRequest, user *model.User) []map[string]interface{} {
-	condition := &model.Condition{
-		Table: "friends",
-	}
+	condition := model.NewCondition()
+	condition.Table = "friends"
 	condition.Where = map[string]interface{}{
 		"user": user.Uuid,
 	}

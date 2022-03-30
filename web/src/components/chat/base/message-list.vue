@@ -49,7 +49,7 @@ export default {
                 this.loadData()
                 this.loading = false
                 this.finished = true
-            }, 1200)
+            }, 0)
         },
         loadHistory() {
             setTimeout(() => {

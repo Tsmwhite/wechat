@@ -8,6 +8,7 @@
                        v-model="message"
                        :autosize="{maxHeight:100}"
                        style="border-radius: 8px"
+                       @blur="sendTextMessage"
                        type="textarea"/>
         </div>
         <div class="right">
@@ -25,9 +26,29 @@ import Add from "@/components/icons/send-message-icons/add";
 export default {
     name: "send-message",
     components: {Add, Emoji, Voice},
+    props: {
+        friend: {
+            type: String,
+            required: true,
+        }
+    },
     data() {
         return {
             message: ''
+        }
+    },
+    mounted() {},
+    watch: {
+      friend() {
+          this.$SetR(this.friend)
+      }
+    },
+    methods: {
+        sendTextMessage() {
+            if (this.message === "") {
+                return
+            }
+            this.$WebSocket.send(this.$Chat.text(this.message))
         }
     }
 }
@@ -44,10 +65,12 @@ export default {
     display: flex;
     align-items: center;
     padding: 12px 5px;
+
     .center {
         flex: 2;
         margin: 0 4px;
     }
+
     .right {
         display: flex;
         align-items: center;

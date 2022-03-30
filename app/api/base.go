@@ -7,16 +7,15 @@ import (
 	model "wechat/models"
 )
 
-var currentUser *model.User
-
 func NewResult() []map[string]interface{} {
 	return []map[string]interface{}{}
 }
 
 func GetCurrentUser(ctx *gin.Context) *model.User {
-	if currentUser == nil {
-		user, _ := ctx.Get(env.AppCurrentUserKey)
-		currentUser = user.(*model.User)
+	user, _ := ctx.Get(env.AppCurrentUserKey)
+	currentUser, ok := user.(*model.User)
+	if !ok {
+		return nil
 	}
 	return currentUser
 }

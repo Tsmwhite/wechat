@@ -2,7 +2,7 @@
     <div class="chat-box">
         <chat-header></chat-header>
         <message-list></message-list>
-        <send-message></send-message>
+        <send-message :friend="friendUuid"></send-message>
     </div>
 </template>
 
@@ -13,7 +13,15 @@ import SendMessage from "@/components/chat/base/send-message";
 
 export default {
     name: "chat-box",
-    components: {SendMessage, MessageList, ChatHeader}
+    components: {SendMessage, MessageList, ChatHeader},
+    data(){
+        return {
+            friendUuid: "",
+        }
+    },
+    mounted() {
+        this.friendUuid = this.$route.query.friend
+    }
 }
 </script>
 
