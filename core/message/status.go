@@ -8,3 +8,10 @@ const (
 	StateHaveRead        // 消息已读
 	StateDelete          // 消息删除
 )
+
+// 添加好友申请状态
+const (
+	AddFriendStatusNormal = iota
+	AddFriendStatusAgree
+	AddFriendStatusReject
+)

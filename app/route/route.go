@@ -19,6 +19,7 @@ func init() {
 	chatApi := ginEngine.Group("/chat", middleware.Authorization)
 	{
 		chatApi.POST("/addFriends", contact.AddFriend)
+		chatApi.POST("/addFriendsHandle", contact.AddFriendsHandle)
 		chatApi.POST("/friends", contact.FriendsList)
 		chatApi.POST("/addContact", contact.AddContact)
 		chatApi.POST("/contacts", contact.ContactsList)

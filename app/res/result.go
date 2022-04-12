@@ -9,6 +9,8 @@ const (
 	ErrorCodeAuthErr
 )
 
+const Nil = ""
+
 type ErrOption struct {
 	Msg       string
 	ErrorCode int

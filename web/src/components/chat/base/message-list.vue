@@ -1,6 +1,11 @@
 <template>
     <div class="message-list">
-        <van-pull-refresh v-model="refreshing" @refresh="loadHistory">
+        <van-list id="messageListScroll"
+                  v-model="loading"
+                  :finished="finished"
+                  finished-text="没有更多了"
+                  @load="loadHistory"
+                  direction="up">
             <div v-for="(item,index) in data"
                  :key="index"
                  :class="['message-box',{right:item.Recipient !==0 }]">
@@ -25,7 +30,7 @@
                     <img v-lazy="'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'">
                 </div>
             </div>
-        </van-pull-refresh>
+        </van-list>
     </div>
 </template>
 
@@ -34,7 +39,7 @@ export default {
     name: "message-list",
     data() {
         return {
-            loading: true,
+            loading: false,
             finished: false,
             refreshing: false,
             data: [],
@@ -167,6 +172,7 @@ export default {
             width: 36px;
             height: 36px;
         }
+
         .avatar > img {
             border-radius: 6px;
             width: 100%;
@@ -207,6 +213,7 @@ export default {
 
     .message-box.right {
         justify-content: flex-end;
+
         .text {
             background: #bae4ff;
         }

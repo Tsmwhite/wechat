@@ -1,7 +1,7 @@
 package model
 
 const ContactsLimit = 500
-type Contacts struct {
+type Contact struct {
 	Id        int64  `json:"id"`
 	User      string `json:"user"`
 	Object    string `json:"object"`

@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"wechat/config"
 	wsClient "wechat/core/client"
+	"wechat/core/redis"
+	"wechat/env"
+	model "wechat/models"
 )
 
 type Config struct {
@@ -45,12 +48,22 @@ func Run(option *Option) {
 	_manager = option.ClientManage
 	_config = option.Config
 	go _manager.Run()
+	go addFriendsRequestHandel()
 	//注册默认路由为 /ws ，并使用wsHandler这个方法
 	http.HandleFunc(_config.router, wsHandler)
 	//监听端口
 	fmt.Println("Listen:", _config.port, _config.router)
 	if err := http.ListenAndServe(_config.port, nil); err != nil {
 		panic(err)
+	}
+}
+
+func addFriendsRequestHandel() {
+	for {
+		msg := &model.Message{}
+		redis.Init().LPop(redis.Ctx, env.AddFriendRequestHandel).Scan(msg)
+		model.DB.Create(msg)
+		_manager.Broadcast(msg)
 	}
 }
 
@@ -74,7 +87,7 @@ func wsHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	//每一次连接都会新开一个client
-	client := wsClient.NewClient(conn, _uuid, _manager.GetBroadcastChan())
+	client := wsClient.NewClient(conn, _uuid, &model.Message{}, _manager.GetBroadcastChan())
 	//注册一个新的链接
 	_manager.Register(client)
 }

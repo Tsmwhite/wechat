@@ -40,6 +40,10 @@ func NewCondition() *Condition {
 	}
 }
 
+func Find(option *Condition, dest interface{}) {
+	option.Parse(DB).First(dest)
+}
+
 func FindAll(option *Condition, dest interface{}) {
 	option.Parse(DB).Find(dest)
 }

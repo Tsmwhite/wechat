@@ -14,6 +14,7 @@ const (
 
 const (
 	TypeChatDefault    = iota + 200 // 默认聊天消息
+	TypeAddFriendReq				// 添加好友请求
 	TypeChatTip                     // 提示性消息
 	TypeChatGroup					// 群消息
 	TypeGroupNotice                 // 群通知

@@ -33,8 +33,10 @@ func NewUser() *User {
 	return new(User)
 }
 
-func GetUsers(c *Condition) {
-
+func GetUserByUuid(uuid string) *User {
+	u := NewUser()
+	DB.Raw("SELECT * FROM `users` WHERE `uuid` = ? AND `is_del` = 0 ", uuid).Scan(u)
+	return u
 }
 
 func (u *User) ShowAppUser() *ShowAppUser {
@@ -56,12 +58,12 @@ func (u *User) Create() error {
 
 func GetUserByAccount(account string) *User {
 	user := NewUser()
-	DB.Raw("SELECT * FROM `users` WHERE `mobile` = ?", account).Scan(user)
+	DB.Raw("SELECT * FROM `users` WHERE `mobile` = ? AND `is_del` = 0", account).Scan(user)
 	return user
 }
 
 func (u *User) CheckMemberByUuid(uuid string) bool {
-	DB.Raw("SELECT * FROM `users` WHERE `uuid` = ?", uuid).Scan(u)
+	DB.Raw("SELECT * FROM `users` WHERE `uuid` = ? AND `is_del` = 0 ", uuid).Scan(u)
 	return u.Uuid == uuid
 }
 

@@ -6,20 +6,26 @@ import (
 	"wechat/core/message"
 )
 
-func NewClient(conn *websocket.Conn, id string, msgChan chan message.Messenger) *WsClient {
-	return &WsClient{
-		id:   id,
-		conn: conn,
-		Send: make(chan message.Messenger),
-		Read: msgChan,
-	}
-}
-
 type WsClient struct {
 	id   string
 	conn *websocket.Conn
-	Send chan message.Messenger
-	Read chan message.Messenger
+	Msg  message.Messenger
+	Send chan message.Messenger // 向该链接发送消息的通道
+	Read chan message.Messenger // 读取该链接发送的消息，传递到消息处理中心
+}
+
+func NewClient(conn *websocket.Conn, id string, msgHandel message.Messenger, read chan message.Messenger) *WsClient {
+	return &WsClient{
+		id:   id,
+		conn: conn,
+		Msg:  msgHandel,
+		Send: make(chan message.Messenger, 100),
+		Read: read,
+	}
+}
+
+func (c *WsClient) GetConnect() *websocket.Conn {
+	return c.conn
 }
 
 func (c *WsClient) GetUuid() string {
@@ -31,10 +37,14 @@ func (c *WsClient) MessageProcess() {
 	go c.write()
 }
 
+func (c *WsClient) Close() {
+	c.conn.Close()
+}
+
 //读取客户端消息
 func (c *WsClient) read() {
-	defer func() { c.close() }()
-	var msg = &message.Message{}
+	defer func() { c.Close() }()
+	var msg = c.Msg.New()
 	for {
 		//读取消息
 		err := c.conn.ReadJSON(msg)
@@ -42,25 +52,16 @@ func (c *WsClient) read() {
 		if err != nil {
 			return
 		}
-		if msg.Recipient == "" || msg.Content == "" {
+		if msg.GetRecipientsUuid() == nil || msg.GetContent() == "" {
 			continue
 		}
-		switch msg.Type {
-		case message.TypeHeartbeat:
-			if err = c.conn.WriteMessage(websocket.PongMessage, nil); err != nil {
-				c.close()
-			}
-		default:
-			// 消息发送者为该连接
-			msg.Sender = c.id
-			c.Read <- msg
-		}
+
 	}
 }
 
 //将消息发送至客户端
 func (c *WsClient) write() {
-	defer func() { c.close() }()
+	defer func() { c.Close() }()
 	for {
 		select {
 		case msg, ok := <-c.Send:
@@ -74,8 +75,4 @@ func (c *WsClient) write() {
 			}
 		}
 	}
-}
-
-func (c *WsClient) close() {
-	c.conn.Close()
 }
