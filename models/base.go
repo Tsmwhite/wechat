@@ -3,6 +3,7 @@ package model
 import (
 	"gorm.io/gorm"
 	"wechat/core/database"
+	"wechat/core/log"
 )
 
 const IsNoDel = 0
@@ -20,37 +21,35 @@ const RecordDel = 1
 const RecordNoDel = 0
 
 type Condition struct {
-	Table    string
-	Fields   []string
-	Where    map[string]interface{}
-	SqlStr   string
-	Order    string
-	Group    string
-	Having   string
-	Limit    int
-	Offset   int
-	Distinct []string
-	Joins    []string
-	NoDel    bool
-}
-
-func NewCondition() *Condition {
-	return &Condition{
-		NoDel: true,
-	}
+	Table      string
+	Fields     []string
+	Where      map[string]interface{}
+	SqlStr     string
+	Order      string
+	Group      string
+	Having     string
+	Limit      int
+	Offset     int
+	Distinct   []string
+	Joins      []string
+	IncludeDel bool
 }
 
 func Find(option *Condition, dest interface{}) {
-	option.Parse(DB).First(dest)
+	if err := option.Parse(DB).First(dest).Error; err != nil {
+		log.Error.Println("Find Error:", err, "\noption:", option)
+	}
 }
 
 func FindAll(option *Condition, dest interface{}) {
-	option.Parse(DB).Find(dest)
+	if err := option.Parse(DB).Find(dest).Error; err != nil {
+		log.Error.Println("FindAll Error:", err, "\noption:", option)
+	}
 }
 
 func (option *Condition) Parse(db *gorm.DB) *gorm.DB {
 	// 查询未删除数据
-	if option.NoDel {
+	if !option.IncludeDel {
 		db = db.Where("is_del = ?", RecordNoDel)
 	}
 	if option.Table != "" {

@@ -6,6 +6,7 @@ import (
 	"time"
 	"wechat/app/api"
 	"wechat/core/encrypt"
+	"wechat/core/log"
 	"wechat/core/message"
 	"wechat/core/redis"
 	"wechat/env"
@@ -28,11 +29,13 @@ type AddFriendHandleRequest struct {
 	Remark string `validate:"noRequired & filter"`
 }
 
+// GetFriends 获取好友列表
 func GetFriends(req *FriendsRequest, user *model.User) []map[string]interface{} {
-	condition := model.NewCondition()
-	condition.Table = "friends"
-	condition.Where = map[string]interface{}{
-		"user": user.Uuid,
+	condition := &model.Condition{
+		Table: "friends",
+		Where: map[string]interface{}{
+			"user": user.Uuid,
+		},
 	}
 	if req.Keyword != "" {
 		condition.SqlStr = fmt.Sprintf("`name` LIKE '%%%s%%' OR remark LIKE '%%%s%%'", req.Keyword, req.Keyword)
@@ -42,6 +45,7 @@ func GetFriends(req *FriendsRequest, user *model.User) []map[string]interface{} 
 	return result
 }
 
+// AddFriend 添加好友请求
 func AddFriend(req *AddFriendRequest, user *model.User) error {
 	// 1、查询用户是否存在
 	addU := model.NewUser()
@@ -64,11 +68,20 @@ func AddFriend(req *AddFriendRequest, user *model.User) error {
 	if err := sendAddFriendRequestLimit(); err != nil {
 		return err
 	}
-	// 4、发送好友申请
-	sendAddFriendRequest(user, addU)
-	return nil
+	// 4、构造好友申请
+	msg := &model.Message{
+		Uuid:      encrypt.CreateUuid(),
+		Sender:    user.Uuid,
+		Recipient: addU.Uuid,
+		Type:      message.TypeAddFriendReq,
+		Status:    message.AddFriendStatusNormal,
+		SendTime:  time.Now().Unix(),
+		Remark:    req.Remark,
+	}
+	return sendAddFriendRequest(msg)
 }
 
+// AddFriendHandle 处理添加好友请求
 func AddFriendHandle(req *AddFriendHandleRequest, user *model.User) error {
 	// 1、查询消息信息
 	msg := &model.Message{}
@@ -87,7 +100,10 @@ func AddFriendHandle(req *AddFriendHandleRequest, user *model.User) error {
 	}
 	switch req.Status {
 	case message.AddFriendStatusReject:
-
+		// 变更好友申请消息状态
+		msg.Status = message.AddFriendStatusReject
+		msg.UpdateTime = time.Now().Unix()
+		model.DB.Save(msg)
 	case message.AddFriendStatusAgree:
 		if err := agreeFriendRequest(req, msg, user); err != nil {
 			return err
@@ -96,14 +112,23 @@ func AddFriendHandle(req *AddFriendHandleRequest, user *model.User) error {
 	return nil
 }
 
+// agreeFriendRequest 同意好友请求
 func agreeFriendRequest(req *AddFriendHandleRequest, msg *model.Message, receipt *model.User) error {
-	now := time.Now().Unix()
-	// 1、查询发送请求用户信息
+	// 查询发送请求用户信息
 	sender := model.GetUserByUuid(msg.Sender)
 	if sender.Id == 0 {
 		return errors.New("该用户信息异常")
 	}
-	// 2、添加好友关系并加入双方联系人
+	lockKey := CreateRoomKey(sender, receipt)
+	lockKey = "AddFriendAgreeHandle:" + lockKey
+	if err := redis.Init().SetNX(redis.Ctx, lockKey, 1, time.Minute*2).Err(); err != nil {
+		return err
+	}
+	defer func() {
+		redis.Init().Del(redis.Ctx, lockKey)
+	}()
+	now := time.Now().Unix()
+	// 好友关系数据
 	senderFriend := model.Friend{
 		User:       sender.Uuid,
 		Friend:     receipt.Uuid,
@@ -124,21 +149,53 @@ func agreeFriendRequest(req *AddFriendHandleRequest, msg *model.Message, receipt
 		senderFriend,
 		receiptFriend,
 	}
-	model.DB.Create(&friends)
-	return nil
+	// 查询二人是否存在房间
+	room := GetRoom(sender, receipt)
+	tx := model.DB.Begin()
+	return func() error {
+		defer func() {
+			if e := recover(); e != nil {
+				tx.Rollback()
+			}
+		}()
+		// 建立房间
+		var err error
+		if room.Id == 0 {
+			if err = CreatePrivateRoomTx(tx, sender, receipt); err != nil {
+				tx.Rollback()
+				log.Error.Println("agreeFriendRequest -> CreatePrivateRoomTx Error:", err)
+				return errors.New("建立房间失败")
+			}
+		}
+		// 添加好友关系
+		if err = tx.Create(&friends).Error; err != nil {
+			tx.Rollback()
+			log.Error.Println("agreeFriendRequest ->  Error:", err)
+			return errors.New("建立好友关系失败")
+		}
+		// 建立双方联系人
+		if err = CreateContactsTx(sender, receipt, tx); err != nil {
+			tx.Rollback()
+			log.Error.Println("agreeFriendRequest -> CreateContactsTx Error:", err)
+			return errors.New("建立联系人失败")
+		}
+		// 变更好友申请消息状态
+		msg.Status = message.AddFriendStatusAgree
+		msg.UpdateTime = now
+		if err = tx.Save(msg).Error; err != nil {
+			tx.Rollback()
+			log.Error.Println("agreeFriendRequest ->  Error:", err)
+			return errors.New("变更好友申请状态失败")
+		}
+		return tx.Commit().Error
+	}()
 }
 
 // sendAddFriendRequest 发送添加好友申请
-func sendAddFriendRequest(user, friend *model.User) {
-	msg := model.Message{
-		Uuid:      encrypt.CreateUuid(),
-		Sender:    user.Uuid,
-		Recipient: friend.Uuid,
-		Type:      message.TypeAddFriendReq,
-		Status:    message.AddFriendStatusNormal,
-		SendTime:  time.Now().Unix(),
-	}
-	redis.Init().LPush(redis.Ctx, env.AddFriendRequestHandel, msg)
+func sendAddFriendRequest(msg *model.Message) error {
+	return model.DB.Create(&msg).Error
+	//err := redis.Init().LPush(redis.Ctx, env.AddFriendRequestHandel, msg).Err()
+	//fmt.Println("sendAddFriendRequest", err)
 }
 
 // sendAddFriendRequestLimit 发送好友申请限制

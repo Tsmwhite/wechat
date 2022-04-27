@@ -1,8 +1,7 @@
 package model
 
 import (
-	"errors"
-	"wechat/core/encrypt"
+	"strings"
 	"wechat/core/member"
 )
 
@@ -12,43 +11,27 @@ const (
 )
 
 type Room struct {
-	Uuid        string
-	Title       string
-	Type        int
-	Members     map[string]bool
-	Creator     string
-	Description string
-	CreateTime  int
-}
-
-func New(title string, creator member.Member, members map[string]bool, _type int) *Room {
-	return &Room{
-		Uuid:    encrypt.CreateUuid(),
-		Title:   title,
-		Type:    _type,
-		Members: members,
-		Creator: creator.GetUuid(),
-	}
+	Id          int    `json:"id"`
+	Uuid        string `json:"uuid"`
+	Title       string `json:"title"`
+	Type        int    `json:"type"`
+	Members     string `json:"members"`
+	Creator     string `json:"creator"`
+	Description string `json:"description"`
+	CreateTime  int64  `json:"create_time"`
+	IsDel       int    `json:"is_del"`
 }
 
 func (r *Room) GetMembers() []string {
-	return nil
+	return strings.Split(r.Members, ",")
 }
 
 func (r *Room) Join(m member.Member) error {
-	uuid := m.GetUuid()
-	if r.Members[uuid] {
-		return errors.New("")
-	}
-	r.Members[uuid] = true
+
 	return nil
 }
 
 func (r *Room) Quit(m member.Member) error {
-	uuid := m.GetUuid()
-	if !r.Members[uuid] {
-		return errors.New("")
-	}
-	delete(r.Members, uuid)
+
 	return nil
 }

@@ -1,7 +1,6 @@
 package message
 
 import (
-	wsClient "wechat/core/client"
 	"wechat/core/roomer"
 )
 
@@ -16,5 +15,5 @@ type Messenger interface {
 	GetSenderUuid() string
 	GetRoom() roomer.Roomer
 	SetSenderUuid(string)
-	Handle(*wsClient.WsClient)
+	//Handle(*wsClient.WsClient)
 }

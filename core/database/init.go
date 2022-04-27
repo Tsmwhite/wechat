@@ -16,7 +16,9 @@ func init() {
 		DSN:                      dsn,
 		DefaultStringSize:        256, // string 类型字段的默认长度
 		DisableDatetimePrecision: true,
-	}), &gorm.Config{})
+	}), &gorm.Config{
+		SkipDefaultTransaction: true,
+	})
 	sqlDB, err := _DB_.DB()
 	if err != nil {
 		//TODO

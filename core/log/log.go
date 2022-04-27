@@ -10,6 +10,7 @@ var (
 	Info    *log.Logger // 重要的信息
 	Warning *log.Logger // 需要注意的信息
 	Error   *log.Logger // 非常严重的问题
+	DBError *log.Logger // sql问题
 )
 
 func init() {

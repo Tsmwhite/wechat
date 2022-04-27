@@ -8,10 +8,6 @@ import (
 )
 
 func main() {
-	//user := model.NewUser()
-	//model.DB.Raw("SELECT * FROM `users`").Scan(user)
-	//fmt.Println("user", user)
-	//return
 	option := wservice.DefaultOption
 	option.CheckToken = func(s string) (ok bool, uuid string) {
 		user := model.NewUser()

@@ -196,3 +196,73 @@ ERROR:2021/07/01 18:06:47 client.go:86: client -> write -> WriteJSON websocket: 
 ERROR:2021/08/17 18:56:28 client.go:86: client -> write -> WriteJSON websocket: close sent &{9d224242-d40f-4935-8164-d34315d8dec4 0xc00019a000 0xc000198060}
 ERROR:2021/08/17 18:56:32 client.go:86: client -> write -> WriteJSON websocket: close sent &{8b5b6a80-4e56-4b55-b873-7e7f73ac60a9 0xc0000ea840 0xc000096360}
 ERROR:2021/08/17 18:56:32 client.go:86: client -> write -> WriteJSON websocket: close sent &{9d224242-d40f-4935-8164-d34315d8dec4 0xc00019a000 0xc000198060}
+ERROR:2022/04/25 23:13:35 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:20:10 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:23:25 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:26:03 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:31:45 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:32:28 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:32:29 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:32:31 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:32:31 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:32:32 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:35:14 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:39:38 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:40:25 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:44:41 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:46:48 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:47:21 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:50:58 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/25 23:57:15 base.go:40: Find Error: record not found 
+option: &{rooms [] map[uuid:e26c66810b74ba7960d263a75913a48a]     0 0 [] [] false}
+ERROR:2022/04/25 23:57:15 base.go:40: Find Error: record not found 
+option: &{contacts [] map[object:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] true}
+ERROR:2022/04/25 23:57:15 base.go:40: Find Error: record not found 
+option: &{contacts [] map[object:16f10f79d11049968da394a1904fe5c6 user:15bebd5e879b4982bc1f03442d6cfe07]     0 0 [] [] true}
+ERROR:2022/04/26 22:44:47 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/26 22:46:22 base.go:40: Find Error: record not found 
+option: &{contacts [] map[object:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] true}
+ERROR:2022/04/26 22:46:22 base.go:40: Find Error: record not found 
+option: &{contacts [] map[object:16f10f79d11049968da394a1904fe5c6 user:15bebd5e879b4982bc1f03442d6cfe07]     0 0 [] [] true}
+ERROR:2022/04/26 23:20:25 base.go:40: Find Error: record not found 
+option: &{messages [] map[recipient:15bebd5e879b4982bc1f03442d6cfe07 uuid:6a1d4762637942d8831a0b7bc673b8f9]     0 0 [] [] false}
+ERROR:2022/04/26 23:20:30 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/26 23:20:51 base.go:40: Find Error: record not found 
+option: &{contacts [] map[object:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] true}
+ERROR:2022/04/26 23:20:51 base.go:40: Find Error: record not found 
+option: &{contacts [] map[object:16f10f79d11049968da394a1904fe5c6 user:15bebd5e879b4982bc1f03442d6cfe07]     0 0 [] [] true}
+ERROR:2022/04/26 23:22:48 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/26 23:23:25 base.go:40: Find Error: record not found 
+option: &{rooms [] map[uuid:e26c66810b74ba7960d263a75913a48a]     0 0 [] [] false}
+ERROR:2022/04/26 23:23:25 base.go:40: Find Error: record not found 
+option: &{contacts [] map[object:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] true}
+ERROR:2022/04/26 23:23:25 base.go:40: Find Error: record not found 
+option: &{contacts [] map[object:16f10f79d11049968da394a1904fe5c6 user:15bebd5e879b4982bc1f03442d6cfe07]     0 0 [] [] true}
+ERROR:2022/04/26 23:25:23 base.go:40: Find Error: record not found 
+option: &{friends [] map[friend:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] false}
+ERROR:2022/04/26 23:25:57 base.go:40: Find Error: record not found 
+option: &{rooms [] map[uuid:e26c66810b74ba7960d263a75913a48a]     0 0 [] [] false}
+ERROR:2022/04/26 23:25:57 base.go:40: Find Error: record not found 
+option: &{contacts [] map[object:15bebd5e879b4982bc1f03442d6cfe07 user:16f10f79d11049968da394a1904fe5c6]     0 0 [] [] true}
+ERROR:2022/04/26 23:25:57 base.go:40: Find Error: record not found 
+option: &{contacts [] map[object:16f10f79d11049968da394a1904fe5c6 user:15bebd5e879b4982bc1f03442d6cfe07]     0 0 [] [] true}

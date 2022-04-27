@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"wechat/config"
 	wsClient "wechat/core/client"
-	"wechat/core/redis"
-	"wechat/env"
 	model "wechat/models"
 )
 
@@ -59,12 +57,15 @@ func Run(option *Option) {
 }
 
 func addFriendsRequestHandel() {
-	for {
-		msg := &model.Message{}
-		redis.Init().LPop(redis.Ctx, env.AddFriendRequestHandel).Scan(msg)
-		model.DB.Create(msg)
-		_manager.Broadcast(msg)
-	}
+	//for {
+	//	msg := &model.Message{}
+	//	err := redis.Init().LPop(redis.Ctx, env.AddFriendRequestHandel).Scan(msg).Error()
+	//	if msg.Uuid != "" {
+	//		fmt.Println("addFriendsRequestHandel error", err, msg)
+	//		model.DB.Create(msg)
+	//		_manager.Broadcast(msg)
+	//	}
+	//}
 }
 
 func wsHandler(res http.ResponseWriter, req *http.Request) {
