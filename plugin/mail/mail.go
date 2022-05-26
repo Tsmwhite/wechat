@@ -67,8 +67,8 @@ func ResMail() *Mail {
 	return &Mail{
 		Server: Server{
 			host:     "smtp.163.com",
-			account:  "thesmallwhiteme@163.com",
-			password: "whiteme1314",
+			account:  "xxxxxxx@163.com",
+			password: "xxxxxxxx",
 			port:     "465",
 			ssl:      true,
 		},
