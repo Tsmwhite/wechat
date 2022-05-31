@@ -75,7 +75,6 @@ func CreateContactTx(user, contacts *model.User, tx *gorm.DB) error {
 	// 查询好友信息
 	friend := &model.Friend{}
 	tx.Table("friends").Where(where).First(friend)
-	fmt.Println("friend", friend)
 	c.Avatar = contacts.Avatar
 	c.Name = contacts.Name
 	c.Remark = friend.Remark

@@ -15,6 +15,8 @@ func init() {
 
 	ginEngine.POST("/register", user.Register)
 	ginEngine.POST("/login", user.Login)
+	ginEngine.POST("/loginReg", user.LoginOrRegister)
+	ginEngine.POST("/sendCode", user.SendVerifyCode)
 
 	chatApi := ginEngine.Group("/chat", middleware.Authorization)
 	{

@@ -67,3 +67,36 @@ func Login(ctx *gin.Context) {
 		res.Error(ctx, err)
 	}
 }
+
+func LoginOrRegister(ctx *gin.Context) {
+	tipCode := make(map[string]string)
+	tipCode["Account"] = tipsMap[TipNotInputAccount]
+	tipCode["VerifyCode"] = tipsMap[TipNotInputCode]
+	req := &usersrv.LoginOrRegisterRequest{}
+	err := api.VerifyParams(ctx, req, tipCode)
+	if err != nil {
+		res.Error(ctx, err)
+	} else {
+		if err = usersrv.VerifyCode(req.Account, req.VerifyCode); err != nil {
+			res.Error(ctx, err)
+		} else if err, user := usersrv.LoginOrRegister(req); err == nil {
+			res.Success(ctx, user)
+		} else {
+			res.Error(ctx, err)
+		}
+	}
+}
+
+func SendVerifyCode(ctx *gin.Context) {
+	req := &usersrv.SendCodeRequest{}
+	err := api.VerifyParams(ctx, req, nil)
+	if err != nil {
+		res.Error(ctx, err)
+	} else {
+		if err := usersrv.SendCode(req); err == nil {
+			res.Success(ctx, res.Nil, "已发送，请注意查收")
+		} else {
+			res.Error(ctx, err)
+		}
+	}
+}

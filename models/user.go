@@ -44,6 +44,7 @@ func (u *User) ShowAppUser() *ShowAppUser {
 	res.Name = u.Name
 	res.Mobile = u.Mobile
 	res.Avatar = u.Avatar
+	res.Mail = u.Mail
 	res.RoleId = u.RoleId
 	return res
 }
@@ -58,7 +59,7 @@ func (u *User) Create() error {
 
 func GetUserByAccount(account string) *User {
 	user := NewUser()
-	DB.Raw("SELECT * FROM `users` WHERE `mobile` = ? AND `is_del` = 0", account).Scan(user)
+	DB.Raw("SELECT * FROM `users` WHERE (`mobile` = ? OR `mail` = ?) AND `is_del` = 0", account, account).Scan(user)
 	return user
 }
 
