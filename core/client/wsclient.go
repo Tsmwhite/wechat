@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"github.com/gorilla/websocket"
 	"wechat/core/log"
 	"wechat/core/message"
@@ -10,17 +11,17 @@ type WsClient struct {
 	id   string
 	conn *websocket.Conn
 	Msg  message.Messenger
-	Send chan message.Messenger // 向该链接发送消息的通道
-	Read chan message.Messenger // 读取该链接发送的消息，传递到消息处理中心
+	Send chan message.Messenger   // 接受向web端发送消息的通道
+	Read chan<- message.Messenger // 读取web端发送的消息，传递到消息处理中心
 }
 
-func NewClient(conn *websocket.Conn, id string, msgHandel message.Messenger, read chan message.Messenger) *WsClient {
+func NewClient(conn *websocket.Conn, id string, msgCarrier message.Messenger, managerReceiveCh chan<- message.Messenger) *WsClient {
 	return &WsClient{
 		id:   id,
 		conn: conn,
-		Msg:  msgHandel,
+		Msg:  msgCarrier,
 		Send: make(chan message.Messenger, 100),
-		Read: read,
+		Read: managerReceiveCh,
 	}
 }
 
@@ -38,7 +39,9 @@ func (c *WsClient) MessageProcess() {
 }
 
 func (c *WsClient) Close() {
-	c.conn.Close()
+	if err := c.conn.Close(); err != nil {
+		log.Error.Println("WsClient Close Error:", err)
+	}
 }
 
 //读取客户端消息
@@ -52,10 +55,17 @@ func (c *WsClient) read() {
 		if err != nil {
 			return
 		}
-		if msg.GetRecipientsUuid() == nil || msg.GetContent() == "" {
+		if msg.GetType() == message.TypeHeartbeat || msg.GetContent() == "" || msg.GetRecipientsUuid() == nil {
 			continue
 		}
-
+		// 将消息塞入消息中心
+		fmt.Println("msg.GetSenderUuid()", msg.GetSenderUuid())
+		if msg.GetSenderUuid() == "" {
+			fmt.Println("c.id", c.id)
+			msg.SetSenderUuid(c.id)
+		}
+		fmt.Println("msg", msg)
+		c.Read <- msg
 	}
 }
 

@@ -11,10 +11,8 @@ const IsDel = 1
 
 const StatusNormal = 0
 
-var DB *gorm.DB
-
-func init() {
-	DB = database.GetDB()
+func DB() *gorm.DB {
+	return database.GetDB()
 }
 
 const RecordDel = 1
@@ -35,14 +33,16 @@ type Condition struct {
 	IncludeDel bool
 }
 
+
+
 func Find(option *Condition, dest interface{}) {
-	if err := option.Parse(DB).First(dest).Error; err != nil {
+	if err := option.Parse(DB()).First(dest).Error; err != nil {
 		log.Error.Println("Find Error:", err, "\noption:", option)
 	}
 }
 
 func FindAll(option *Condition, dest interface{}) {
-	if err := option.Parse(DB).Find(dest).Error; err != nil {
+	if err := option.Parse(DB()).Find(dest).Error; err != nil {
 		log.Error.Println("FindAll Error:", err, "\noption:", option)
 	}
 }

@@ -18,6 +18,12 @@ export default {
 </script>
 
 <style>
+html,body,#app {
+    height: 100%;
+}
+.h100 {
+    height: 100%;
+}
 body {
     background: #f7f7f7;
 }

@@ -21,6 +21,7 @@ type User struct {
 }
 
 type ShowAppUser struct {
+	Uuid   string `json:"uuid"`
 	Name   string `json:"name"`
 	Mobile string `json:"mobile"`
 	Mail   string `json:"mail"`
@@ -35,12 +36,13 @@ func NewUser() *User {
 
 func GetUserByUuid(uuid string) *User {
 	u := NewUser()
-	DB.Raw("SELECT * FROM `users` WHERE `uuid` = ? AND `is_del` = 0 ", uuid).Scan(u)
+	DB().Raw("SELECT * FROM `users` WHERE `uuid` = ? AND `is_del` = 0 ", uuid).Scan(u)
 	return u
 }
 
 func (u *User) ShowAppUser() *ShowAppUser {
 	res := new(ShowAppUser)
+	res.Uuid = u.Uuid
 	res.Name = u.Name
 	res.Mobile = u.Mobile
 	res.Avatar = u.Avatar
@@ -50,7 +52,7 @@ func (u *User) ShowAppUser() *ShowAppUser {
 }
 
 func (u *User) Create() error {
-	res := DB.Create(&u)
+	res := DB().Create(&u)
 	if res.Error != nil {
 		return res.Error
 	}
@@ -59,12 +61,12 @@ func (u *User) Create() error {
 
 func GetUserByAccount(account string) *User {
 	user := NewUser()
-	DB.Raw("SELECT * FROM `users` WHERE (`mobile` = ? OR `mail` = ?) AND `is_del` = 0", account, account).Scan(user)
+	DB().Raw("SELECT * FROM `users` WHERE (`mobile` = ? OR `mail` = ?) AND `is_del` = 0", account, account).Scan(user)
 	return user
 }
 
 func (u *User) CheckMemberByUuid(uuid string) bool {
-	DB.Raw("SELECT * FROM `users` WHERE `uuid` = ? AND `is_del` = 0 ", uuid).Scan(u)
+	DB().Raw("SELECT * FROM `users` WHERE `uuid` = ? AND `is_del` = 0 ", uuid).Scan(u)
 	return u.Uuid == uuid
 }
 

@@ -2,9 +2,11 @@ package route
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"wechat/app/api/contact"
 	"wechat/app/api/user"
 	"wechat/app/middleware"
+	"wechat/config"
 )
 
 var ginEngine *gin.Engine
@@ -12,6 +14,13 @@ var ginEngine *gin.Engine
 func init() {
 	ginEngine = gin.Default()
 	ginEngine.Use(middleware.AccessLog)
+
+	//web入口 home
+	ginEngine.Static("/static", "./web/dist/static")
+	ginEngine.LoadHTMLFiles("./web/dist/index.html")
+	ginEngine.GET("/home", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", nil)
+	})
 
 	ginEngine.POST("/register", user.Register)
 	ginEngine.POST("/login", user.Login)
@@ -29,5 +38,5 @@ func init() {
 }
 
 func Run() error {
-	return ginEngine.Run(":8099")
+	return ginEngine.Run(":" + config.WebSrvEnv.Port)
 }

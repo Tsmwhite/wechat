@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"wechat/config"
 	wsClient "wechat/core/client"
+	"wechat/core/log"
 	model "wechat/models"
 )
 
@@ -20,25 +21,24 @@ type Option struct {
 	CheckOrigin  func(*http.Request) bool
 }
 
-var DefaultOption = &Option{
-	ClientManage: NewManager(),
-	Config: &Config{
-		router: config.CONFIG.Server.Router,
-		port:   config.CONFIG.Server.Port,
-	},
-	CheckToken: func(s string) (ok bool, uuid string) {
-		return
-	},
-	CheckOrigin: func(request *http.Request) bool {
-		return true
-	},
-}
-
 var _option *Option
 var _manager Manager
-var _config = &Config{
-	router: config.CONFIG.Server.Router,
-	port:   config.CONFIG.Server.Port,
+var _config *Config
+
+func NewOption() *Option {
+	return &Option{
+		ClientManage: NewManager(),
+		Config: &Config{
+			router: config.ServerEnv.Router,
+			port:   config.ServerEnv.Port,
+		},
+		CheckToken: func(s string) (ok bool, uuid string) {
+			return
+		},
+		CheckOrigin: func(request *http.Request) bool {
+			return true
+		},
+	}
 }
 
 func Run(option *Option) {
@@ -46,13 +46,13 @@ func Run(option *Option) {
 	_manager = option.ClientManage
 	_config = option.Config
 	go _manager.Run()
-	go addFriendsRequestHandel()
+	//go addFriendsRequestHandel()
 	//注册默认路由为 /ws ，并使用wsHandler这个方法
 	http.HandleFunc(_config.router, wsHandler)
 	//监听端口
 	fmt.Println("Listen:", _config.port, _config.router)
 	if err := http.ListenAndServe(_config.port, nil); err != nil {
-		panic(err)
+		log.Error.Println("ListenAndServe Error:", err)
 	}
 }
 

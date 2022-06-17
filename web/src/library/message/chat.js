@@ -1,37 +1,46 @@
+import {GetCurrentUuid} from "../../utis/cache";
+
 const time = () => {
     return Math.ceil((new Date()).getTime() / 1000)
 }
 
-const commonStruct = {
-    Recipient: "",
-    SendTime: time()
+const CurrentChatInfo = {
+    Recipient: ""
+}
+
+const commonStruct = () => {
+   return {
+       recipient: CurrentChatInfo.Recipient,
+       sender: GetCurrentUuid(),
+       send_time: time()
+   }
 }
 
 export const setRecipient = (recipient) => {
-    commonStruct.Recipient = recipient
+    CurrentChatInfo.Recipient = recipient
 }
 
 export const Chat = {
     ping() {
         return {
-            Content: "ping",
-            Type: 0,
+            content: "ping",
+            type: 0,
         }
     },
     text(content) {
         return {
-            Content: content,
-            Type: 200,
-            SecondType: 400,
-            ...commonStruct
+            content: content,
+            type: 200,
+            second_type: 400,
+            ...commonStruct(),
         }
     },
     image(address) {
         return {
-            Content: address,
-            Type: 200,
-            SecondType: 401,
-            ...commonStruct
+            content: address,
+            type: 200,
+            second_type: 401,
+            ...commonStruct(),
         }
     },
 }

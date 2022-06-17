@@ -2,7 +2,6 @@ package model
 
 import (
 	"encoding/json"
-	"strings"
 	"wechat/core/message"
 	"wechat/core/roomer"
 )
@@ -27,59 +26,46 @@ type Message struct {
 	Remark      string `json:"remark"`
 }
 
-func (m Message) MarshalBinary() ([]byte, error) {
+func (m *Message) MarshalBinary() ([]byte, error) {
 	return json.Marshal(m)
 }
 
-func (m Message) New() message.Messenger {
+func (m *Message) New() message.Messenger {
 	return &Message{}
 }
 
-func (m Message) Send() {
+func (m *Message) Send() {
 	panic("implement me")
 }
 
-func (m Message) Revoke() {
+func (m *Message) Revoke() {
 	panic("implement me")
 }
 
-func (m Message) GetContent() string {
+func (m *Message) GetContent() string {
 	return m.Content
 }
 
-func (m Message) GetStatus() int {
+func (m *Message) GetStatus() int {
 	return m.Status
 }
 
-func (m Message) GetType() int {
+func (m *Message) GetType() int {
 	return m.Type
 }
 
-func (m Message) GetRecipientsUuid() []string {
-	return strings.Split(m.Recipient, ",")
+func (m *Message) GetRecipientsUuid() []string {
+	return GetRoomBuyUuid(m.Recipient).GetMembers()
 }
 
-func (m Message) GetSenderUuid() string {
+func (m *Message) GetSenderUuid() string {
 	return m.Sender
 }
 
-func (m Message) GetRoom() roomer.Roomer {
+func (m *Message) GetRoom() roomer.Roomer {
 	return nil
 }
 
-func (m Message) SetSenderUuid(uuid string) {
+func (m *Message) SetSenderUuid(uuid string) {
 	m.Sender = uuid
 }
-
-//func (m Message) Handle(ws *wsClient.WsClient) {
-//	switch m.Type {
-//	case message.TypeHeartbeat:
-//		if err := ws.GetConnect().WriteMessage(websocket.PongMessage, nil); err != nil {
-//			ws.Close()
-//		}
-//	default:
-//		// 消息发送者为该连接
-//		m.SetSenderUuid(ws.GetUuid())
-//		ws.Read <- m
-//	}
-//}

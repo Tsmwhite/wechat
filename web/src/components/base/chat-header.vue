@@ -4,7 +4,7 @@
             <van-icon class="icon" name="arrow-left" @click="back"/>
         </div>
         <div class="center">
-            <div class="title">芝麻微克</div>
+            <div class="title">{{ roomData.name }}</div>
         </div>
         <div class="right">
             <van-icon class="icon" name="ellipsis"/>
@@ -15,17 +15,24 @@
 <script>
 export default {
     name: "chat-header",
-    data() {
-        return {
-            friendUuid: "",
-        }
+    props: {
+        backFunc: {
+            type: Function,
+        },
+        roomData: {
+            type: Object,
+        },
     },
-    mounted() {
-        this.friendUuid = this.$route.query.user
+    data() {
+        return {}
     },
     methods: {
         back() {
-            this.$router.go(-1)
+            if (typeof this.backFunc === "function") {
+                this.backFunc()
+            } else {
+                this.$router.go(-1)
+            }
         }
     }
 }

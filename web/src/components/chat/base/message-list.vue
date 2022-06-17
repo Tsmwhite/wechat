@@ -1,33 +1,33 @@
 <template>
-    <div class="message-list">
+    <div id="messageList" class="message-list">
         <van-list id="messageListScroll"
                   v-model="loading"
                   :finished="finished"
                   finished-text="没有更多了"
                   @load="loadHistory"
                   direction="up">
-            <div v-for="(item,index) in data"
+            <div v-for="(item,index) in messages"
                  :key="index"
-                 :class="['message-box',{right:item.Recipient !==0 }]">
-                <div v-if="item.Recipient ===0" class="avatar">
-                    <img v-lazy="'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'">
+                 :class="['message-box',{right:item.sender === currentUuid() }]">
+                <div v-if="item.sender !== currentUuid()" class="avatar">
+                    <img :src="getAvatar(item)">
                 </div>
                 <!--消息前置提示@start消息状态-发送中、发送失败-->
-                <div v-if="item.Recipient !==0" class="berfore-tip">
+                <div v-if="item.sender === currentUuid()" class="berfore-tip">
                     <van-loading v-if="false" class="loading-icon" size="14"/>
-                    <van-icon v-if="true" name="warning" class="fail-icon"/>
+                    <van-icon v-if="false" name="warning" class="fail-icon"/>
                 </div>
                 <!--消息前置提示@end-->
                 <!--消息体@start-->
-                <template v-if="item.SecondType === $MsgType.Text">
-                    <div class="text">{{ item.Content }}</div>
+                <template v-if="item.second_type === $MsgType.Text">
+                    <div class="text">{{ item.content }}</div>
                 </template>
-                <template v-else-if="item.SecondType === $MsgType.Image">
-                    <div class="image"><img :src="item.Content"></div>
+                <template v-else-if="item.second_type === $MsgType.Image">
+                    <div class="image"><img :src="item.content"></div>
                 </template>
                 <!--消息体@end-->
-                <div v-if="item.Recipient !==0" class="avatar">
-                    <img v-lazy="'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'">
+                <div v-if="item.sender === currentUuid()" class="avatar">
+                    <img :src="meAvatar">
                 </div>
             </div>
         </van-list>
@@ -35,124 +35,73 @@
 </template>
 
 <script>
+import {GetCurrentUuid, GetUserInfo} from "../../../utis/cache";
+
 export default {
     name: "message-list",
+    props: {
+        roomData: {
+            type: Object,
+        }
+    },
     data() {
         return {
             loading: false,
-            finished: false,
+            finished: true,
             refreshing: false,
-            data: [],
         }
+    },
+    computed: {
+        meAvatar() {
+            return GetUserInfo().avatar || 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
+        },
+        messages() {
+            let storeData = this.$store.state
+            let roomId = this.roomData.room || 0
+            let list = storeData.msg.MessageMapList[roomId]
+            if (!list) {
+                return []
+            }
+            this.finished = true
+            return list
+        },
     },
     mounted() {
         this.init()
     },
     methods: {
         init() {
-            setTimeout(() => {
-                this.loadData()
-                this.loading = false
-                this.finished = true
-            }, 0)
+            this.loadData()
+        },
+        getAvatar() {
+            if (this.roomData["is_private"] === 0) {
+                return this.roomData.avatar ||  'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
+            }
+            return  'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
+        },
+        currentUuid() {
+            return GetCurrentUuid()
         },
         loadHistory() {
-            setTimeout(() => {
-                for (let i = 0; i < 10; i++) {
-                    this.data.unshift({
-                        Recipient: i % 2 === 0 ? 0 : 1,
-                        SendTime: '',
-                        Content: "信息" + i,
-                        Type: 200,
-                        SecondType: 400,
-                    })
-                }
-                this.refreshing = false
-            })
 
         },
         loadData() {
-            const contents = [
-                "嗯哼",
-                "怎么说",
-                "明天一起去玩啊明天一起去玩啊明天一起去玩啊明天一起去玩啊明天一起去玩啊明天一起去玩啊明天一起去玩啊明天一起去玩啊",
-                "????",
-                "怎么样",
-                "ok",
-                "ok",
-                "go go go",
-                "lol 啊",
-                "kkk",
-                "kkk",
-                "kkk",
-                "kkk",
-                "kkk",
-                "kkk",
-                "kkk",
-                "go go go",
-                "lol 啊",
-                "kkk",
-                "kkk",
-                "kkk",
-                "kkk",
-                "go go go",
-                "lol 啊",
-                "kkk",
-                "kkk",
-                "kkk",
-                "kkk",
-            ]
-            const message1 = {
-                Recipient: 1,
-                SendTime: '',
-                Content: "https://lofter.lf127.net/1611802375723/xizhang3.png?imageView&type=jpg&quality=80&stripmeta=0&thumbnail=4000x4000",
-                Type: 200,
-                SecondType: 401,
-            }
-            const message2 = {
-                Recipient: 0,
-                SendTime: '',
-                Content: "https://lofter.lf127.net/1611802375723/xizhang3.png?imageView&type=jpg&quality=80&stripmeta=0&thumbnail=4000x4000",
-                Type: 200,
-                SecondType: 401,
-            }
-            const message3 = {
-                Recipient: 1,
-                SendTime: '',
-                Content: "嗯嗯嗯",
-                Type: 200,
-                SecondType: 400,
-            }
-            const message4 = {
-                Recipient: 1,
-                SendTime: '',
-                Content: "嗯嗯嗯",
-                Type: 200,
-                SecondType: 400,
-            }
-            this.data.push(message1)
-            this.data.push(message2)
-            this.data.push(message3)
-            this.data.push(message4)
-            for (let i = 0; i < contents.length; i++) {
-                this.data.push({
-                    Recipient: i % 2 === 0 ? 0 : 1,
-                    SendTime: '',
-                    Content: contents[i],
-                    Type: 200,
-                    SecondType: 400,
-                })
-            }
-        }
+
+        },
+        scrollToBottom() {
+            this.$nextTick(() => {
+                const container = document.getElementById('messageList')
+                container.scrollTop = container.scrollHeight
+            })
+        },
     }
 }
 </script>
 
 <style scoped lang="less">
 .message-list {
-    margin-top: 60px;
-    padding-bottom: 60px;
-    height: 100%;
+    margin: 60px 0;
+    height: calc(100% - 120px);
     overflow-y: scroll;
 
     .message-box {

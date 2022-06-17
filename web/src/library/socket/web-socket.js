@@ -1,4 +1,6 @@
 import {Chat} from "../message/chat"
+import mesHandleFunc from "../message/handle"
+import {GetToken} from "../../utis/cache";
 
 const WEB_SOCKET = {
     Error: "",
@@ -13,18 +15,18 @@ const WEB_SOCKET = {
     _reConnCounter: 0, // 重连计数
     Socket() {
         if (this._socket === null) {
-            this.WsInit()
+            this.Init()
         }
         return this._socket
     },
-    Init(token) {
+    Init(token = null) {
         if (this._socket !== null) {
             return
         }
         if (!this.Func.isSupportWs()) {
             return false
         }
-        this._token = token
+        this._token = token || GetToken()
         this.WsInit()
         return this
     },
@@ -83,7 +85,7 @@ const WEB_SOCKET = {
         }
         this.heart = () => {
             this._heartTimer = setInterval(() => {
-                this.send(Chat.ping())
+                this.Socket().send(JSON.stringify(Chat.ping()))
                 // this._closeTimer = setTimeout(() => {
                 //     this.close()
                 // }, this._heartTimeout)
@@ -98,14 +100,14 @@ const WEB_SOCKET = {
             this.WsInit()
         }
         this.send = (message) => {
-            message = JSON.stringify(message)
             switch (this.Socket().readyState) {
                 case WebSocket.OPEN:
-                    this.Socket().send(message)
+                    this.Socket().send(JSON.stringify(message))
+                    this.MessageHandleCallback(message)
                     break
                 case WebSocket.CONNECTING:
                     setTimeout(() => {
-                        this.Socket().send(message)
+                        this.send(message)
                     }, 3000)
                     break
                 case WebSocket.CLOSED:
@@ -125,6 +127,7 @@ const WEB_SOCKET = {
     }
 }
 
+WEB_SOCKET.MessageHandleCallback = mesHandleFunc
 WEB_SOCKET.WsFuncInit()
 
 export default WEB_SOCKET

@@ -55,7 +55,7 @@ func AddContact(req *AddContactRequest, user *model.User) error {
 	if cInfo.Id == 0 {
 		return errors.New("用户信息异常")
 	}
-	return CreateContactTx(user, cInfo, model.DB)
+	return CreateContactTx(user, cInfo, model.DB())
 }
 
 // CreateContactTx 添加为联系人

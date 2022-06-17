@@ -103,7 +103,7 @@ func AddFriendHandle(req *AddFriendHandleRequest, user *model.User) error {
 		// 变更好友申请消息状态
 		msg.Status = message.AddFriendStatusReject
 		msg.UpdateTime = time.Now().Unix()
-		model.DB.Save(msg)
+		model.DB().Save(msg)
 	case message.AddFriendStatusAgree:
 		if err := agreeFriendRequest(req, msg, user); err != nil {
 			return err
@@ -151,7 +151,7 @@ func agreeFriendRequest(req *AddFriendHandleRequest, msg *model.Message, receipt
 	}
 	// 查询二人是否存在房间
 	room := GetRoom(sender, receipt)
-	tx := model.DB.Begin()
+	tx := model.DB().Begin()
 	return func() error {
 		defer func() {
 			if e := recover(); e != nil {
@@ -193,7 +193,7 @@ func agreeFriendRequest(req *AddFriendHandleRequest, msg *model.Message, receipt
 
 // sendAddFriendRequest 发送添加好友申请
 func sendAddFriendRequest(msg *model.Message) error {
-	return model.DB.Create(&msg).Error
+	return model.DB().Create(&msg).Error
 	//err := redis.Init().LPush(redis.Ctx, env.AddFriendRequestHandel, msg).Err()
 	//fmt.Println("sendAddFriendRequest", err)
 }

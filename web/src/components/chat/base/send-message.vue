@@ -27,8 +27,8 @@ export default {
     name: "send-message",
     components: {Add, Emoji, Voice},
     props: {
-        friend: {
-            type: String,
+        roomData: {
+            type: Object,
             required: true,
         }
     },
@@ -37,11 +37,8 @@ export default {
             message: ''
         }
     },
-    mounted() {},
-    watch: {
-      friend() {
-          this.$SetR(this.friend)
-      }
+    mounted() {
+        this.$SetR(this.roomData.room)
     },
     methods: {
         sendTextMessage() {
@@ -49,6 +46,8 @@ export default {
                 return
             }
             this.$WebSocket.send(this.$Chat.text(this.message))
+            this.$emit('sendMessage', this.message)
+            this.message = ""
         }
     }
 }

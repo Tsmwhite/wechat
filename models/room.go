@@ -1,8 +1,11 @@
 package model
 
 import (
+	"encoding/json"
 	"strings"
 	"wechat/core/member"
+	"wechat/core/redis"
+	"wechat/env"
 )
 
 const (
@@ -20,6 +23,28 @@ type Room struct {
 	Description string `json:"description"`
 	CreateTime  int64  `json:"create_time"`
 	IsDel       int    `json:"is_del"`
+}
+
+func GetRoomBuyUuid(roomId string) *Room {
+	room := new(Room)
+	redis.Get(env.RoomInfoKey, roomId, room)
+	if room.Id == 0 {
+		Find(&Condition{
+			Table: "rooms",
+			Where: map[string]interface{}{
+				"uuid": roomId,
+			},
+		}, room)
+		if room.Id == 0 {
+			room.Id = -1
+		}
+		redis.Set(env.RoomInfoKey, roomId, room)
+	}
+	return room
+}
+
+func (r *Room) MarshalBinary() ([]byte, error) {
+	return json.Marshal(r)
 }
 
 func (r *Room) GetMembers() []string {

@@ -4,28 +4,42 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
+
+	"github.com/spf13/viper"
 )
 
 var RootPath string
 
+func NewSetting(configFileName string) (*viper.Viper, error) {
+	vp := viper.New()
+	vp.SetConfigName(configFileName)
+	vp.AddConfigPath("config")
+	vp.SetConfigType("yaml")
+	err := vp.ReadInConfig()
+	if err != nil {
+		return nil, err
+	}
+	return vp, nil
+}
+
 type config struct {
-	Message  struct {
-		Status map[string]int `yaml:"status"`
-		FileMax int `yaml:"file_max"`
-		ContentMaxLen int `yaml:"content_max_len"`
-		SendTimeout int `yaml:"send_time_out"`
-		RevokeTimeout int `yaml:"revoke_time_out"`
+	Message struct {
+		Status        map[string]int `yaml:"status"`
+		FileMax       int            `yaml:"file_max"`
+		ContentMaxLen int            `yaml:"content_max_len"`
+		SendTimeout   int            `yaml:"send_time_out"`
+		RevokeTimeout int            `yaml:"revoke_time_out"`
 	}
 	Client struct {
 		PingTimeOut int `yaml:"ping_time_out"`
 	}
-	Server struct{
+	Server struct {
 		Router string `yaml:"router"`
-		Port string `yaml:"port"`
+		Port   string `yaml:"port"`
 	}
 }
 
-const CONFIG_FILE string = "/config/config.yml"
+const ConfigFile = "/config/config.yaml"
 
 var CONFIG config
 
@@ -33,7 +47,7 @@ func init() {
 	//项目根目录
 	RootPath, _ = os.Getwd()
 	//配置文件路径
-	CONFIG_PATH := RootPath + CONFIG_FILE
+	CONFIG_PATH := RootPath + ConfigFile
 	//判断配置文件是否存在
 	_, err := os.Stat(CONFIG_PATH)
 	if err != nil {

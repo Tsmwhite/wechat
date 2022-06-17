@@ -18,13 +18,13 @@ type SendCodeRequest struct {
 func SendCode(req *SendCodeRequest) error {
 	now := time.Now().Unix()
 	code := createCode(6)
-	res := model.DB.Create(&model.VerifyCode{
-		Account: req.Account,
-		Code:    code,
-		Type:    req.Type,
+	res := model.DB().Create(&model.VerifyCode{
+		Account:    req.Account,
+		Code:       code,
+		Type:       req.Type,
 		CreateTime: now,
 		UpdateTime: now,
-		ExpireTime: now + 5 * 60,
+		ExpireTime: now + 5*60,
 	})
 	if res.Error != nil {
 		return res.Error
@@ -43,7 +43,7 @@ func SendCode(req *SendCodeRequest) error {
 
 func VerifyCode(account, code string) error {
 	codeInfo := &model.VerifyCode{}
-	model.DB.Raw("SELECT * FROM `verify_codes` WHERE `account` = ? AND `code` = ? ORDER BY `id` DESC LIMIT 1", account, code).Scan(codeInfo)
+	model.DB().Raw("SELECT * FROM `verify_codes` WHERE `account` = ? AND `code` = ? ORDER BY `id` DESC LIMIT 1", account, code).Scan(codeInfo)
 	if codeInfo.Id == 0 {
 		return errors.New("验证码错误")
 	}
@@ -54,7 +54,7 @@ func VerifyCode(account, code string) error {
 	if now > codeInfo.ExpireTime {
 		return errors.New("验证码已过期")
 	}
-	model.DB.Table("verify_codes").Updates(map[string]interface{}{
+	model.DB().Table("verify_codes").Where("id = ?", codeInfo.Id).Updates(map[string]interface{}{
 		"status":      model.VerifyCodeStatusUsed,
 		"update_time": now,
 	})

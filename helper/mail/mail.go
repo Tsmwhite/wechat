@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"wechat/config"
 )
 
 // Mail 邮件
@@ -66,10 +67,10 @@ func (m *Mail) AddFile(filename string) *Mail {
 func New() *Mail {
 	return &Mail{
 		Server: Server{
-			host:     "smtp.163.com",
-			account:  "thesmallwhiteme@163.com",
-			password: "LRNJNXDWUZXDAZUE",
-			port:     "465",
+			host:     config.MailEnv.Host,
+			account:  config.MailEnv.Account,
+			password: config.MailEnv.Password,
+			port:     config.MailEnv.Port,
 			ssl:      true,
 		},
 		Msg: Msg{
