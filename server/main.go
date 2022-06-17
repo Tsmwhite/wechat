@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 	"wechat/config"
 	"wechat/core/encrypt/token"
 	"wechat/core/log"
@@ -10,6 +11,7 @@ import (
 )
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU() - 1)
 	err := config.SetupServer()
 	if err != nil {
 		log.Error.Println("setup error:", err)
