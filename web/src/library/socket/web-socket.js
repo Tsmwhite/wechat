@@ -48,7 +48,7 @@ const WEB_SOCKET = {
     WsInit() {
         let _this = this
         this._closeFlag = false
-        this._socket = new WebSocket(process.WEB_SOCKET_SERVER, this._token)
+        this._socket = new WebSocket(process.env.WEB_SOCKET_SERVER, this._token)
         this._socket.onopen = function (e) {
             _this._OPEN(e)
         }
