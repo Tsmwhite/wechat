@@ -7,7 +7,12 @@
         </template>
         <template v-else>
             <div class="contact-list">
-                <van-search v-model="value" placeholder="搜索"/>
+                <van-search v-model="value"
+                            :show-action="showSearchFlag"
+                            placeholder="搜索"
+                            @focus="showSearchFlag = true"
+                            @cancel="showSearchFlag = false"/>
+                <search-box></search-box>
                 <van-list v-model="loading"
                           :finished="finished"
                           @load="loadData">
@@ -41,16 +46,18 @@
 import api from "../api/common"
 import {SetToken} from "../api/request";
 import ChatBox from "../components/chat/base/chat-box";
-import ChatHeader from "../components/base/chat-header";
+import ChatHeader from "../components/chat/base/chat-header";
+import SearchBox from "../components/search/search-box";
 
 export default {
     name: "index",
-    components: {ChatHeader, ChatBox},
+    components: {SearchBox, ChatHeader, ChatBox},
     data() {
         return {
             value: "",
             loading: true,
             finished: false,
+            showSearchFlag: false,
             data: [],
             chat: {
                 show: false,

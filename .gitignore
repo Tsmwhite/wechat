@@ -3,3 +3,4 @@
 /web/node_modules
 /web/node_modules/*
 /config/config.yaml
+/config/config.dev.yaml

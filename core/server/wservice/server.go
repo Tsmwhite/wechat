@@ -42,6 +42,11 @@ func NewOption() *Option {
 }
 
 func Run(option *Option) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error.Println("Run Panic:", err)
+		}
+	}()
 	_option = option
 	_manager = option.ClientManage
 	_config = option.Config

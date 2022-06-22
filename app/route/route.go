@@ -34,6 +34,9 @@ func init() {
 		chatApi.POST("/friends", contact.FriendsList)
 		chatApi.POST("/addContact", contact.AddContact)
 		chatApi.POST("/contacts", contact.ContactsList)
+		chatApi.POST("/searchUser", contact.SearchUser)
+		chatApi.POST("/searchRoom", contact.SearchRoom)
+		chatApi.POST("/searchFriend", contact.SearchFriends)
 	}
 }
 

@@ -13,7 +13,7 @@
                     <img :src="getAvatar(item)">
                 </div>
                 <!--消息前置提示@start消息状态-发送中、发送失败-->
-                <div v-if="item.sender === currentUuid()" class="berfore-tip">
+                <div v-if="item.sender === currentUuid()" class="before-tip">
                     <van-loading v-if="false" class="loading-icon" size="14"/>
                     <van-icon v-if="false" name="warning" class="fail-icon"/>
                 </div>
@@ -128,7 +128,7 @@ export default {
             height: 100%;
         }
 
-        .berfore-tip {
+        .before-tip {
             margin-right: 5px;
 
             .fail-icon {

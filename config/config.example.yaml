@@ -1,0 +1,31 @@
+Server:
+  Router: "/ws"
+  Port: ":8011"
+  PingTimeOut: 5 #s
+WebServer:
+  Port: "8099"
+Database:
+  Host: "127.0.0.1"
+  Port: "3306"
+  UserName: "root"
+  Password: "xxxxx"
+  DatabaseName: "table"
+  MaxIdleConns: 10
+  MaxOpenConns: 50
+  ConnMaxLifetime: 60 #minute
+  Dsn: "root:xxxxx@tcp(127.0.0.1:3306)/table?charset=utf8&multiStatements=true"
+Message:
+  FileMax: 120 # m
+  ContentMaxLen: 500
+  SendTimeOut: 60
+  RevokeTtimeOut: 120
+Mail:
+  Host: "smtp.163.com"
+  Account: "xxxxx@163.com"
+  Password: ""
+  Port: "465"
+Redis:
+  Addr: "120.26.1.206:6379"
+  Port: 6379
+  Password: "xxxxxxx"
+
