@@ -1,6 +1,7 @@
 package route
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"wechat/app/api/contact"
@@ -37,9 +38,12 @@ func init() {
 		chatApi.POST("/searchUser", contact.SearchUser)
 		chatApi.POST("/searchRoom", contact.SearchRoom)
 		chatApi.POST("/searchFriend", contact.SearchFriends)
+
+		chatApi.POST("/createGroup", contact.CreateGroup)
 	}
 }
 
 func Run() error {
+	fmt.Println("Listen:", config.WebSrvEnv.Port)
 	return ginEngine.Run(":" + config.WebSrvEnv.Port)
 }

@@ -20,14 +20,26 @@ func verify(ctx *gin.Context) *contactsrv.SearchRequest {
 func SearchFriends(ctx *gin.Context) {
 	req := verify(ctx)
 	if req != nil {
-		
+		res.Success(ctx, contactsrv.SearchFriends(req, api.GetCurrentUser(ctx)))
+	} else {
+		res.Success(ctx, nil)
 	}
 }
 
 func SearchUser(ctx *gin.Context) {
-
+	req := verify(ctx)
+	if req != nil {
+		res.Success(ctx, contactsrv.SearchUser(req, api.GetCurrentUser(ctx)))
+	} else {
+		res.Success(ctx, nil)
+	}
 }
 
 func SearchRoom(ctx *gin.Context) {
-
+	req := verify(ctx)
+	if req != nil {
+		res.Success(ctx, contactsrv.SearchRoom(req, api.GetCurrentUser(ctx)))
+	} else {
+		res.Success(ctx, nil)
+	}
 }

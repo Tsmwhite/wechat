@@ -8,7 +8,7 @@ import (
 )
 
 // CreatePrivateRoomTx 建立用户单聊房间
-func CreatePrivateRoomTx(tx *gorm.DB, u1, u2 *model.User)  error {
+func CreatePrivateRoomTx(tx *gorm.DB, u1, u2 *model.User) error {
 	room := &model.Room{}
 	room.Uuid = CreateRoomKey(u1, u2)
 	room.Type = model.IsPrivate
@@ -28,7 +28,8 @@ func CreateRoomKey(users ...*model.User) string {
 	return encrypt.CreteUuidsKey(uuids)
 }
 
-func GetRoom(u1, u2 *model.User) *model.Room {
+// GetPrivateRoom 获取单聊房间信息
+func GetPrivateRoom(u1, u2 *model.User) *model.Room {
 	roomUuid := CreateRoomKey(u1, u2)
 	// 2、查询房间是否存在
 	room := &model.Room{}
@@ -36,6 +37,7 @@ func GetRoom(u1, u2 *model.User) *model.Room {
 		Table: "rooms",
 		Where: map[string]interface{}{
 			"uuid": roomUuid,
+			"type": model.IsPrivate,
 		},
 	}, room)
 	return room

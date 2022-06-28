@@ -1,5 +1,9 @@
 package config
 
+import (
+	"wechat/env"
+)
+
 type Message struct {
 	FileMax       int
 	ContentMaxLen int
@@ -52,7 +56,13 @@ var (
 )
 
 func SetupServer() error {
-	setting, err := NewSetting("config")
+	configFile := ""
+	if env.Debug {
+		configFile = "config.dev"
+	} else {
+		configFile = "config"
+	}
+	setting, err := NewSetting(configFile)
 	if err != nil {
 		return err
 	}
@@ -84,5 +94,6 @@ func SetupServer() error {
 	//fmt.Println("message", MessageEnv)
 	//fmt.Println("Database", DBEnv)
 	//fmt.Println("Mail", MailEnv)
+	//fmt.Println("WebSrvEnv", WebSrvEnv)
 	return nil
 }

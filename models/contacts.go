@@ -10,7 +10,7 @@ type Contact struct {
 	Avatar     string `json:"avatar"`
 	Remark     string `json:"remark"`
 	Name       string `json:"name"`
-	IsPrivate  int64  `json:"is_private"`
+	Type       int64  `json:"type"`
 	Sort       int64  `json:"sort"`
 	LastTime   int64  `json:"last_time"`
 	IsDel      int64  `json:"is_del"`

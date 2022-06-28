@@ -140,3 +140,23 @@ ERROR:2022/06/16 22:47:22 base.go:12: Redis Get Key room:info:e26c66810b74ba7960
 ERROR:2022/06/16 22:47:22 base.go:12: Redis Get Key room:info:e26c66810b74ba7960d263a75913a48a Error: redis: can't unmarshal *model.Room (consider implementing BinaryUnmarshaler)
 ERROR:2022/06/16 22:47:25 base.go:12: Redis Get Key room:info:e26c66810b74ba7960d263a75913a48a Error: redis: can't unmarshal *model.Room (consider implementing BinaryUnmarshaler)
 ERROR:2022/06/16 22:47:25 base.go:12: Redis Get Key room:info:e26c66810b74ba7960d263a75913a48a Error: redis: can't unmarshal *model.Room (consider implementing BinaryUnmarshaler)
+ERROR:2022/06/24 18:36:11 main.go:12: setup error: Config File "config" Not Found in "[/Go/Run/src/wechat/config.dev]"
+ERROR:2022/06/24 18:39:21 main.go:12: setup error: Config File "config" Not Found in "[/Go/Run/src/wechat/config.dev]"
+ERROR:2022/06/24 18:46:25 main.go:12: setup error: Config File "config" Not Found in "[/Go/Run/src/wechat/config.dev]"
+ERROR:2022/06/24 18:47:01 main.go:12: setup error: Config File "config" Not Found in "[/Go/Run/src/wechat/config.dev]"
+ERROR:2022/06/24 18:48:54 main.go:12: setup error: Config File "config" Not Found in "[/Go/Run/src/wechat/config.dev]"
+ERROR:2022/06/24 18:56:16 main.go:12: setup error: Config File "config.devss" Not Found in "[/Go/Run/src/wechat/config]"
+ERROR:2022/06/24 18:56:45 main.go:12: setup error: Config File "config.devss" Not Found in "[/Go/Run/src/wechat/config]"
+ERROR:2022/06/24 18:57:43 main.go:12: setup error: Config File "config.devss" Not Found in "[/Go/Run/src/wechat/config]"
+ERROR:2022/06/24 19:05:05 base.go:46: FindAll Error: Error 1054: Unknown column 'uuid' in 'field list' 
+option: &{friends [uuid friend remark remark name avatar type] map[user:15bebd5e879b4982bc1f03442d6cfe07] name = 阿 OR remark = 阿    1000 0 [] [] false}
+ERROR:2022/06/24 19:05:51 base.go:46: FindAll Error: Error 1054: Unknown column 'uuid' in 'field list' 
+option: &{friends [uuid friend remark remark name avatar type] map[user:15bebd5e879b4982bc1f03442d6cfe07] name = 小 OR remark = 小    1000 0 [] [] false}
+ERROR:2022/06/24 19:06:06 base.go:46: FindAll Error: Error 1054: Unknown column 'uuid' in 'field list' 
+option: &{friends [uuid friend remark remark name avatar type] map[user:15bebd5e879b4982bc1f03442d6cfe07] name = 1=1 OR remark = 1=1    1000 0 [] [] false}
+ERROR:2022/06/24 19:07:16 base.go:46: FindAll Error: Error 1054: Unknown column 'uuid' in 'field list' 
+option: &{friends [uuid friend remark remark name avatar type] map[user:15bebd5e879b4982bc1f03442d6cfe07] name = 阿毛 OR remark = 阿毛    1000 0 [] [] false}
+ERROR:2022/06/24 19:08:36 base.go:46: FindAll Error: Error 1054: Unknown column '阿毛' in 'where clause' 
+option: &{friends [user friend remark remark name avatar type] map[user:15bebd5e879b4982bc1f03442d6cfe07] name = 阿毛 OR remark = '阿毛'    1000 0 [] [] false}
+ERROR:2022/06/24 19:12:56 base.go:46: FindAll Error: Error 1054: Unknown column '阿毛' in 'where clause' 
+option: &{friends [user friend remark remark name avatar type] map[user:15bebd5e879b4982bc1f03442d6cfe07] name = 阿毛 OR remark = 阿毛    1000 0 [] [] false}

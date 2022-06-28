@@ -10,6 +10,7 @@ func main() {
 	err := config.SetupServer()
 	if err != nil {
 		log.Error.Println("setup error:", err)
+		panic(err)
 	}
 	if err := route.Run(); err != nil {
 		panic(err)

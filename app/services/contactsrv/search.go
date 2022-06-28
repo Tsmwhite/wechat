@@ -8,24 +8,40 @@ type SearchRequest struct {
 	Keyword string
 }
 
-func SearchFriends(req *SearchRequest, user *model.User) []*model.Friend {
+func SearchFriends(req *SearchRequest, currentUser *model.User) []*model.Friend {
 	var friends []*model.Friend
-	//sql := "SELECT `uuid`,`friend`,`remark`,`name`,`avatar`,`type` FROM `friends` WHERE `is_del` = 0 AND `user` = ? AND (`name` = ? OR remark = ?) LIMIT 100"
+	likeKeyword := "%" + req.Keyword + "%"
 	model.DB().
 		Table("friends").
-		Select("uuid").Where("is_del = 0").
-		Where("user = ?", user.Uuid).
-		Where("name = ? OR remark = ?", req.Keyword, req.Keyword).
-		Limit(100).Scan(friends)
+		Select([]string{"user", "friend", "remark", "remark", "name", "avatar", "type"}).
+		Where("is_del = 0").
+		Where("user = ?", currentUser.Uuid).
+		Where("name LIKE ? OR remark LIKE ?", likeKeyword, likeKeyword).
+		Limit(1000).Find(&friends)
 	return friends
 }
 
-func SearchUser(req *SearchRequest, user *model.User) {
-	var friends []*model.Friend
-	sql := "SELECT `uuid`,`friend`,`remark`,`name`,`avatar`,`type` FROM `friends` WHERE `is_del` = 0 AND `user` = ? AND (`name` = ? OR remark = ?) LIMIT 100"
-	model.DB().Raw(sql, user.Uuid, req.Keyword, req.Keyword).Scan(friends)
+func SearchUser(req *SearchRequest, currentUser *model.User) *model.ShowAppUser {
+	var user *model.User
+	model.Find(&model.Condition{
+		Table: "users",
+		Where: map[string]interface{}{
+			"mail": req.Keyword,
+		},
+	}, user)
+	if user == nil {
+		return nil
+	}
+	return user.ShowAppUser()
 }
 
-func SearchRoom(req *SearchRequest, user *model.User) {
-
+func SearchRoom(req *SearchRequest, currentUser *model.User) *model.Room {
+	var room *model.Room
+	model.Find(&model.Condition{
+		Table: "rooms",
+		Where: map[string]interface{}{
+			"uuid": req.Keyword,
+		},
+	}, room)
+	return room
 }
