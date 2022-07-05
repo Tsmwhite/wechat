@@ -49,14 +49,17 @@ func CreateGroup(req *CreateGroupRequest, currentUser *model.User) error {
 	if err := req.verify(currentUser); err != nil {
 		return err
 	}
+	users := strings.Split(req.Friends, ",")
+	users = append(users, currentUser.Uuid)
 	// 创建房间
 	roomData := &model.Room{
 		Uuid:       encrypt.CreateUuid(),
 		Title:      req.Title,
 		Members:    req.Friends,
-		Creator:    currentUser.Uuid,
+		Creator:    currentUser.Uuid + "," + currentUser.Uuid,
 		Type:       model.IsGroup,
 		CreateTime: time.Now().Unix(),
+		MemberNum:  len(users),
 	}
 	err := model.DB().Create(roomData).Error
 	if err != nil {
@@ -66,7 +69,7 @@ func CreateGroup(req *CreateGroupRequest, currentUser *model.User) error {
 
 	now := time.Now().Unix()
 	var contactsRelation []model.Contact
-	for _, user := range strings.Split(req.Friends, ",") {
+	for _, user := range users {
 		contactsRelation = append(contactsRelation, model.Contact{
 			Room:       roomData.Uuid,
 			User:       user,

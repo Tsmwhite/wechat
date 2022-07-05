@@ -1,6 +1,6 @@
 package env
 
-const Debug = true
+const Debug = false
 const AppAuthTokenKey = "authorization"
 const AppCurrentUserKey = "current-user"
 const AppTokenError = "无权限访问"

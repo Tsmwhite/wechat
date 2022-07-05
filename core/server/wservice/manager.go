@@ -68,7 +68,7 @@ func (m *ClientManager) Run() {
 				delete(m.clients, conn.GetUuid())
 			}
 		case msg := <-m.broadcast:
-			fmt.Println("msg", msg.GetContent())
+			fmt.Println("msg", msg.GetContent(), msg.GetRecipientsUuid())
 			for _, mem := range msg.GetRecipientsUuid() {
 				if mem != msg.GetSenderUuid() {
 					wsc, ok := m.clients[mem]

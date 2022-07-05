@@ -12,7 +12,7 @@
                             placeholder="搜索"
                             @focus="showSearchFlag = true"
                             @cancel="showSearchFlag = false"/>
-                <search-box></search-box>
+<!--                <search-box></search-box>-->
                 <van-list v-model="loading"
                           :finished="finished"
                           @load="loadData">
@@ -23,7 +23,7 @@
                         <div class="left">
                             <div :class="['avatar',{unread:item.unreadCount > 0},{'only-tip':item.onlyTip}]"
                                  :data-unread="item.unreadCount > 99 ? 99 : item.unreadCount">
-                                <img v-lazy="item.avatar">
+                                <img v-lazy="item.avatar || groupDefaultAvatar">
                             </div>
                         </div>
                         <div class="right">
@@ -48,12 +48,14 @@ import {SetToken} from "../api/request";
 import ChatBox from "../components/chat/base/chat-box";
 import ChatHeader from "../components/chat/base/chat-header";
 import SearchBox from "../components/search/search-box";
+import groupDefaultAvatar from "../assets/default-group-avatar.jpeg"
 
 export default {
     name: "index",
     components: {SearchBox, ChatHeader, ChatBox},
     data() {
         return {
+            groupDefaultAvatar,
             value: "",
             loading: true,
             finished: false,

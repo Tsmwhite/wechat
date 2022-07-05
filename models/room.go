@@ -23,6 +23,7 @@ type Room struct {
 	Description string `json:"description"`
 	CreateTime  int64  `json:"create_time"`
 	IsDel       int    `json:"is_del"`
+	MemberNum   int    `json:"member_num"`
 }
 
 func GetRoomBuyUuid(roomId string) *Room {
