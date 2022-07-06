@@ -20,3 +20,15 @@ func CreateGroup(ctx *gin.Context) {
 		}
 	}
 }
+
+func InviteJoin(ctx *gin.Context) {
+
+}
+
+func ApplyJoin(ctx *gin.Context) {
+
+}
+
+func JoinGroupHandle(ctx *gin.Context) {
+
+}

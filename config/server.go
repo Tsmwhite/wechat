@@ -4,13 +4,6 @@ import (
 	"wechat/env"
 )
 
-type Message struct {
-	FileMax       int
-	ContentMaxLen int
-	SendTimeout   int
-	RevokeTimeout int
-}
-
 type Database struct {
 	Host,
 	Port,
@@ -46,6 +39,13 @@ type WebServer struct {
 	Port string
 }
 
+type Message struct {
+	FileMax       int
+	ContentMaxLen int
+	SendTimeout   int
+	RevokeTimeout int
+}
+
 var (
 	ServerEnv  = &Server{}
 	WebSrvEnv  = &Server{}
@@ -54,6 +54,15 @@ var (
 	MessageEnv = &Message{}
 	MailEnv    = &Mail{}
 )
+
+var configMap = map[string]interface{}{
+	"Server":    ServerEnv,
+	"WebServer": WebSrvEnv,
+	"Redis":     RedisEnv,
+	"Database":  DBEnv,
+	"Mail":      MailEnv,
+	"Message":   MessageEnv,
+}
 
 func SetupServer() error {
 	configFile := ""
@@ -66,34 +75,10 @@ func SetupServer() error {
 	if err != nil {
 		return err
 	}
-	err = setting.UnmarshalKey("Server", ServerEnv)
-	if err != nil {
-		return err
+	for key, option := range configMap {
+		if err = setting.UnmarshalKey(key, option); err != nil {
+			return err
+		}
 	}
-	err = setting.UnmarshalKey("WebServer", WebSrvEnv)
-	if err != nil {
-		return err
-	}
-	err = setting.UnmarshalKey("Redis", RedisEnv)
-	if err != nil {
-		return err
-	}
-	err = setting.UnmarshalKey("Message", MessageEnv)
-	if err != nil {
-		return err
-	}
-	err = setting.UnmarshalKey("Database", DBEnv)
-	if err != nil {
-		return err
-	}
-	err = setting.UnmarshalKey("Mail", MailEnv)
-	if err != nil {
-		return err
-	}
-	//fmt.Println("server", ServerEnv)
-	//fmt.Println("message", MessageEnv)
-	//fmt.Println("Database", DBEnv)
-	//fmt.Println("Mail", MailEnv)
-	//fmt.Println("WebSrvEnv", WebSrvEnv)
 	return nil
 }

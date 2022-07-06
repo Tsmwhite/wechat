@@ -40,6 +40,9 @@ func init() {
 		chatApi.POST("/searchFriend", contact.SearchFriends)
 
 		chatApi.POST("/createGroup", contact.CreateGroup)
+		chatApi.POST("/inviteJoinGroup", contact.InviteJoin)
+		chatApi.POST("/applyJoinGroup", contact.ApplyJoin)
+		chatApi.POST("/joinGroupHandle", contact.JoinGroupHandle)
 	}
 }
 
