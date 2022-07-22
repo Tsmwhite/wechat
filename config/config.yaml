@@ -1,0 +1,3 @@
+EnvMod: "development" #production || development
+Deubg: 1 # 1 || 0
+

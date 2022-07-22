@@ -5,8 +5,36 @@ import (
 	"wechat/core/log"
 )
 
+const ModDevelopment = "development"
+const ModProduction = "production"
+
 type Setting struct {
 	ViperInstance *viper.Viper
+}
+
+var mod string
+var debug bool
+
+func IsDev() bool {
+	return ModDevelopment == mod
+}
+
+func IsPro() bool {
+	return ModProduction == mod
+}
+
+func Debug() bool {
+	return debug
+}
+
+func LoadMod() error {
+	setting, err := NewSetting("config")
+	if err != nil {
+		return err
+	}
+	debug = setting.ViperInstance.GetBool("Debug")
+	mod = setting.ViperInstance.GetString("mod")
+	return nil
 }
 
 func NewSetting(configFileName string) (*Setting, error) {

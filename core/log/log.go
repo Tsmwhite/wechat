@@ -14,6 +14,19 @@ var (
 )
 
 func init() {
+	workPath, err := os.Getwd()
+	if err != nil {
+		log.Fatalln("Get work path error:", err)
+		return
+	}
+	logPath := workPath + "/log"
+	_, err = os.Stat(logPath)
+	if os.IsNotExist(err) {
+		err = os.Mkdir(logPath, 0755)
+		if err != nil {
+			log.Fatalln("Create log dir error:", err)
+		}
+	}
 	initDebug()
 	initInfo()
 	initWaring()

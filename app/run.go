@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"wechat/app/route"
@@ -6,13 +6,11 @@ import (
 	"wechat/core/log"
 )
 
-func main() {
-	err := config.SetupServer()
-	if err != nil {
+func Run() {
+	if err := config.SetupServer(); err != nil {
 		log.Error.Println("setup error:", err)
-		panic(err)
 	}
 	if err := route.Run(); err != nil {
-		panic(err)
+		log.Error.Println("run error:", err)
 	}
 }

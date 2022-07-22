@@ -1,8 +1,6 @@
 package config
 
-import (
-	"wechat/env"
-)
+import "fmt"
 
 type Database struct {
 	Host,
@@ -65,12 +63,17 @@ var configMap = map[string]interface{}{
 }
 
 func SetupServer() error {
-	configFile := ""
-	if env.Debug {
-		configFile = "config.dev"
-	} else {
-		configFile = "config"
+	err := LoadMod()
+	if err != nil {
+		return err
 	}
+	configFile := ""
+	if IsPro() {
+		configFile = "config.pro"
+	} else {
+		configFile = "config.dev"
+	}
+	fmt.Println("configFile",configFile)
 	setting, err := NewSetting(configFile)
 	if err != nil {
 		return err

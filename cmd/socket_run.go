@@ -10,7 +10,7 @@ import (
 	model "wechat/models"
 )
 
-func main() {
+func main()  {
 	runtime.GOMAXPROCS(runtime.NumCPU() - 1)
 	err := config.SetupServer()
 	if err != nil {
