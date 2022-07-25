@@ -1,7 +1,5 @@
 package config
 
-import "fmt"
-
 type Database struct {
 	Host,
 	Port,
@@ -73,7 +71,6 @@ func SetupServer() error {
 	} else {
 		configFile = "config.dev"
 	}
-	fmt.Println("configFile",configFile)
 	setting, err := NewSetting(configFile)
 	if err != nil {
 		return err
