@@ -1,7 +1,6 @@
 package wservice
 
 import (
-	"fmt"
 	"wechat/core/client"
 	"wechat/core/message"
 )
@@ -11,14 +10,16 @@ type Manager interface {
 	Unregister(*client.WsClient)
 	Broadcast(message.Messenger)
 	GetBroadcastChan() chan message.Messenger
-	GetClient(string) *client.WsClient
+	GetClient(string) []*client.WsClient
+	SetClient(string, []*client.WsClient)
+	DelClient(string)
 	Run()
 }
 
 // ClientManager 客户端管理
 type ClientManager struct {
 	//客户端 map 储存并管理所有的长连接client
-	clients map[string]*client.WsClient
+	clients map[string][]*client.WsClient
 	//web端发送来的的message我们用broadcast来接收，并最后分到client
 	broadcast chan message.Messenger
 	//新创建的长连接client
@@ -32,7 +33,7 @@ func NewManager() *ClientManager {
 		broadcast:  make(chan message.Messenger, 1000),
 		register:   make(chan *client.WsClient, 100),
 		unregister: make(chan *client.WsClient, 100),
-		clients:    make(map[string]*client.WsClient),
+		clients:    make(map[string][]*client.WsClient),
 	}
 }
 
@@ -48,7 +49,7 @@ func (m *ClientManager) Broadcast(messenger message.Messenger) {
 	m.broadcast <- messenger
 }
 
-func (m *ClientManager) GetClient(uuid string) *client.WsClient {
+func (m *ClientManager) GetClient(uuid string) []*client.WsClient {
 	return m.clients[uuid]
 }
 
@@ -56,27 +57,26 @@ func (m *ClientManager) GetBroadcastChan() chan message.Messenger {
 	return m.broadcast
 }
 
+func (m *ClientManager) SetClient(uuid string, conn []*client.WsClient) {
+	m.clients[uuid] = conn
+}
+
+func (m *ClientManager) DelClient(uuid string) {
+	delete(m.clients, uuid)
+}
+
 func (m *ClientManager) Run() {
 	for {
 		select {
 		case conn := <-m.register:
-			m.clients[conn.GetUuid()] = conn
-			conn.MessageProcess()
+			// 注册连接
+			HandleRegister(m, conn)
 		case conn := <-m.unregister:
-			if _, ok := m.clients[conn.GetUuid()]; ok {
-				close(conn.Send)
-				delete(m.clients, conn.GetUuid())
-			}
+			// 退出连接
+			HandleUnregister(m, conn)
 		case msg := <-m.broadcast:
-			fmt.Println("msg", msg.GetContent(), msg.GetRecipientsUuid())
-			for _, mem := range msg.GetRecipientsUuid() {
-				if mem != msg.GetSenderUuid() {
-					wsc, ok := m.clients[mem]
-					if ok {
-						wsc.Send <- msg
-					}
-				}
-			}
+			// 转发消息
+			HandleBroadcast(m, msg)
 		}
 	}
 }

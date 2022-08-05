@@ -42,6 +42,7 @@ export default {
     },
     methods: {
         sendTextMessage() {
+            this.message = this.message.trim()
             if (this.message === "") {
                 return
             }
@@ -55,9 +56,9 @@ export default {
 
 <style scoped lang="less">
 .send-message {
-    position: fixed;
-    bottom: 0;
-    left: 0;
+    //position: fixed;
+    //bottom: 0;
+    //left: 0;
     background: #f7f7f7;
     width: 100%;
     border-top: 1px solid #d7d8d9;

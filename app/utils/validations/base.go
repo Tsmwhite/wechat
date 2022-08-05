@@ -106,22 +106,26 @@ func assign(carrier interface{}, params map[string]string) error {
 	fieldLen := carrierVal.NumField()
 	for i := 0; i < fieldLen; i++ {
 		fieldName := carrierType.Field(i).Name
+		if params[fieldName] == "" {
+			continue
+		}
 		fieldType := carrierVal.Field(i).Type().Name()
+		filed := carrierVal.FieldByName(fieldName)
 		switch fieldType {
 		case reflect.Int.String():
 			value, err := strconv.Atoi(params[fieldName])
 			if err != nil {
 				return err
 			}
-			carrierVal.FieldByName(fieldName).Set(reflect.ValueOf(value))
+			filed.Set(reflect.ValueOf(value))
 		case reflect.Int64.String():
 			value, err := strconv.ParseInt(params[fieldName], 10, 64)
 			if err != nil {
 				return err
 			}
-			carrierVal.FieldByName(fieldName).Set(reflect.ValueOf(value))
+			filed.Set(reflect.ValueOf(value))
 		case reflect.String.String():
-			carrierVal.FieldByName(fieldName).Set(reflect.ValueOf(params[fieldName]))
+			filed.Set(reflect.ValueOf(params[fieldName]))
 		}
 	}
 	return nil
@@ -136,6 +140,7 @@ func verify(ruleModels []RuleModel, params map[string]string) error {
 			if !model.NoRequired {
 				return getErrorMsg(field, Required)
 			}
+			delete(params, field)
 			continue
 		}
 		for _, rule := range model.Rules {

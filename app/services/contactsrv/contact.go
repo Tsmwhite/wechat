@@ -17,15 +17,27 @@ type AddContactRequest struct {
 
 type GetContactsRequest struct {
 	Keyword string `validate:"noRequired & filter"`
+	Page    int    `validate:"noRequired"`
+	Size    int    `validate:"noRequired"`
 }
 
 // GetContacts 获取联系列表
 func GetContacts(req *GetContactsRequest, user *model.User) []map[string]interface{} {
+	if req.Page == 0 {
+		req.Page = 1
+	}
+	if req.Size == 0 {
+		req.Size = 200
+	}
 	condition := &model.Condition{
-		Table: "contacts",
+		Table:  "contacts",
+		Fields: []string{"contacts.*", "rooms.member_num"},
+		Joins:  []string{"LEFT JOIN rooms ON contacts.object = rooms.uuid"},
 		Where: map[string]interface{}{
 			"user": user.Uuid,
 		},
+		Limit:  (req.Page - 1) * req.Size,
+		Offset: req.Size,
 	}
 	if req.Keyword != "" {
 		condition.SqlStr = fmt.Sprintf("`name` LIKE '%%%s%%' OR remark LIKE '%%%s%%'", req.Keyword, req.Keyword)

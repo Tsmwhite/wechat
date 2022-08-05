@@ -4,7 +4,8 @@
             <van-icon class="icon" name="arrow-left" @click="back"/>
         </div>
         <div class="center">
-            <div class="title">{{ roomData.name }}</div>
+            <div class="title" v-if="roomData.type === 1">{{ roomData.name }}（{{roomData.member_num}}）</div>
+            <div class="title" v-else>{{ roomData.name }}</div>
         </div>
         <div class="right">
             <van-icon class="icon" name="ellipsis"/>

@@ -33,8 +33,6 @@ type Condition struct {
 	IncludeDel bool
 }
 
-
-
 func Find(option *Condition, dest interface{}) {
 	if err := option.Parse(DB()).First(dest).Error; err != nil {
 		log.Error.Println("Find Error:", err, "\noption:", option)
@@ -50,7 +48,7 @@ func FindAll(option *Condition, dest interface{}) {
 func (option *Condition) Parse(db *gorm.DB) *gorm.DB {
 	// 查询未删除数据
 	if !option.IncludeDel {
-		db = db.Where("is_del = ?", RecordNoDel)
+		db = db.Where(option.Table+".is_del = ?", RecordNoDel)
 	}
 	if option.Table != "" {
 		db = db.Table(option.Table)
@@ -77,7 +75,11 @@ func (option *Condition) Parse(db *gorm.DB) *gorm.DB {
 		db = db.Limit(option.Limit)
 	}
 	if option.Offset > 0 {
-		db = db.Offset(option.Offset)
+		if option.Limit == 0 {
+			db = db.Limit(option.Offset)
+		} else {
+			db = db.Offset(option.Offset)
+		}
 	}
 	if option.Distinct != nil {
 		db = db.Distinct(option.Distinct)

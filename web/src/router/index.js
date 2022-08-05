@@ -10,9 +10,9 @@ const RouterInstance = new Router({
             path: '/',
             name: 'index',
             component: () => import ('@/views/Index'),
-            // meta: {
-            //     auth: true,
-            // }
+            meta: {
+                auth: true,
+            }
         },
         {
             path: '/index',

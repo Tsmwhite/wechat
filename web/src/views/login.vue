@@ -15,7 +15,7 @@
                            label="邮箱"
                            :clearable="true"
                            :clickable="true"
-                           placeholder="请输入手机号"
+                           placeholder="请输入邮箱"
                            :maxlength="50"/>
                 <van-field v-model="form.verifyCode"
                            type="number"

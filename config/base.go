@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/spf13/viper"
 	"wechat/core/log"
 )
@@ -33,7 +34,9 @@ func LoadMod() error {
 		return err
 	}
 	debug = setting.ViperInstance.GetBool("Debug")
-	mod = setting.ViperInstance.GetString("mod")
+	mod = setting.ViperInstance.GetString("EnvMod")
+	fmt.Println("Debug:", debug)
+	fmt.Println("EnvMod:", mod)
 	return nil
 }
 

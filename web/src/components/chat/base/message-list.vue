@@ -20,7 +20,7 @@
                 <!--消息前置提示@end-->
                 <!--消息体@start-->
                 <template v-if="item.second_type === $MsgType.Text">
-                    <div class="text">{{ item.content }}</div>
+                    <div class="text" v-html="item.content"></div>
                 </template>
                 <template v-else-if="item.second_type === $MsgType.Image">
                     <div class="image"><img :src="item.content"></div>
@@ -100,9 +100,11 @@ export default {
 
 <style scoped lang="less">
 .message-list {
-    margin: 60px 0;
-    height: calc(100% - 120px);
+    //margin: 60px 0;
+    //height: calc(100% - 60px);
+    margin-top: 50px;
     overflow-y: scroll;
+    flex: 1;
 
     .message-box {
         max-width: 100%;
@@ -110,7 +112,7 @@ export default {
         text-align: left;
         position: relative;
         display: flex;
-        align-items: center;
+        //align-items: center;
 
         > div {
             display: inline-block;
@@ -147,6 +149,9 @@ export default {
             font-size: 14px;
             max-width: 60%;
             text-align: left;
+            overflow: hidden;
+            white-space: break-spaces;
+            word-break: break-all;
         }
 
         .image {

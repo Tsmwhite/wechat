@@ -1,6 +1,7 @@
 package format
 
 import (
+	"reflect"
 	"strings"
 	"unicode"
 )
@@ -27,4 +28,16 @@ func Case2Camel(name string) string {
 	name = strings.Replace(name, "_", " ", -1)
 	name = strings.Title(name)
 	return strings.Replace(name, " ", "", -1)
+}
+
+// StructToMap 结构体转map
+func StructToMap(obj interface{}) map[string]interface{} {
+	t := reflect.TypeOf(obj)
+	v := reflect.ValueOf(obj)
+
+	var data = make(map[string]interface{})
+	for i := 0; i < t.NumField(); i++ {
+		data[Camel2Case(t.Field(i).Name)] = v.Field(i).Interface()
+	}
+	return data
 }
