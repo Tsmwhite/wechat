@@ -45,3 +45,7 @@ func (token Token) Check(member member.Member) bool {
 	}
 	return member.CheckMemberByUuid(_uuid)
 }
+
+func (token Token) ToString() string {
+	return string(token)
+}

@@ -8,20 +8,20 @@ import (
 )
 
 type WsClient struct {
-	id   string
-	conn *websocket.Conn
-	Msg  message.Messenger
-	Send chan message.Messenger   // 接受向web端发送消息的通道
-	Read chan<- message.Messenger // 读取web端发送的消息，传递到消息处理中心
+	id          string
+	conn        *websocket.Conn
+	Msg         message.Messenger
+	PullMsgChan chan message.Messenger   // 接受向web端发送消息的通道
+	PushMsgChan chan<- message.Messenger // 读取web端发送的消息，推送到消息处理中心
 }
 
 func NewClient(conn *websocket.Conn, id string, msgCarrier message.Messenger, managerReceiveCh chan<- message.Messenger) *WsClient {
 	return &WsClient{
-		id:   id,
-		conn: conn,
-		Msg:  msgCarrier,
-		Send: make(chan message.Messenger, 100),
-		Read: managerReceiveCh,
+		id:          id,
+		conn:        conn,
+		Msg:         msgCarrier,
+		PullMsgChan: make(chan message.Messenger, 100),
+		PushMsgChan: managerReceiveCh,
 	}
 }
 
@@ -47,25 +47,29 @@ func (c *WsClient) Close() {
 //读取客户端消息
 func (c *WsClient) read() {
 	defer func() { c.Close() }()
-	var msg = c.Msg.New()
 	for {
 		//读取消息
+		msg := c.Msg.New()
 		err := c.conn.ReadJSON(msg)
 		//如果有错误信息，就注销这个连接然后关闭
 		if err != nil {
 			return
 		}
-		if msg.GetType() == message.TypeHeartbeat || msg.GetContent() == "" || msg.GetRecipientsUuid() == nil {
+		switch msg.GetType() {
+		case message.TypeHeartbeat:
+			c.Pong()
+			continue
+		}
+		if msg.GetContent() == "" || msg.GetRecipientsUuid() == nil {
 			continue
 		}
 		// 将消息塞入消息中心
-		fmt.Println("msg.GetSenderUuid()", msg.GetSenderUuid())
 		if msg.GetSenderUuid() == "" {
-			fmt.Println("c.id", c.id)
 			msg.SetSenderUuid(c.id)
 		}
 		fmt.Println("msg", msg)
-		c.Read <- msg
+		msg.SetReceiveTime()
+		c.PushMsgChan <- msg
 	}
 }
 
@@ -74,7 +78,7 @@ func (c *WsClient) write() {
 	defer func() { c.Close() }()
 	for {
 		select {
-		case msg, ok := <-c.Send:
+		case msg, ok := <-c.PullMsgChan:
 			if !ok {
 				log.Error.Println("client -> write -> WriteMessage", c)
 				return
@@ -84,5 +88,16 @@ func (c *WsClient) write() {
 				return
 			}
 		}
+	}
+}
+
+func (c *WsClient) Pong() {
+	pongMsg := map[string]interface{}{
+		"type":    0,
+		"content": "pong",
+	}
+	err := c.conn.WriteJSON(pongMsg)
+	if err != nil {
+		log.Error.Println("Connect Pong Error:", err)
 	}
 }

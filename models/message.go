@@ -1,16 +1,20 @@
 package model
 
 import (
-	"encoding/json"
+	"gorm.io/gorm"
+	"time"
+	"wechat/core/encrypt"
 	"wechat/core/message"
 	"wechat/core/roomer"
+	"wechat/helper/format"
 )
 
 type Message struct {
+	BaseModal
 	Id          int    `json:"id"`
 	Uuid        string `json:"uuid"`
 	Sender      string `json:"sender"`
-	Recipient   string `json:"recipient"`
+	Recipient   string `json:"recipient"` //接受消息房间uuid
 	Type        int    `json:"type"`
 	SecondType  int    `json:"second_type"`
 	Status      int    `json:"status"`
@@ -26,8 +30,9 @@ type Message struct {
 	Remark      string `json:"remark"`
 }
 
-func (m *Message) MarshalBinary() ([]byte, error) {
-	return json.Marshal(m)
+// SetTable 设置表名 根据房间id分表（10张）
+func (m *Message) SetTable() *gorm.DB {
+	return DB().Table(format.HashCutTable("messages", m.Recipient, 10))
 }
 
 func (m *Message) New() message.Messenger {
@@ -68,4 +73,28 @@ func (m *Message) GetRoom() roomer.Roomer {
 
 func (m *Message) SetSenderUuid(uuid string) {
 	m.Sender = uuid
+}
+
+func (m *Message) SetType(typeVal int) {
+	m.Type = typeVal
+}
+
+func (m *Message) SetContent(content string) {
+	m.Content = content
+}
+
+func (m *Message) SetReceiveTime() {
+	m.ReceiveTime = time.Now().Unix()
+}
+
+func (m *Message) Save() {
+	if m.Id > 0 {
+		m.SetTable().Save(m)
+	} else {
+		now := time.Now().Unix()
+		m.Uuid = encrypt.CreateUuid()
+		m.LogTime = now
+		m.UpdateTime = now
+		m.SetTable().Create(m)
+	}
 }

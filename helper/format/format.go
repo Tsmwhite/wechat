@@ -1,6 +1,9 @@
 package format
 
 import (
+	"fmt"
+	"hash/crc32"
+	"math"
 	"reflect"
 	"strings"
 	"unicode"
@@ -40,4 +43,19 @@ func StructToMap(obj interface{}) map[string]interface{} {
 		data[Camel2Case(t.Field(i).Name)] = v.Field(i).Interface()
 	}
 	return data
+}
+
+// HashCutTable 获取分表名
+func HashCutTable(table, uuid string, total int) string {
+	hashVal := crc32.ChecksumIEEE([]byte(uuid))
+	val := int(hashVal)
+	if val > 2147483647 {
+		val -= 4294967296
+	}
+	number := int(math.Abs(float64(val % total)))
+	if number < 10 {
+		return fmt.Sprintf("%s_0%d", table, number)
+	} else {
+		return fmt.Sprintf("%s_%d", table, number)
+	}
 }

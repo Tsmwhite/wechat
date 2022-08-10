@@ -1,7 +1,6 @@
 package model
 
 import (
-	"encoding/json"
 	"strings"
 	"wechat/core/member"
 	"wechat/core/redis"
@@ -14,6 +13,7 @@ const (
 )
 
 type Room struct {
+	BaseModal
 	Id          int    `json:"id"`
 	Uuid        string `json:"uuid"`
 	Title       string `json:"title"`
@@ -44,20 +44,14 @@ func GetRoomBuyUuid(roomId string) *Room {
 	return room
 }
 
-func (r *Room) MarshalBinary() ([]byte, error) {
-	return json.Marshal(r)
-}
-
 func (r *Room) GetMembers() []string {
 	return strings.Split(r.Members, ",")
 }
 
 func (r *Room) Join(m member.Member) error {
-
 	return nil
 }
 
 func (r *Room) Quit(m member.Member) error {
-
 	return nil
 }

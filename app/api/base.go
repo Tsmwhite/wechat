@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"wechat/app/utils/validations"
-	env "wechat/env"
+	"wechat/env"
 	model "wechat/models"
 )
 

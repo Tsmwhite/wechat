@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"gorm.io/gorm"
 	"wechat/core/database"
 	"wechat/core/log"
@@ -31,6 +32,16 @@ type Condition struct {
 	Distinct   []string
 	Joins      []string
 	IncludeDel bool
+}
+
+type BaseModal struct {}
+
+func (m *BaseModal) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+func (m *BaseModal) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
 }
 
 func Find(option *Condition, dest interface{}) {

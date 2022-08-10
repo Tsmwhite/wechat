@@ -15,5 +15,9 @@ type Messenger interface {
 	GetSenderUuid() string
 	GetRoom() roomer.Roomer
 	SetSenderUuid(string)
+	SetContent(string)
+	SetType(int)
+	SetReceiveTime()
+	Save()
 	//Handle(*wsClient.WsClient)
 }

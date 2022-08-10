@@ -22,6 +22,8 @@ type ClientManager struct {
 	clients map[string][]*client.WsClient
 	//web端发送来的的message我们用broadcast来接收，并最后分到client
 	broadcast chan message.Messenger
+	//写入消息
+	writeMsg chan message.Messenger
 	//新创建的长连接client
 	register chan *client.WsClient
 	//新注销的长连接client
@@ -30,10 +32,11 @@ type ClientManager struct {
 
 func NewManager() *ClientManager {
 	return &ClientManager{
-		broadcast:  make(chan message.Messenger, 1000),
+		clients:    make(map[string][]*client.WsClient),
+		broadcast:  make(chan message.Messenger, 5000),
+		writeMsg:   make(chan message.Messenger, 5000),
 		register:   make(chan *client.WsClient, 100),
 		unregister: make(chan *client.WsClient, 100),
-		clients:    make(map[string][]*client.WsClient),
 	}
 }
 
@@ -66,17 +69,6 @@ func (m *ClientManager) DelClient(uuid string) {
 }
 
 func (m *ClientManager) Run() {
-	for {
-		select {
-		case conn := <-m.register:
-			// 注册连接
-			HandleRegister(m, conn)
-		case conn := <-m.unregister:
-			// 退出连接
-			HandleUnregister(m, conn)
-		case msg := <-m.broadcast:
-			// 转发消息
-			HandleBroadcast(m, msg)
-		}
-	}
+	go m.Handle()
+	go m.Log()
 }

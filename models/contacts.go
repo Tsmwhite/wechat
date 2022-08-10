@@ -3,6 +3,7 @@ package model
 const ContactsLimit = 500
 
 type Contact struct {
+	BaseModal
 	Id         int64  `json:"id"`
 	Room       string `json:"room"`
 	User       string `json:"user"`
