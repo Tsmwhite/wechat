@@ -4,4 +4,4 @@
 /web/node_modules/*
 /config/config.pro.yaml
 /config/config.dev.yaml
-/log/*
+log/
