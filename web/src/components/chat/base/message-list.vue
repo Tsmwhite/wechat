@@ -100,6 +100,9 @@ export default {
             return GetCurrentUuid()
         },
         loadHistory() {
+            if (this.loading) {
+                return
+            }
             this.loading = true
             getHistory({
                 room_uuid: this.roomData.room,
@@ -113,7 +116,6 @@ export default {
                     return
                 }
                 this.loadLastId = res.data[len - 1].id || 0
-                console.log(" this.loadLastId", this.loadLastId)
                 this.$store.dispatch("history", {
                     recipient: this.roomData.room,
                     messages: res.data.reverse()
