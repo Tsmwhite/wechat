@@ -4,6 +4,7 @@ import (
 	"gorm.io/gorm"
 	"time"
 	"wechat/core/encrypt"
+	"wechat/core/log"
 	"wechat/core/message"
 	"wechat/core/roomer"
 	"wechat/helper/format"
@@ -88,13 +89,17 @@ func (m *Message) SetReceiveTime() {
 }
 
 func (m *Message) Save() {
+	var err error
 	if m.Id > 0 {
-		m.SetTable().Save(m)
+		err = m.SetTable().Save(m).Error
 	} else {
 		now := time.Now().Unix()
 		m.Uuid = encrypt.CreateUuid()
 		m.LogTime = now
 		m.UpdateTime = now
-		m.SetTable().Create(m)
+		err = m.SetTable().Create(m).Error
+	}
+	if err != nil {
+		log.Error.Println("Message Save Error:", err)
 	}
 }

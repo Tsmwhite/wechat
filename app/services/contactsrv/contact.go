@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 	"time"
-	"wechat/app/api"
+	"wechat/app/services"
 	model "wechat/models"
 )
 
@@ -42,7 +42,7 @@ func GetContacts(req *GetContactsRequest, user *model.User) []map[string]interfa
 	if req.Keyword != "" {
 		condition.SqlStr = fmt.Sprintf("`name` LIKE '%%%s%%' OR remark LIKE '%%%s%%'", req.Keyword, req.Keyword)
 	}
-	result := api.NewResult()
+	result := services.NewResult()
 	model.FindAll(condition, &result)
 	return result
 }

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"time"
-	"wechat/app/api"
+	"wechat/app/services"
 	"wechat/core/encrypt"
 	"wechat/core/log"
 	"wechat/core/message"
@@ -40,7 +40,7 @@ func GetFriends(req *FriendsRequest, user *model.User) []map[string]interface{} 
 	if req.Keyword != "" {
 		condition.SqlStr = fmt.Sprintf("`name` LIKE '%%%s%%' OR remark LIKE '%%%s%%'", req.Keyword, req.Keyword)
 	}
-	result := api.NewResult()
+	result := services.NewResult()
 	model.FindAll(condition, &result)
 	return result
 }

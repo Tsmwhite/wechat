@@ -36,6 +36,8 @@
 
 <script>
 import {GetCurrentUuid, GetUserInfo} from "../../../utis/cache";
+import {GetUserByUuid} from "../../../utis/cookie";
+import {getHistory} from "../../../api/common";
 
 export default {
     name: "message-list",
@@ -47,8 +49,14 @@ export default {
     data() {
         return {
             loading: false,
-            finished: true,
+            finished: false,
             refreshing: false,
+            loadLastId: 0,
+            pagination: {
+                current: 1,
+                pageSize: 50,
+                total: 0,
+            },
         }
     },
     computed: {
@@ -62,8 +70,18 @@ export default {
             if (!list) {
                 return []
             }
-            this.finished = true
             return list
+        },
+        getAvatar() {
+            return (item) => {
+                let storeData = this.$store.state
+                let user = storeData.friend.FriendMap[item.sender]
+                if (!user) {
+                    GetUserByUuid({user_id: item.sender})
+                    return 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
+                }
+                return user.avatar || 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
+            }
         },
     },
     mounted() {
@@ -71,22 +89,40 @@ export default {
     },
     methods: {
         init() {
-            this.loadData()
-        },
-        getAvatar() {
-            if (this.roomData["is_private"] === 0) {
-                return this.roomData.avatar ||  'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
+            let storeData = this.$store.state
+            let roomId = this.roomData.room || 0
+            let list = storeData.msg.MessageMapList[roomId]
+            if (!list || list.length < 1) {
+                this.loadHistory()
             }
-            return  'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
         },
         currentUuid() {
             return GetCurrentUuid()
         },
         loadHistory() {
-
-        },
-        loadData() {
-
+            this.loading = true
+            getHistory({
+                room_uuid: this.roomData.room,
+                page: this.pagination.current,
+                size: this.pagination.pageSize,
+                last_id: this.loadLastId,
+            }).then(res => {
+                let len = res.data.length
+                if (len < 1) {
+                    this.finished = true
+                    return
+                }
+                this.loadLastId = res.data[len - 1].id || 0
+                console.log(" this.loadLastId", this.loadLastId)
+                this.$store.dispatch("history", {
+                    recipient: this.roomData.room,
+                    messages: res.data.reverse()
+                })
+                this.pagination.current === 1 && this.scrollToBottom()
+                this.pagination.current++
+            }).finally(() => {
+                this.loading = false
+            })
         },
         scrollToBottom() {
             this.$nextTick(() => {

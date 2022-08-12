@@ -22,11 +22,22 @@ export default {
         READ_MSG(state, {recipient, messageIds}) {
 
         },
+        ASSIGN_HISORY(state, {recipient, messages}) {
+            if (!state.MessageMapList[recipient]) {
+                Vue.set(state.MessageMapList, recipient, messages)
+            } else {
+                let list = [...messages, ...state.MessageMapList[recipient]]
+                Vue.set(state.MessageMapList, recipient, list)
+            }
+        }
     },
     actions: {
         push({commit}, message) {
             commit("PUSH_MSG", message)
-        }
+        },
+        history({commit}, {recipient, messages}) {
+            commit("ASSIGN_HISORY", {recipient, messages})
+        },
     },
     getters: {},
 }

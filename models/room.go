@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"strings"
 	"wechat/core/member"
 	"wechat/core/redis"
@@ -13,7 +14,6 @@ const (
 )
 
 type Room struct {
-	BaseModal
 	Id          int    `json:"id"`
 	Uuid        string `json:"uuid"`
 	Title       string `json:"title"`
@@ -25,6 +25,14 @@ type Room struct {
 	IsDel       int    `json:"is_del"`
 	MemberNum   int    `json:"member_num"`
 }
+
+//func (m *Room) MarshalBinary() ([]byte, error) {
+//	return json.Marshal(m)
+//}
+//
+//func (m *Room) UnmarshalBinary(data []byte) error {
+//	return json.Unmarshal(data, m)
+//}
 
 func GetRoomBuyUuid(roomId string) *Room {
 	room := new(Room)
@@ -39,6 +47,7 @@ func GetRoomBuyUuid(roomId string) *Room {
 		if room.Id == 0 {
 			room.Id = -1
 		}
+		fmt.Println("room",room)
 		redis.Set(env.RoomInfoKey, roomId, room)
 	}
 	return room

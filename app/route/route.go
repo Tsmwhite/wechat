@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"wechat/app/api/contact"
+	"wechat/app/api/message"
 	"wechat/app/api/user"
 	"wechat/app/middleware"
 	"wechat/config"
@@ -27,6 +28,7 @@ func init() {
 	ginEngine.POST("/login", user.Login)
 	ginEngine.POST("/loginReg", user.LoginOrRegister)
 	ginEngine.POST("/sendCode", user.SendVerifyCode)
+	ginEngine.GET("/getUserInfo", middleware.Authorization, user.GetUserInfo)
 
 	chatApi := ginEngine.Group("/chat", middleware.Authorization)
 	{
@@ -43,6 +45,8 @@ func init() {
 		chatApi.POST("/inviteJoinGroup", contact.InviteJoin)
 		chatApi.POST("/applyJoinGroup", contact.ApplyJoin)
 		chatApi.POST("/joinGroupHandle", contact.JoinGroupHandle)
+
+		chatApi.POST("/getHistory", message.GetHistory)
 	}
 }
 

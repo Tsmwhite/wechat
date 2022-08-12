@@ -1,5 +1,10 @@
 package model
 
+import (
+	"wechat/core/redis"
+	"wechat/env"
+)
+
 type User struct {
 	BaseModal
 	Id           int64  `json:"id"`
@@ -37,7 +42,11 @@ func NewUser() *User {
 
 func GetUserByUuid(uuid string) *User {
 	u := NewUser()
-	DB().Raw("SELECT * FROM `users` WHERE `uuid` = ? AND `is_del` = 0 ", uuid).Scan(u)
+	redis.Get(env.UserInfoKey, uuid, u)
+	if !(u.Id > 0) {
+		DB().Raw("SELECT * FROM `users` WHERE `uuid` = ? AND `is_del` = 0 ", uuid).Scan(u)
+		redis.Set(env.UserInfoKey, uuid, u)
+	}
 	return u
 }
 

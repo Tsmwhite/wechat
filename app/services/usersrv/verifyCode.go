@@ -72,3 +72,8 @@ func createCode(length int) (code string) {
 	}
 	return code
 }
+
+func GetUserInfoByUuid(userUuid string) *model.ShowAppUser {
+	user := model.GetUserByUuid(userUuid)
+	return user.ShowAppUser()
+}

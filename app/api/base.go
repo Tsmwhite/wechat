@@ -7,10 +7,6 @@ import (
 	model "wechat/models"
 )
 
-func NewResult() []map[string]interface{} {
-	return []map[string]interface{}{}
-}
-
 func GetCurrentUser(ctx *gin.Context) *model.User {
 	user, _ := ctx.Get(env.AppCurrentUserKey)
 	currentUser, ok := user.(*model.User)
