@@ -1,54 +1,47 @@
 <template>
     <div class="h100">
-        <template v-if="chat.show">
-            <chat-header :room-data="chat.currentRoom"
-                         :back-func="() => chat.show = false"></chat-header>
-            <chat-box :room-data="chat.currentRoom"></chat-box>
-        </template>
-        <template v-else>
-            <div class="contact-list">
-                <van-search v-model="value"
-                            :show-action="showSearchFlag"
-                            placeholder="搜索"
-                            @focus="showSearchFlag = true"
-                            @cancel="showSearchFlag = false"/>
-<!--                <search-box></search-box>-->
-                <van-list v-model="loading"
-                          :finished="finished"
-                          @load="loadData">
-                    <div class="contact-option"
-                         v-for="(item,index) in data"
-                         @click="openChat(item)"
-                         :key="index">
-                        <div class="left">
-                            <div :class="['avatar',{unread:item.unreadCount > 0},{'only-tip':item.onlyTip}]"
-                                 :data-unread="item.unreadCount > 99 ? 99 : item.unreadCount">
-                                <img v-lazy="item.avatar || groupDefaultAvatar">
-                            </div>
-                        </div>
-                        <div class="right">
-                            <div class="info">
-                                <div class="nickname">{{ item.name }}</div>
-                                <div class="last-msg">{{ item.lastMsg }}</div>
-                            </div>
-                            <div class="extra">
-                                <div class="last-time">{{ item.lastTime }}</div>
-                            </div>
+        <div class="contact-list">
+            <van-search v-model="value"
+                        :show-action="showSearchFlag"
+                        placeholder="搜索"
+                        @focus="showSearchFlag = true"
+                        @cancel="showSearchFlag = false"/>
+            <!--                <search-box></search-box>-->
+            <van-list v-model="loading"
+                      :finished="finished"
+                      @load="loadData">
+                <div class="contact-option"
+                     v-for="(item,index) in data"
+                     @click="openChat(item)"
+                     :key="index">
+                    <div class="left">
+                        <div :class="['avatar',{unread:item.unreadCount > 0},{'only-tip':item.onlyTip}]"
+                             :data-unread="item.unreadCount > 99 ? 99 : item.unreadCount">
+                            <img v-lazy="item.avatar || groupDefaultAvatar">
                         </div>
                     </div>
-                </van-list>
-            </div>
-        </template>
+                    <div class="right">
+                        <div class="info">
+                            <div class="nickname">{{ item.name }}</div>
+                            <div class="last-msg">{{ item.lastMsg }}</div>
+                        </div>
+                        <div class="extra">
+                            <div class="last-time">{{ item.lastTime }}</div>
+                        </div>
+                    </div>
+                </div>
+            </van-list>
+        </div>
     </div>
 </template>
 
 <script>
 import api from "../api/common"
-import {SetToken} from "../api/request";
 import ChatBox from "../components/chat/base/chat-box";
 import ChatHeader from "../components/chat/base/chat-header";
 import SearchBox from "../components/search/search-box";
 import groupDefaultAvatar from "../assets/default-group-avatar.jpeg"
+import {CurrentContactCachetKey, SetLocalStorage} from "../utis/cache";
 
 export default {
     name: "index",
@@ -85,9 +78,11 @@ export default {
             })
         },
         openChat(item) {
-            console.log("chatRoom",item)
-            this.chat.currentRoom = item
-            this.chat.show = true
+            console.log("chatRoom", item)
+            SetLocalStorage(CurrentContactCachetKey, JSON.stringify(item))
+            this.$router.push({
+                path: "/chat"
+            })
         },
     }
 }

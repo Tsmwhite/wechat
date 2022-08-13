@@ -19,9 +19,11 @@ export const RemoveLocalStorage = (key) => {
     return window.localStorage.removeItem(PREFIX + key);
 };
 
+export const CurrentContactCachetKey = "current-contact"
 const localStorageKeys = [
     "token",
-    "user-info"
+    "user-info",
+    CurrentContactCachetKey,
 ]
 
 const Cache = {}

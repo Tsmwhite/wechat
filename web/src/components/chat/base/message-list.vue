@@ -5,6 +5,7 @@
                   :finished="finished"
                   finished-text="没有更多了"
                   @load="loadHistory"
+                  :offset="80"
                   direction="up">
             <div v-for="(item,index) in messages"
                  :key="index"
@@ -49,12 +50,13 @@ export default {
     data() {
         return {
             loading: false,
+            loadingController: false,
             finished: false,
             refreshing: false,
             loadLastId: 0,
             pagination: {
                 current: 1,
-                pageSize: 50,
+                pageSize: 20,
                 total: 0,
             },
         }
@@ -85,10 +87,11 @@ export default {
         },
     },
     mounted() {
-        this.init()
+        //this.init()
     },
     methods: {
         init() {
+            this.finished = false
             let storeData = this.$store.state
             let roomId = this.roomData.room || 0
             let list = storeData.msg.MessageMapList[roomId]
@@ -100,10 +103,10 @@ export default {
             return GetCurrentUuid()
         },
         loadHistory() {
-            if (this.loading) {
-                return
-            }
-            this.loading = true
+            // if (this.loadingController) {
+            //     return
+            // }
+            // this.loadingController = true
             getHistory({
                 room_uuid: this.roomData.room,
                 page: this.pagination.current,
@@ -113,16 +116,29 @@ export default {
                 let len = res.data.length
                 if (len < 1) {
                     this.finished = true
+                    this.loading = false
                     return
                 }
+                const container = document.getElementById('messageList')
+                let oldHeight = container.scrollHeight
                 this.loadLastId = res.data[len - 1].id || 0
                 this.$store.dispatch("history", {
                     recipient: this.roomData.room,
                     messages: res.data.reverse()
                 })
-                this.pagination.current === 1 && this.scrollToBottom()
-                this.pagination.current++
-            }).finally(() => {
+                this.$nextTick(() => {
+                    if (this.pagination.current === 1) {
+                        this.scrollToBottom()
+                    } else {
+                        container.scrollTop = (container.scrollHeight - oldHeight)
+                    }
+                    this.pagination.current++
+                    setTimeout(() => {
+                        this.loading = false
+                    }, 3000)
+                })
+
+            }).catch(() => {
                 this.loading = false
             })
         },

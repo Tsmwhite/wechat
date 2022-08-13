@@ -14,7 +14,7 @@ export default {
     },
     actions: {
         update({commit}, userInfo) {
-            console.log("userInfo", userInfo)
+            //console.log("userInfo", userInfo)
             commit("UPDATE", userInfo)
         },
     },

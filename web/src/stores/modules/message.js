@@ -9,7 +9,7 @@ export default {
     },
     mutations: {
         PUSH_MSG(state, message) {
-            console.log("PUSH_MSG", message)
+            //console.log("PUSH_MSG", message)
             if (!state.MessageMapList[message.recipient]) {
                 Vue.set(state.MessageMapList, message.recipient, [message])
                 // state.MessageMapList[message.recipient] = []

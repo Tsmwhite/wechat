@@ -23,6 +23,14 @@ const RouterInstance = new Router({
             }
         },
         {
+            path: '/chat',
+            name: 'chat',
+            component: () => import ('@/views/chat'),
+            meta: {
+                auth: true,
+            }
+        },
+        {
             path: '/login',
             name: 'login',
             component: () => import('@/views/login.vue'),
