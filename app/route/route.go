@@ -13,7 +13,7 @@ import (
 
 var ginEngine *gin.Engine
 
-func init() {
+func _init() {
 	ginEngine = gin.Default()
 	ginEngine.Use(middleware.AccessLog)
 
@@ -51,6 +51,10 @@ func init() {
 }
 
 func Run() error {
+	if config.IsPro() {
+		gin.SetMode(gin.ReleaseMode)
+	}
+	_init()
 	fmt.Println("Listen:", config.WebSrvEnv.Port)
 	return ginEngine.Run(":" + config.WebSrvEnv.Port)
 }
