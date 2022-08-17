@@ -10,6 +10,7 @@ type Manager interface {
 	Unregister(*client.WsClient)
 	Broadcast(message.Messenger)
 	GetBroadcastChan() chan message.Messenger
+	GetUnregisterChan() chan *client.WsClient
 	GetClient(string) []*client.WsClient
 	SetClient(string, []*client.WsClient)
 	DelClient(string)
@@ -58,6 +59,10 @@ func (m *ClientManager) GetClient(uuid string) []*client.WsClient {
 
 func (m *ClientManager) GetBroadcastChan() chan message.Messenger {
 	return m.broadcast
+}
+
+func (m *ClientManager) GetUnregisterChan() chan *client.WsClient {
+	return m.unregister
 }
 
 func (m *ClientManager) SetClient(uuid string, conn []*client.WsClient) {

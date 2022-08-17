@@ -93,7 +93,7 @@ func wsHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	//每一次连接都会新开一个client
-	client := wsClient.NewClient(conn, _uuid, &model.Message{}, _manager.GetBroadcastChan())
+	client := wsClient.NewClient(conn, _uuid, &model.Message{}, _manager.GetBroadcastChan(), _manager.GetUnregisterChan())
 	//注册一个新的链接
 	_manager.Register(client)
 }

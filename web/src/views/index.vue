@@ -65,6 +65,7 @@ export default {
         // this.$WebSocket.Init(token)
         // SetToken(token)
         this.init()
+        this.$WebSocket.Detect()
     },
     methods: {
         init() {

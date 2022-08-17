@@ -7,21 +7,36 @@ import (
 	"wechat/core/message"
 )
 
-type WsClient struct {
-	id          string
-	conn        *websocket.Conn
-	Msg         message.Messenger
-	PullMsgChan chan message.Messenger   // 接受向web端发送消息的通道
-	PushMsgChan chan<- message.Messenger // 读取web端发送的消息，推送到消息处理中心
+type OtherHandle struct {
+	Type    int
+	Options []interface{}
+	Handle  func(...interface{})
 }
 
-func NewClient(conn *websocket.Conn, id string, msgCarrier message.Messenger, managerReceiveCh chan<- message.Messenger) *WsClient {
+type WsClient struct {
+	id              string
+	conn            *websocket.Conn
+	Msg             message.Messenger
+	PullMsgChan     chan message.Messenger   // 接受向web端发送消息的通道
+	PushMsgChan     chan<- message.Messenger // 读取web端发送的消息，推送到消息处理中心
+	UnregisterChan  chan<- *WsClient         // 读取web端发送的消息，推送到消息处理中心
+	OtherHandleChan chan<- *OtherHandle      // 读取web端发送的消息，推送到消息处理中心
+}
+
+func NewClient(
+	conn *websocket.Conn,
+	id string,
+	msgCarrier message.Messenger,
+	managerReceiveCh chan<- message.Messenger,
+	managerUnregisterCh chan<- *WsClient) *WsClient {
 	return &WsClient{
-		id:          id,
-		conn:        conn,
-		Msg:         msgCarrier,
-		PullMsgChan: make(chan message.Messenger, 100),
-		PushMsgChan: managerReceiveCh,
+		id:              id,
+		conn:            conn,
+		Msg:             msgCarrier,
+		PullMsgChan:     make(chan message.Messenger, 100),
+		PushMsgChan:     managerReceiveCh,
+		UnregisterChan:  managerUnregisterCh,
+		OtherHandleChan: make(chan *OtherHandle),
 	}
 }
 
@@ -39,6 +54,7 @@ func (c *WsClient) MessageProcess() {
 }
 
 func (c *WsClient) Close() {
+	c.UnregisterChan <- c
 	if err := c.conn.Close(); err != nil {
 		log.Error.Println("WsClient Close Error:", err)
 	}
