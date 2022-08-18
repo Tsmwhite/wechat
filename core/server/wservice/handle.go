@@ -1,7 +1,6 @@
 package wservice
 
 import (
-	"fmt"
 	"wechat/core/client"
 	"wechat/core/message"
 )
@@ -55,7 +54,6 @@ func HandleRegister(m Manager, conn *client.WsClient) {
 // HandleUnregister 处理断开连接
 func HandleUnregister(m Manager, conn *client.WsClient) {
 	uuid := conn.GetUuid()
-	conn.Close()
 	var temp []*client.WsClient
 	for _, c := range m.GetClient(uuid) {
 		if c != conn {
@@ -71,7 +69,6 @@ func HandleUnregister(m Manager, conn *client.WsClient) {
 
 // HandleBroadcast 转发消息至客户端
 func HandleBroadcast(m Manager, msg message.Messenger) {
-	fmt.Println("msg", msg.GetContent(), msg.GetRecipientsUuid())
 	for _, mem := range msg.GetRecipientsUuid() {
 		if mem != msg.GetSenderUuid() {
 			for _, c := range m.GetClient(mem) {

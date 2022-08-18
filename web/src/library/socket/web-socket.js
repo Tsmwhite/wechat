@@ -31,9 +31,7 @@ const WEB_SOCKET = {
         return this
     },
     Detect() {
-        if (this.Socket().readyState !== WebSocket.OPEN) {
-            this.WsInit()
-        }
+        this.Socket()
     },
     Func: {
         isSupportWs() {
