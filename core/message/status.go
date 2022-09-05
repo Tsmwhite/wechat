@@ -14,4 +14,5 @@ const (
 	AddFriendStatusNormal = iota
 	AddFriendStatusAgree
 	AddFriendStatusReject
+	AddFriendStatusLose
 )

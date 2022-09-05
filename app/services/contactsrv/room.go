@@ -33,7 +33,7 @@ func GetPrivateRoom(u1, u2 *model.User) *model.Room {
 	roomUuid := CreateRoomKey(u1, u2)
 	// 2、查询房间是否存在
 	room := &model.Room{}
-	model.Find(&model.Condition{
+	model.First(&model.Condition{
 		Table: "rooms",
 		Where: map[string]interface{}{
 			"uuid": roomUuid,

@@ -109,7 +109,7 @@ export default {
             // this.loadingController = true
             getHistory({
                 room_uuid: this.roomData.room,
-                page: this.pagination.current,
+                //page: this.pagination.current,
                 size: this.pagination.pageSize,
                 last_id: this.loadLastId,
             }).then(res => {

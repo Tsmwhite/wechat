@@ -7,6 +7,8 @@ import (
 	"wechat/config"
 	wsClient "wechat/core/client"
 	"wechat/core/log"
+	"wechat/core/redis"
+	"wechat/env"
 	model "wechat/models"
 )
 
@@ -51,7 +53,7 @@ func Run(option *Option) {
 	_manager = option.ClientManage
 	_config = option.Config
 	go _manager.Run()
-	//go addFriendsRequestHandel()
+	go addFriendsRequestHandel()
 	//注册默认路由为 /ws ，并使用wsHandler这个方法
 	http.HandleFunc(_config.router, wsHandler)
 	//监听端口
@@ -62,15 +64,28 @@ func Run(option *Option) {
 }
 
 func addFriendsRequestHandel() {
-	//for {
-	//	msg := &model.Message{}
-	//	err := redis.Init().LPop(redis.Ctx, env.AddFriendRequestHandel).Scan(msg).Error()
-	//	if msg.Uuid != "" {
-	//		fmt.Println("addFriendsRequestHandel error", err, msg)
-	//		model.DB.Create(msg)
-	//		_manager.Broadcast(msg)
-	//	}
-	//}
+	for {
+		func() {
+			defer func() {
+				if err := recover(); err != nil {
+					log.Error.Println("addFriendsRequestHandel recover error", err)
+				}
+			}()
+			//count := redis.LLen(env.AddFriendRequestHandel)
+			//if count < 1 {
+			//	return
+			//}
+			msg := &model.Message{}
+			err := redis.LPop(env.AddFriendRequestHandel, msg)
+			if err != nil {
+				log.Error.Println("addFriendsRequestHandel error", err)
+				return
+			}
+			if msg.Id > 0 {
+				_manager.Broadcast(msg)
+			}
+		}()
+	}
 }
 
 func wsHandler(res http.ResponseWriter, req *http.Request) {

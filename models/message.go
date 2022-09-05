@@ -1,17 +1,16 @@
 package model
 
 import (
+	"encoding/json"
 	"gorm.io/gorm"
 	"time"
 	"wechat/core/encrypt"
 	"wechat/core/log"
 	"wechat/core/message"
 	"wechat/core/roomer"
-	"wechat/helper/format"
 )
 
 type Message struct {
-	BaseModal
 	Id          int    `json:"id"`
 	Uuid        string `json:"uuid"`
 	Sender      string `json:"sender"`
@@ -31,9 +30,17 @@ type Message struct {
 	Remark      string `json:"remark"`
 }
 
+func (m *Message) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+func (m *Message) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
+}
+
 // SetTable 设置表名 根据房间id分表（10张）
 func (m *Message) SetTable() *gorm.DB {
-	return DB().Table(format.HashCutTable("messages", m.Recipient, 10))
+	return DB().Table(GetTableName("messages", m.Recipient))
 }
 
 func (m *Message) New() message.Messenger {
@@ -89,17 +96,18 @@ func (m *Message) SetReceiveTime() {
 }
 
 func (m *Message) Save() {
+	now := time.Now().Unix()
 	var err error
 	if m.Id > 0 {
+		m.UpdateTime = now
 		err = m.SetTable().Save(m).Error
 	} else {
-		now := time.Now().Unix()
 		m.Uuid = encrypt.CreateUuid()
 		m.LogTime = now
 		m.UpdateTime = now
 		err = m.SetTable().Create(m).Error
 	}
 	if err != nil {
-		log.Error.Println("Message Save Error:", err)
+		log.Error.Println("Message Save Error:", err, "\n", "data:", m)
 	}
 }

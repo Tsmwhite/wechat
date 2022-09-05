@@ -30,3 +30,24 @@ func Set(key, uuid string, value interface{}, expiredTime ...time.Duration) {
 		log.Error.Println("Redis Set Key "+key+" Error:", err)
 	}
 }
+
+func LLen(key string) int64 {
+	return Init().LLen(Ctx, key).Val()
+}
+
+func LPush(key string, value ...interface{}) error {
+	err := Init().LPush(Ctx, key, value...).Err()
+	if err != nil {
+		log.Error.Println("Redis LPush Key "+key+" Error:", err, "\n", "value:", value)
+	}
+	return err
+}
+
+func LPop(key string, dest interface{}) error {
+	res, err := Init().LPop(Ctx, key).Bytes()
+	if err != nil {
+		log.Error.Println("Redis LPop Key "+key+" Error:", err)
+		return err
+	}
+	return json.Unmarshal(res, dest)
+}

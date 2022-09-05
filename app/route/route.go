@@ -47,6 +47,7 @@ func _init() {
 		chatApi.POST("/joinGroupHandle", contact.JoinGroupHandle)
 
 		chatApi.POST("/getHistory", message.GetHistory)
+		chatApi.POST("/getFriendNotice", message.GetFriendNotice)
 	}
 }
 

@@ -10,14 +10,14 @@ import (
 
 func TestCondition(t *testing.T) {
 	var users, users2 []model.User
-	model.FindAll(&model.Condition{Table: "users"}, &users)
+	model.Find(&model.Condition{Table: "users"}, &users)
 	fmt.Println("users", users)
 
-	model.FindAll(&model.Condition{}, &users2)
+	model.Find(&model.Condition{}, &users2)
 	fmt.Println("users", users)
 
 	var result []map[string]interface{}
-	model.FindAll(&model.Condition{Table: "users", Limit: 3}, &result)
+	model.Find(&model.Condition{Table: "users", Limit: 3}, &result)
 	fmt.Println("users", result, len(result))
 }
 

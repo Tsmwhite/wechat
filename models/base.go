@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"wechat/core/database"
 	"wechat/core/log"
 )
@@ -19,10 +20,15 @@ func DB() *gorm.DB {
 const RecordDel = 1
 const RecordNoDel = 0
 
+func NewExpr(expr string, args ...interface{}) clause.Expr {
+	return gorm.Expr(expr, args)
+}
+
 type Condition struct {
 	Table      string
 	Fields     []string
 	Where      map[string]interface{}
+	Expr       clause.Expr
 	SqlStr     string
 	Order      string
 	Group      string
@@ -34,7 +40,7 @@ type Condition struct {
 	IncludeDel bool
 }
 
-type BaseModal struct {}
+type BaseModal struct{}
 
 func (m *BaseModal) MarshalBinary() ([]byte, error) {
 	return json.Marshal(m)
@@ -44,13 +50,13 @@ func (m *BaseModal) UnmarshalBinary(data []byte) error {
 	return json.Unmarshal(data, m)
 }
 
-func Find(option *Condition, dest interface{}) {
+func First(option *Condition, dest interface{}) {
 	if err := option.Parse(DB()).First(dest).Error; err != nil {
 		log.Error.Println("Find Error:", err, "\noption:", option)
 	}
 }
 
-func FindAll(option *Condition, dest interface{}) {
+func Find(option *Condition, dest interface{}) {
 	if err := option.Parse(DB()).Find(dest).Error; err != nil {
 		log.Error.Println("FindAll Error:", err, "\noption:", option)
 	}
@@ -69,6 +75,9 @@ func (option *Condition) Parse(db *gorm.DB) *gorm.DB {
 	}
 	if option.Where != nil {
 		db = db.Where(option.Where)
+	}
+	if option.Expr.SQL != "" {
+		db = db.Where(option.Expr)
 	}
 	if option.SqlStr != "" {
 		db = db.Where(option.SqlStr)

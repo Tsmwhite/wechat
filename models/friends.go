@@ -1,7 +1,6 @@
 package model
 
 type Friend struct {
-	BaseModal
 	Id         int64  `json:"id"`
 	User       string `json:"user"`
 	Friend     string `json:"friend"`

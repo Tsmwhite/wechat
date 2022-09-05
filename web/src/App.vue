@@ -4,7 +4,7 @@
 <!--        <keep-alive>-->
 <!--            <router-view/>-->
 <!--        </keep-alive>-->
-        <!--        <main-tab></main-tab>-->
+        <main-tab v-if="showMainTab"></main-tab>
     </div>
 </template>
 
@@ -13,7 +13,12 @@ import MainTab from "./components/base/main-tab";
 
 export default {
     name: 'App',
-    components: {MainTab}
+    components: {MainTab},
+    computed: {
+        showMainTab() {
+            return this.$route.meta.showMainTab || false
+        }
+    }
 }
 </script>
 

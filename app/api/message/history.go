@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"wechat/app/api"
 	"wechat/app/res"
+	"wechat/app/services"
 	"wechat/app/services/messagesrv"
 )
 
@@ -16,5 +17,17 @@ func GetHistory(ctx *gin.Context) {
 	if err != nil {
 		res.Error(ctx, err)
 	}
-	res.Success(ctx,result)
+	res.Success(ctx, result)
+}
+
+func GetFriendNotice(ctx *gin.Context) {
+	pagination := new(services.Pagination)
+	if err := api.VerifyParams(ctx, pagination, nil); err != nil {
+		res.Error(ctx, err)
+	}
+	result, err := messagesrv.FriendNotice(pagination, api.GetCurrentUser(ctx))
+	if err != nil {
+		res.Error(ctx, err)
+	}
+	res.Success(ctx, result)
 }

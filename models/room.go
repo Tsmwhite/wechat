@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"strings"
 	"wechat/core/member"
 	"wechat/core/redis"
@@ -38,7 +37,7 @@ func GetRoomBuyUuid(roomId string) *Room {
 	room := new(Room)
 	redis.Get(env.RoomInfoKey, roomId, room)
 	if room.Id == 0 {
-		Find(&Condition{
+		First(&Condition{
 			Table: "rooms",
 			Where: map[string]interface{}{
 				"uuid": roomId,
@@ -47,7 +46,6 @@ func GetRoomBuyUuid(roomId string) *Room {
 		if room.Id == 0 {
 			room.Id = -1
 		}
-		fmt.Println("room",room)
 		redis.Set(env.RoomInfoKey, roomId, room)
 	}
 	return room

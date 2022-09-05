@@ -6,7 +6,6 @@ import (
 )
 
 type User struct {
-	BaseModal
 	Id           int64  `json:"id"`
 	Uuid         string `json:"uuid"`
 	Name         string `json:"name"`

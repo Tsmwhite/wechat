@@ -1,7 +1,6 @@
 package model
 
 type File struct {
-	BaseModal
 	Id         int
 	Uuid       string
 	Path       string

@@ -7,19 +7,26 @@ Vue.use(Router)
 const RouterInstance = new Router({
     routes: [
         {
+            path: '/login',
+            name: 'login',
+            component: () => import('@/views/login.vue'),
+        },
+        {
             path: '/',
-            name: 'index',
-            component: () => import ('@/views/Index'),
+            name: 'home',
+            component: () => import ('@/views/index'),
             meta: {
                 auth: true,
+                showMainTab: true,
             }
         },
         {
             path: '/index',
             name: 'index',
-            component: () => import ('@/views/Index'),
+            component: () => import ('@/views/index'),
             meta: {
                 auth: true,
+                showMainTab: true,
             }
         },
         {
@@ -31,9 +38,12 @@ const RouterInstance = new Router({
             }
         },
         {
-            path: '/login',
-            name: 'login',
-            component: () => import('@/views/login.vue'),
+            path: '/friend-notice',
+            name: 'friendNotice',
+            component: () => import ('@/views/friend-notice'),
+            meta: {
+                auth: true,
+            }
         },
     ]
 })

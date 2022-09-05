@@ -18,9 +18,10 @@ type FriendsRequest struct {
 }
 
 type AddFriendRequest struct {
-	Uuid   string // 添加用户或群组uuid
-	Type   int    // 0 用户 1群组
-	Remark string `validate:"noRequired & filter"`
+	Uuid    string // 添加用户或群组uuid
+	Type    int    // 0 用户 1群组
+	Content string // 验证信息
+	Remark  string `validate:"noRequired & filter"`
 }
 
 type AddFriendHandleRequest struct {
@@ -36,12 +37,13 @@ func GetFriends(req *FriendsRequest, user *model.User) []map[string]interface{} 
 		Where: map[string]interface{}{
 			"user": user.Uuid,
 		},
+		Limit: 500,
 	}
 	if req.Keyword != "" {
 		condition.SqlStr = fmt.Sprintf("`name` LIKE '%%%s%%' OR remark LIKE '%%%s%%'", req.Keyword, req.Keyword)
 	}
 	result := services.NewResult()
-	model.FindAll(condition, &result)
+	model.Find(condition, &result)
 	return result
 }
 
@@ -54,7 +56,7 @@ func AddFriend(req *AddFriendRequest, user *model.User) error {
 	}
 	// 2、查询用户是否存在好友关系
 	friend := new(model.Friend)
-	model.Find(&model.Condition{
+	model.First(&model.Condition{
 		Table: "friends",
 		Where: map[string]interface{}{
 			"user":   user.Uuid,
@@ -65,7 +67,7 @@ func AddFriend(req *AddFriendRequest, user *model.User) error {
 		return errors.New("已存在好友关系，请勿重复添加")
 	}
 	// 3、查询是否频繁发送请求
-	if err := sendAddFriendRequestLimit(); err != nil {
+	if err := sendAddFriendRequestLimit(req, user); err != nil {
 		return err
 	}
 	// 4、构造好友申请
@@ -76,6 +78,7 @@ func AddFriend(req *AddFriendRequest, user *model.User) error {
 		Type:      message.TypeAddFriendReq,
 		Status:    message.AddFriendStatusNormal,
 		SendTime:  time.Now().Unix(),
+		Content:   req.Content,
 		Remark:    req.Remark,
 	}
 	return sendAddFriendRequest(msg)
@@ -83,10 +86,11 @@ func AddFriend(req *AddFriendRequest, user *model.User) error {
 
 // AddFriendHandle 处理添加好友请求
 func AddFriendHandle(req *AddFriendHandleRequest, user *model.User) error {
+	msgTable := model.GetTableName("messages", req.Uuid)
 	// 1、查询消息信息
 	msg := &model.Message{}
-	model.Find(&model.Condition{
-		Table: "messages",
+	model.First(&model.Condition{
+		Table: msgTable,
 		Where: map[string]interface{}{
 			"uuid":      req.Uuid,
 			"recipient": user.Uuid,
@@ -100,10 +104,15 @@ func AddFriendHandle(req *AddFriendHandleRequest, user *model.User) error {
 	}
 	switch req.Status {
 	case message.AddFriendStatusReject:
+		// 存在历史申请变更为失效状态
+		model.DB().Table(msgTable).
+			Where("recipient = ?", user.Uuid).
+			Where("sender = ?", msg.Sender).Update("status", message.AddFriendStatusLose)
+
 		// 变更好友申请消息状态
 		msg.Status = message.AddFriendStatusReject
 		msg.UpdateTime = time.Now().Unix()
-		model.DB().Save(msg)
+		msg.Save()
 	case message.AddFriendStatusAgree:
 		if err := agreeFriendRequest(req, msg, user); err != nil {
 			return err
@@ -193,13 +202,34 @@ func agreeFriendRequest(req *AddFriendHandleRequest, msg *model.Message, receipt
 
 // sendAddFriendRequest 发送添加好友申请
 func sendAddFriendRequest(msg *model.Message) error {
-	return model.DB().Create(&msg).Error
-	//err := redis.Init().LPush(redis.Ctx, env.AddFriendRequestHandel, msg).Err()
-	//fmt.Println("sendAddFriendRequest", err)
+	msg.Save()
+	err := redis.LPush(env.AddFriendRequestHandel, msg)
+	if err != nil {
+		log.Error.Println("sendAddFriendRequest LPush Msg Error:", err)
+		return errors.New("发送失败，请稍后重试")
+	}
+	return nil
 }
 
 // sendAddFriendRequestLimit 发送好友申请限制
-func sendAddFriendRequestLimit() error {
+func sendAddFriendRequestLimit(req *AddFriendRequest, user *model.User) error {
+	// 查询最近10分钟是否存在未处理请求
+	tenMinutesAgoUnix := time.Now().Unix() - (10 * 60)
+	msg := &model.Message{}
+	model.First(&model.Condition{
+		Table: model.GetTableName("messages", req.Uuid),
+		Where: map[string]interface{}{
+			"recipient": req.Uuid,
+			"sender":    user.Uuid,
+			"status":    message.AddFriendStatusNormal,
+		},
+		Expr: model.NewExpr("`send_time` > ?", tenMinutesAgoUnix),
+	}, msg)
+
+	if msg.Id > 0 {
+		return errors.New("已发送申请，请勿频繁发送")
+	}
+
 	if redis.Init().LLen(redis.Ctx, env.AddFriendRequestHandel).Val() > 100 {
 		return errors.New("当前访问人数过多，请稍后重试")
 	}

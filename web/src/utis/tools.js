@@ -15,7 +15,7 @@ export const getUrlParam = (variable) => {
     return (false);
 }
 
-export  const replaceParamVal = function (paramName, replaceWith, oUrl = "") {
+export const replaceParamVal = function (paramName, replaceWith, oUrl = "") {
     oUrl = oUrl ? oUrl : window.location.href.toString()
     let re = eval('/(' + paramName + '=)([^&]*)/gi')
     return oUrl.replace(re, paramName + '=' + replaceWith)
@@ -56,10 +56,15 @@ export const isEmail = function (str) {
     return false;
 }
 
+export const copyObject = (obj) => {
+    return JSON.parse(JSON.stringify(obj))
+}
+
 export default {
     getUrlParam,
     replaceParamVal,
     isWxBrowser,
     getUrlQuery,
     isEmail,
+    copyObject,
 }

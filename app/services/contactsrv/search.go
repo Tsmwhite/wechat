@@ -21,27 +21,30 @@ func SearchFriends(req *SearchRequest, currentUser *model.User) []*model.Friend 
 	return friends
 }
 
-func SearchUser(req *SearchRequest, currentUser *model.User) *model.ShowAppUser {
-	var user *model.User
+func SearchUser(req *SearchRequest, currentUser *model.User) []*model.ShowAppUser {
+	var users []*model.User
+	var resList []*model.ShowAppUser
 	model.Find(&model.Condition{
 		Table: "users",
 		Where: map[string]interface{}{
 			"mail": req.Keyword,
 		},
-	}, user)
-	if user == nil {
-		return nil
+	}, &users)
+	if len(users) > 0 {
+		for _, user := range users {
+			resList = append(resList, user.ShowAppUser())
+		}
 	}
-	return user.ShowAppUser()
+	return resList
 }
 
-func SearchRoom(req *SearchRequest, currentUser *model.User) *model.Room {
-	var room *model.Room
-	model.Find(&model.Condition{
+func SearchRoom(req *SearchRequest, currentUser *model.User) []*model.Room {
+	var rooms []*model.Room
+	model.First(&model.Condition{
 		Table: "rooms",
 		Where: map[string]interface{}{
 			"uuid": req.Keyword,
 		},
-	}, room)
-	return room
+	}, &rooms)
+	return rooms
 }

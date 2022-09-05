@@ -1,15 +1,26 @@
 <template>
     <div class="h100">
         <div class="contact-list">
-            <van-search v-model="value"
-                        :show-action="showSearchFlag"
-                        placeholder="搜索"
-                        @focus="showSearchFlag = true"
-                        @cancel="showSearchFlag = false"/>
-            <!--                <search-box></search-box>-->
+            <search-box></search-box>
             <van-list v-model="loading"
                       :finished="finished"
                       @load="loadData">
+                <div class="contact-option" @click="openFriendNoticeBox">
+                    <div class="left">
+                        <div class="avatar">
+                            <img src="@/assets/friend-notice-icon.png"/>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="info">
+                            <div class="nickname">好友通知</div>
+                            <div class="last-msg"></div>
+                        </div>
+                        <div class="extra">
+                            <div class="last-time"></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="contact-option"
                      v-for="(item,index) in data"
                      @click="openChat(item)"
@@ -52,7 +63,6 @@ export default {
             value: "",
             loading: true,
             finished: false,
-            showSearchFlag: false,
             data: [],
             chat: {
                 show: false,
@@ -83,6 +93,11 @@ export default {
             SetLocalStorage(CurrentContactCachetKey, JSON.stringify(item))
             this.$router.push({
                 path: "/chat"
+            })
+        },
+        openFriendNoticeBox() {
+            this.$router.push({
+                path: "/friend-notice"
             })
         },
     }

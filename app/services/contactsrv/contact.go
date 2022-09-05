@@ -43,7 +43,7 @@ func GetContacts(req *GetContactsRequest, user *model.User) []map[string]interfa
 		condition.SqlStr = fmt.Sprintf("`name` LIKE '%%%s%%' OR remark LIKE '%%%s%%'", req.Keyword, req.Keyword)
 	}
 	result := services.NewResult()
-	model.FindAll(condition, &result)
+	model.Find(condition, &result)
 	return result
 }
 
@@ -78,7 +78,7 @@ func CreateContactTx(user, contacts *model.User, tx *gorm.DB) error {
 		"object": contacts.Uuid,
 	}
 	// 查询是否存在联系人
-	model.Find(&model.Condition{
+	model.First(&model.Condition{
 		Table:      "contacts",
 		IncludeDel: true,
 		Where:      where,

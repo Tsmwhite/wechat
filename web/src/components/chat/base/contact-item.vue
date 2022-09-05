@@ -3,12 +3,13 @@
         <div class="left">
             <div :class="['avatar',{unread:contact.unread_count > 0},{'only-tip':contact.only_tip}]"
                  :data-unread="contact.unread_count > 99 ? 99 : contact.unread_count">
-                <img :src="contact.avatar">
+                <img v-if="contact.avatar" :src="contact.avatar">
+                <img v-else src="@/assets/default-group-avatar.jpeg"/>
             </div>
         </div>
         <div class="right">
             <div class="info">
-                <div class="nickname">{{ contact.name }}</div>
+                <div class="nickname">{{ contact.name || contact.title }}</div>
                 <div class="last-msg">{{ contact.last_msg }}</div>
             </div>
             <div class="extra">
