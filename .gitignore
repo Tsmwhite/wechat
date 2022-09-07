@@ -2,6 +2,7 @@
 /.idea
 /web/node_modules
 /web/node_modules/*
+/web/certs/*
 /config/config.pro.yaml
 /config/config.dev.yaml
 log/
