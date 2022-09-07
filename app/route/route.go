@@ -19,6 +19,7 @@ func _init() {
 
 	//web入口 home
 	ginEngine.Static("/static", "./web/dist/static")
+	ginEngine.Static("/.well-known", "./web/public/.well-known")
 	ginEngine.LoadHTMLFiles("./web/dist/index.html")
 	ginEngine.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", nil)
