@@ -15,7 +15,6 @@ type Setting struct {
 
 var mod string
 var debug bool
-var webTls bool
 
 func IsDev() bool {
 	return ModDevelopment == mod
@@ -29,10 +28,6 @@ func Debug() bool {
 	return debug
 }
 
-func WebTlsOpen() bool {
-	return webTls
-}
-
 func LoadMod() error {
 	setting, err := NewSetting("config")
 	if err != nil {
@@ -40,10 +35,8 @@ func LoadMod() error {
 	}
 	debug = setting.ViperInstance.GetBool("Debug")
 	mod = setting.ViperInstance.GetString("EnvMod")
-	webTls = setting.ViperInstance.GetBool("WebTls")
 	fmt.Println("Debug:", debug)
 	fmt.Println("EnvMod:", mod)
-	fmt.Println("WebTls:", webTls)
 	return nil
 }
 

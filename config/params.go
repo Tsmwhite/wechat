@@ -26,13 +26,14 @@ type Redis struct {
 }
 
 type Server struct {
-	Router,
-	Port string
+	Router      string
+	Port        string
 	PingTimeOut int
 }
 
 type WebServer struct {
 	Port string
+	Tls  bool
 }
 
 type Message struct {
@@ -44,7 +45,7 @@ type Message struct {
 
 var (
 	ServerEnv  = &Server{}
-	WebSrvEnv  = &Server{}
+	WebSrvEnv  = &WebServer{}
 	RedisEnv   = &Redis{}
 	DBEnv      = &Database{}
 	MessageEnv = &Message{}

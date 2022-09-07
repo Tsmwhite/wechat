@@ -57,9 +57,10 @@ func Run() error {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	_init()
-	fmt.Println("Listen:", config.WebSrvEnv.Port)
-	if config.WebTlsOpen() {
+	if config.WebSrvEnv.Tls {
 		return  ginEngine.RunTLS(":443","./web/certs/certificate.crt", "./web/certs/private.key")
+	} else {
+		fmt.Println("Listen:", config.WebSrvEnv.Port)
 	}
 	return ginEngine.Run(":" + config.WebSrvEnv.Port)
 }
