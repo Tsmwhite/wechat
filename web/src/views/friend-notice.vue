@@ -106,7 +106,6 @@ export default {
             return (item) => {
                 let storeData = this.$store.state
                 let user = storeData.friend.FriendMap[item.sender]
-                console.log("user",user)
                 if (!user) {
                     GetUserByUuid({user_id: item.sender})
                     return {

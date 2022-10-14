@@ -1,20 +1,31 @@
 <template>
     <div class="send-message">
-        <div class="left">
-            <voice></voice>
+        <div class="top">
+            <div class="left">
+                <voice></voice>
+            </div>
+            <div class="center">
+                <van-field rows="1"
+                           v-model="message"
+                           :autosize="{maxHeight:100}"
+                           style="border-radius: 8px"
+                           @blur="sendTextMessage"
+                           type="textarea"/>
+            </div>
+            <div class="right">
+                <emoji></emoji>
+                <span @click="showExtra"><add></add></span>
+            </div>
         </div>
-        <div class="center">
-            <van-field rows="1"
-                       v-model="message"
-                       :autosize="{maxHeight:100}"
-                       style="border-radius: 8px"
-                       @blur="sendTextMessage"
-                       type="textarea"/>
+        <div v-if="extraFlag"
+             class="extra">
+            <div class="extra-item" @click="sendVideoCall">
+                <send-video></send-video>
+                <span class="title">视频通话</span>
+            </div>
         </div>
-        <div class="right">
-            <emoji></emoji>
-            <add></add>
-        </div>
+
+        <video-call :room-data="roomData" ref="videoCallRef"></video-call>
     </div>
 </template>
 
@@ -22,10 +33,12 @@
 import Voice from "@/components/icons/send-message-icons/voice";
 import Emoji from "@/components/icons/send-message-icons/emoji";
 import Add from "@/components/icons/send-message-icons/add";
+import SendVideo from "@/components/icons/send-message-icons/send-video";
+import VideoCall from "../extras/video-call";
 
 export default {
     name: "send-message",
-    components: {Add, Emoji, Voice},
+    components: {VideoCall, SendVideo, Add, Emoji, Voice},
     props: {
         roomData: {
             type: Object,
@@ -34,13 +47,17 @@ export default {
     },
     data() {
         return {
-            message: ''
+            message: '',
+            extraFlag: false,
         }
     },
     mounted() {
         this.$SetR(this.roomData.room)
     },
     methods: {
+        showExtra() {
+            this.extraFlag = true
+        },
         sendTextMessage() {
             this.message = this.message.trim()
             if (this.message === "") {
@@ -49,6 +66,9 @@ export default {
             this.$WebSocket.send(this.$Chat.text(this.message))
             this.$emit('sendMessage', this.message)
             this.message = ""
+        },
+        sendVideoCall() {
+            this.$refs.videoCallRef.open()
         }
     }
 }
@@ -56,25 +76,45 @@ export default {
 
 <style scoped lang="less">
 .send-message {
-    //position: fixed;
-    //bottom: 0;
-    //left: 0;
-    background: #f7f7f7;
     width: 100%;
-    border-top: 1px solid #d7d8d9;
-    display: flex;
-    align-items: center;
-    padding: 12px 5px;
 
-    .center {
-        flex: 2;
-        margin: 0 4px;
-    }
-
-    .right {
+    .top {
+        background: #f7f7f7;
+        width: 100%;
+        border-top: 1px solid #d7d8d9;
         display: flex;
         align-items: center;
-        margin-right: 12px;
+        padding: 12px 5px;
+
+        .center {
+            flex: 2;
+            margin: 0 4px;
+        }
+
+        .right {
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+        }
+    }
+
+    .extra {
+        display: flex;
+        margin: 12px;
+
+        .extra-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px;
+            background: rgba(255, 255, 255, 0.65);;
+            border-radius: 4px;
+
+            .title {
+                font-size: 12px;
+                color: rgba(0, 0, 0, 0.65);
+            }
+        }
     }
 }
 </style>

@@ -21,3 +21,10 @@ func ContactsList(ctx *gin.Context) {
 	list := contactsrv.GetContacts(req, api.GetCurrentUser(ctx))
 	res.Success(ctx, list)
 }
+
+// GetContactInfo 获取联系人信息
+func GetContactInfo(ctx *gin.Context)  {
+	room := ctx.PostForm("room")
+	info := contactsrv.GetContactInfoByRoom(room, api.GetCurrentUser(ctx))
+	res.Success(ctx, info)
+}

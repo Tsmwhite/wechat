@@ -7,30 +7,35 @@
                   @load="loadHistory"
                   :offset="80"
                   direction="up">
-            <div v-for="(item,index) in messages"
-                 :key="index"
-                 :class="['message-box',{right:item.sender === currentUuid() }]">
-                <div v-if="item.sender !== currentUuid()" class="avatar">
-                    <img :src="getAvatar(item)">
+            <template v-for="(item,index) in messages">
+                <div v-if="item.second_type !== MessageTypes.videoCall"
+                     :key="index"
+                     :class="['message-box',{right:item.sender === currentUuid() }]">
+                    <div v-if="item.sender !== currentUuid()"
+                         class="avatar">
+                        <img :src="getAvatar(item)">
+                    </div>
+                    <!--消息前置提示@start消息状态-发送中、发送失败-->
+                    <div v-if="item.sender === currentUuid()"
+                         class="before-tip">
+                        <van-loading v-if="false" class="loading-icon" size="14"/>
+                        <van-icon v-if="false" name="warning" class="fail-icon"/>
+                    </div>
+                    <!--消息前置提示@end-->
+                    <!--消息体@start-->
+                    <template v-if="item.second_type === MessageTypes.text">
+                        <div class="text" v-html="item.content"></div>
+                    </template>
+                    <template v-else-if="item.second_type === MessageTypes.image">
+                        <div class="image"><img :src="item.content"></div>
+                    </template>
+                    <!--消息体@end-->
+                    <div v-if="item.sender === currentUuid()"
+                         class="avatar">
+                        <img :src="meAvatar">
+                    </div>
                 </div>
-                <!--消息前置提示@start消息状态-发送中、发送失败-->
-                <div v-if="item.sender === currentUuid()" class="before-tip">
-                    <van-loading v-if="false" class="loading-icon" size="14"/>
-                    <van-icon v-if="false" name="warning" class="fail-icon"/>
-                </div>
-                <!--消息前置提示@end-->
-                <!--消息体@start-->
-                <template v-if="item.second_type === $MsgType.Text">
-                    <div class="text" v-html="item.content"></div>
-                </template>
-                <template v-else-if="item.second_type === $MsgType.Image">
-                    <div class="image"><img :src="item.content"></div>
-                </template>
-                <!--消息体@end-->
-                <div v-if="item.sender === currentUuid()" class="avatar">
-                    <img :src="meAvatar">
-                </div>
-            </div>
+            </template>
         </van-list>
     </div>
 </template>
@@ -39,6 +44,7 @@
 import {GetCurrentUuid, GetUserInfo} from "../../../utis/cache";
 import {GetUserByUuid} from "../../../utis/cookie";
 import {getHistory} from "../../../api/common";
+import {MessageTypes} from "../../../library/message/const";
 
 export default {
     name: "message-list",
@@ -49,6 +55,7 @@ export default {
     },
     data() {
         return {
+            MessageTypes,
             loading: false,
             loadingController: false,
             finished: false,
@@ -56,7 +63,7 @@ export default {
             loadLastId: 0,
             pagination: {
                 current: 1,
-                pageSize: 20,
+                pageSize: 60,
                 total: 0,
             },
         }
@@ -95,14 +102,19 @@ export default {
             let storeData = this.$store.state
             let roomId = this.roomData.room || 0
             let list = storeData.msg.MessageMapList[roomId]
-            if (!list || list.length < 1) {
+            if ((!list || list.length < 1) && roomId > 0) {
                 this.loadHistory()
+            } else  {
+                this.finished = true
             }
         },
         currentUuid() {
             return GetCurrentUuid()
         },
         loadHistory() {
+            if (!this.roomData.room) {
+                this.finished = true
+            }
             // if (this.loadingController) {
             //     return
             // }

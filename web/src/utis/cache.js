@@ -38,6 +38,9 @@ export const GetToken = () => {
 export const GetCurrentUuid = () => {
     if (!Cache.uuid) {
         let userInfo = GetLocalStorage("user-info")
+        if (!userInfo) {
+            return 0
+        }
         userInfo = JSON.parse(userInfo)
         Cache.uuid = userInfo.uuid
     }

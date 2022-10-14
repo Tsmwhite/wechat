@@ -5,15 +5,17 @@
 <!--            <router-view/>-->
 <!--        </keep-alive>-->
         <main-tab v-if="showMainTab"></main-tab>
+        <global-notice></global-notice>
     </div>
 </template>
 
 <script>
 import MainTab from "./components/base/main-tab";
+import GlobalNotice from "./components/global-notice/main";
 
 export default {
     name: 'App',
-    components: {MainTab},
+    components: {GlobalNotice, MainTab},
     computed: {
         showMainTab() {
             return this.$route.meta.showMainTab || false

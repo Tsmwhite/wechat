@@ -21,6 +21,22 @@ type GetContactsRequest struct {
 	Size    int    `validate:"noRequired"`
 }
 
+// GetContactInfoByRoom 获取联系人信息
+func GetContactInfoByRoom(roomUuid string, user *model.User) *model.Contact {
+	condition := &model.Condition{
+		Table:  "contacts",
+		Fields: []string{"contacts.*", "rooms.member_num"},
+		Joins:  []string{"LEFT JOIN rooms ON contacts.object = rooms.uuid"},
+		Where: map[string]interface{}{
+			"user": user.Uuid,
+			"room": roomUuid,
+		},
+	}
+	result := new(model.Contact)
+	model.First(condition, &result)
+	return result
+}
+
 // GetContacts 获取联系列表
 func GetContacts(req *GetContactsRequest, user *model.User) []map[string]interface{} {
 	if req.Page == 0 {

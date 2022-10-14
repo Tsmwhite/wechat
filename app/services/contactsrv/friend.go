@@ -30,6 +30,20 @@ type AddFriendHandleRequest struct {
 	Remark string `validate:"noRequired & filter"`
 }
 
+// GetFriendInfo 获取好友信息
+func GetFriendInfo(friendUuid string, user *model.User) *model.Friend {
+	condition := &model.Condition{
+		Table: "friends",
+		Where: map[string]interface{}{
+			"user":   user.Uuid,
+			"friend": friendUuid,
+		},
+	}
+	result := new(model.Friend)
+	model.First(condition, &result)
+	return result
+}
+
 // GetFriends 获取好友列表
 func GetFriends(req *FriendsRequest, user *model.User) []map[string]interface{} {
 	condition := &model.Condition{

@@ -14,9 +14,9 @@ const (
 
 const (
 	TypeChatDefault    = iota + 200 // 默认聊天消息
-	TypeAddFriendReq				// 添加好友请求
+	TypeAddFriendReq                // 添加好友请求
 	TypeChatTip                     // 提示性消息
-	TypeChatGroup					// 群消息
+	TypeChatGroup                   // 群消息
 	TypeGroupNotice                 // 群通知
 	TypeGroupAnonymous              // 群匿名消息
 )
@@ -29,4 +29,5 @@ const (
 	TypeVideo                  // 视频
 	TypeImageText              // 图文
 	TypeFile                   // 文件
+	TypeVideoCall              // 视频通话
 )

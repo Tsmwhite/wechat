@@ -4,6 +4,10 @@ export const getContacts = () => {
     return request.post('/chat/contacts')
 }
 
+export const getContactInfo = (data) => {
+    return request.post('/chat/getContactInfo', data)
+}
+
 export const getUserInfo = (data) => {
     return request.get('/getUserInfo', {
         params: data,
@@ -12,6 +16,10 @@ export const getUserInfo = (data) => {
 
 export const getHistory = (data) => {
     return request.post('/chat/getHistory', data)
+}
+
+export const getFriendInfo = (data) => {
+    return request.post('/chat/getFriendInfo', data)
 }
 
 export const getFriendNotice = (data) => {

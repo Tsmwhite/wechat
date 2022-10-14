@@ -48,3 +48,9 @@ func FriendsList(ctx *gin.Context) {
 	list := contactsrv.GetFriends(req, api.GetCurrentUser(ctx))
 	res.Success(ctx, list)
 }
+
+func GetFriendInfo(ctx *gin.Context) {
+	friendUuid := ctx.PostForm("friend")
+	info := contactsrv.GetFriendInfo(friendUuid, api.GetCurrentUser(ctx))
+	res.Success(ctx, info)
+}

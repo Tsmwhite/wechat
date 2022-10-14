@@ -22,6 +22,7 @@ export default {
     },
     methods: {
         sendMsg() {
+            // 发送完消息将聊天窗口滑动到底部
             this.$refs.msgListRef.scrollToBottom()
         },
     }

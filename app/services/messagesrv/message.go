@@ -66,6 +66,7 @@ func FriendNotice(pagination *services.Pagination, user *model.User) ([]map[stri
 					recipient = ? AND 
 					is_del = 0 AND 
 					send_time > ?
+					GROUP BY sender
 					ORDER BY id DESC
                ) as m GROUP BY m.sender LIMIT ?`
 		args = append(args, pagination.LastId)
@@ -76,6 +77,7 @@ func FriendNotice(pagination *services.Pagination, user *model.User) ([]map[stri
 					recipient = ? AND 
 					is_del = 0 AND 
 					send_time > ?
+					GROUP BY sender
 					ORDER BY id DESC
                ) as m GROUP BY m.sender LIMIT ?`
 	}
