@@ -71,10 +71,10 @@ func addFriendsRequestHandel() {
 					log.Error.Println("addFriendsRequestHandel recover error", err)
 				}
 			}()
-			//count := redis.LLen(env.AddFriendRequestHandel)
-			//if count < 1 {
-			//	return
-			//}
+			count := redis.LLen(env.AddFriendRequestHandel)
+			if count < 1 {
+				return
+			}
 			msg := &model.Message{}
 			err := redis.LPop(env.AddFriendRequestHandel, msg)
 			if err != nil {
