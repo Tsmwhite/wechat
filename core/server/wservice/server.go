@@ -57,9 +57,16 @@ func Run(option *Option) {
 	//注册默认路由为 /ws ，并使用wsHandler这个方法
 	http.HandleFunc(_config.router, wsHandler)
 	//监听端口
-	fmt.Println("Listen:", _config.port, _config.router)
-	if err := http.ListenAndServe(_config.port, nil); err != nil {
-		log.Error.Println("ListenAndServe Error:", err)
+	if config.WebSrvEnv.Tls {
+		fmt.Println("Wss Listen:", _config.port, _config.router)
+		if err := http.ListenAndServeTLS(_config.port, "./web/certs/certificate.crt", "./web/certs/private.key", nil); err != nil {
+			log.Error.Println("ListenAndServe Error:", err)
+		}
+	} else {
+		fmt.Println("Listen:", _config.port, _config.router)
+		if err := http.ListenAndServe(_config.port, nil); err != nil {
+			log.Error.Println("ListenAndServe Error:", err)
+		}
 	}
 }
 
