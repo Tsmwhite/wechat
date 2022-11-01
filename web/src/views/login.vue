@@ -87,11 +87,11 @@ export default {
             if (!isEmail(this.form.email)) {
                 return this.$toast.fail("邮箱格式不正确")
             }
+            this.sendCodeWait = 60
             sendCodeReq({
                 account: this.form.email,
                 type: 1,
             }).then(() => {
-                this.sendCodeWait = 60
                 let timer = setInterval(() => {
                     this.sendCodeWait -= 1
                     if (this.sendCodeWait < 1) {

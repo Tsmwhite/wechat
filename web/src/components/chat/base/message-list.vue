@@ -8,7 +8,11 @@
                   :offset="80"
                   direction="up">
             <template v-for="(item,index) in messages">
-                <div v-if="item.second_type !== MessageTypes.videoCall"
+                <div v-if="item.second_type === MessageTypes.videoCall"
+                     :key="index">
+                   <div style="font-size: 12px;color: rgba(0,0,0,0.65)"> {{item.sender === currentUuid() ? '我' : '对方'}}发起了视频通话【已结束】</div>
+                </div>
+                <div v-else
                      :key="index"
                      :class="['message-box',{right:item.sender === currentUuid() }]">
                     <div v-if="item.sender !== currentUuid()"

@@ -58,7 +58,7 @@ export default {
     watch: {
         videoCallRtcCandidate() {
             if (this.videoCallRtcCandidate && this.videoCallRtcCandidate.status === VideoCallStatus.candidate) {
-                this.handleSendCandidate()
+                this.handleReceivedCandidate()
             }
         },
         videoCallMsg() {
@@ -116,7 +116,7 @@ export default {
                 })
             }
         },
-        handleSendCandidate() {
+        handleReceivedCandidate() {
             if (this.videoCallRtcCandidate && this.videoCallRtcCandidate.status === VideoCallStatus.candidate) {
                 let message = JSON.parse(this.videoCallRtcCandidate.content)
                 let candidate = new RTCIceCandidate({
@@ -130,10 +130,8 @@ export default {
         },
         handleIcecandidate(data, pc) {
             let message = this.$Chat.videoCall(VideoCallStatus.candidate)
-            message.parent = this.videoCallMsg.parent || this.videoCallMsg.uuid
-            message.recipient = this.videoCallMsg.recipient
             message.content = JSON.stringify(data)
-            this.$WebSocket.send(message)
+            this.send(message)
         },
         createPeerConn(key, isSelf) {
             if (!this.peerMap[key]) {
@@ -151,10 +149,8 @@ export default {
                         this.$Log("createVideoCall -> createOffer -> description:", description)
                         // 传输 description
                         let message = this.$Chat.videoCall(VideoCallStatus.createConn)
-                        message.parent = this.videoCallMsg.parent || this.videoCallMsg.uuid
-                        message.recipient = this.videoCallMsg.recipient
                         message.content = JSON.stringify(description)
-                        this.$WebSocket.send(message)
+                        this.send(message)
                     })
                 }
                 this.peerMap[key] = pc
@@ -212,13 +208,16 @@ export default {
                     this.peerMap[this.roomData['object']].HandleOffer(offerDescription, (answerDescription) => {
                         this.$Log("videoCallOfferHandle -> createAnswer -> description:", answerDescription)
                         let message = this.$Chat.videoCall(VideoCallStatus.createConnConfirm)
-                        message.parent = this.videoCallMsg.parent || this.videoCallMsg.uuid
-                        message.recipient = this.videoCallMsg.recipient
                         message.content = JSON.stringify(answerDescription)
-                        this.$WebSocket.send(message)
+                        this.send(message)
                     })
                 }
             })
+        },
+        send(message) {
+            message.parent = this.videoCallMsg.parent || this.videoCallMsg.uuid
+            message.recipient = this.videoCallMsg.recipient
+            this.$WebSocket.send(message)
         },
     }
 }

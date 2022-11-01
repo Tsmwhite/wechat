@@ -111,3 +111,11 @@ func (m *Message) Save() {
 		log.Error.Println("Message Save Error:", err, "\n", "data:", m)
 	}
 }
+
+func (m *Message) WhetherToRecord() bool {
+	// 视频通话WEBRTC中间建立通信信令不进入数据库
+	if m.Type == message.TypeChatDefault && m.SecondType == message.TypeVideoCall && m.Status != message.VideoCallStatusWait {
+		return  false
+	}
+	return true
+}

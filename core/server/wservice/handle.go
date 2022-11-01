@@ -11,15 +11,17 @@ func (m *ClientManager) Handle() {
 		select {
 		case conn := <-m.register:
 			// 注册连接
-			HandleRegister(m, conn)
+			handleRegister(m, conn)
 		case conn := <-m.unregister:
 			// 退出连接
-			HandleUnregister(m, conn)
+			handleUnregister(m, conn)
 		case msg := <-m.broadcast:
-			// 录入消息
-			m.writeMsg <- msg
+			if msg.WhetherToRecord() {
+				// 录入消息
+				m.writeMsg <- msg
+			}
 			// 转发消息
-			HandleBroadcast(m, msg)
+			handleBroadcast(m, msg)
 		}
 	}
 }
@@ -34,8 +36,8 @@ func (m *ClientManager) Log() {
 	}
 }
 
-// HandleRegister 处理注册连接
-func HandleRegister(m Manager, conn *client.WsClient) {
+// 处理注册连接
+func handleRegister(m Manager, conn *client.WsClient) {
 	uuid := conn.GetUuid()
 	exist := false
 	clients := m.GetClient(uuid)
@@ -51,8 +53,8 @@ func HandleRegister(m Manager, conn *client.WsClient) {
 	}
 }
 
-// HandleUnregister 处理断开连接
-func HandleUnregister(m Manager, conn *client.WsClient) {
+// 处理断开连接
+func handleUnregister(m Manager, conn *client.WsClient) {
 	uuid := conn.GetUuid()
 	var temp []*client.WsClient
 	for _, c := range m.GetClient(uuid) {
@@ -67,8 +69,8 @@ func HandleUnregister(m Manager, conn *client.WsClient) {
 	}
 }
 
-// HandleBroadcast 转发消息至客户端
-func HandleBroadcast(m Manager, msg message.Messenger) {
+// 转发消息至客户端
+func handleBroadcast(m Manager, msg message.Messenger) {
 	for _, mem := range msg.GetRecipientsUuid() {
 		if mem != msg.GetSenderUuid() {
 			for _, c := range m.GetClient(mem) {
