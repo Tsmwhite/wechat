@@ -9,6 +9,7 @@
                   direction="up">
             <template v-for="(item,index) in messages">
                 <div v-if="item.second_type === MessageTypes.videoCall"
+                     class="video-call-box"
                      :key="index">
                     <div style="font-size: 12px;color: rgba(0,0,0,0.65)">
                         {{ item.sender === currentUuid() ? '我' : '对方' }}发起了视频通话【已结束】
@@ -275,5 +276,8 @@ export default {
             background: #bae4ff;
         }
     }
+}
+.video-call-box {
+    margin-bottom: 20px;
 }
 </style>
