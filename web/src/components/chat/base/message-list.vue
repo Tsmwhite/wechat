@@ -10,35 +10,39 @@
             <template v-for="(item,index) in messages">
                 <div v-if="item.second_type === MessageTypes.videoCall"
                      :key="index">
-                   <div style="font-size: 12px;color: rgba(0,0,0,0.65)"> {{item.sender === currentUuid() ? '我' : '对方'}}发起了视频通话【已结束】</div>
-                </div>
-                <div v-else
-                     :key="index"
-                     :class="['message-box',{right:item.sender === currentUuid() }]">
-                    <div v-if="item.sender !== currentUuid()"
-                         class="avatar">
-                        <img :src="getAvatar(item)">
-                    </div>
-                    <!--消息前置提示@start消息状态-发送中、发送失败-->
-                    <div v-if="item.sender === currentUuid()"
-                         class="before-tip">
-                        <van-loading v-if="false" class="loading-icon" size="14"/>
-                        <van-icon v-if="false" name="warning" class="fail-icon"/>
-                    </div>
-                    <!--消息前置提示@end-->
-                    <!--消息体@start-->
-                    <template v-if="item.second_type === MessageTypes.text">
-                        <div class="text" v-html="item.content"></div>
-                    </template>
-                    <template v-else-if="item.second_type === MessageTypes.image">
-                        <div class="image"><img :src="item.content"></div>
-                    </template>
-                    <!--消息体@end-->
-                    <div v-if="item.sender === currentUuid()"
-                         class="avatar">
-                        <img :src="meAvatar">
+                    <div style="font-size: 12px;color: rgba(0,0,0,0.65)">
+                        {{ item.sender === currentUuid() ? '我' : '对方' }}发起了视频通话【已结束】
                     </div>
                 </div>
+                <template v-else>
+                    <div v-html="renderTime(item,index)"></div>
+                    <div :key="index"
+                         :class="['message-box',{right:item.sender === currentUuid() }]">
+                        <div v-if="item.sender !== currentUuid()"
+                             class="avatar">
+                            <img :src="getAvatar(item)">
+                        </div>
+                        <!--消息前置提示@start消息状态-发送中、发送失败-->
+                        <div v-if="item.sender === currentUuid()"
+                             class="before-tip">
+                            <van-loading v-if="false" class="loading-icon" size="14"/>
+                            <van-icon v-if="false" name="warning" class="fail-icon"/>
+                        </div>
+                        <!--消息前置提示@end-->
+                        <!--消息体@start-->
+                        <template v-if="item.second_type === MessageTypes.text">
+                            <div class="text" v-html="item.content"></div>
+                        </template>
+                        <template v-else-if="item.second_type === MessageTypes.image">
+                            <div class="image"><img :src="item.content"></div>
+                        </template>
+                        <!--消息体@end-->
+                        <div v-if="item.sender === currentUuid()"
+                             class="avatar">
+                            <img :src="meAvatar">
+                        </div>
+                    </div>
+                </template>
             </template>
         </van-list>
     </div>
@@ -49,6 +53,7 @@ import {GetCurrentUuid, GetUserInfo} from "../../../utis/cache";
 import {GetUserByUuid} from "../../../utis/cookie";
 import {getHistory} from "../../../api/common";
 import {MessageTypes} from "../../../library/message/const";
+import dayjs from "dayjs";
 
 export default {
     name: "message-list",
@@ -70,6 +75,7 @@ export default {
                 pageSize: 60,
                 total: 0,
             },
+            lastSendMsgTime: null,
         }
     },
     computed: {
@@ -108,7 +114,7 @@ export default {
             let list = storeData.msg.MessageMapList[roomId]
             if ((!list || list.length < 1) && roomId > 0) {
                 this.loadHistory()
-            } else  {
+            } else {
                 this.finished = true
             }
         },
@@ -164,10 +170,37 @@ export default {
                 container.scrollTop = container.scrollHeight
             })
         },
+        renderTime(msg, index) {
+            let val
+            let now = dayjs().unix()
+            if (index === 0) {
+                val = now - msg.send_time
+            } else {
+                val = msg.send_time - this.messages[index - 1].send_time
+                let currentDetail = dayjs(msg.send_time * 1000).format("YYYY-MM-DD HH:mm")
+                let prevDetail = dayjs(this.messages[index - 1].send_time * 1000).format("YYYY-MM-DD HH:mm")
+                if (prevDetail === currentDetail) {
+                    return ""
+                }
+            }
+            let time
+            if ((now - msg.send_time) > (60 * 60 * 24)) {
+                time = dayjs(msg.send_time * 1000).format("YYYY-MM-DD HH:mm")
+            } else {
+                time = dayjs(msg.send_time * 1000).format("HH:mm")
+            }
+            return `<div class="send-msg-time">${time}</div>`
+        },
     }
 }
 </script>
 
+<style>
+.send-msg-time {
+    font-size: 12px;
+    color: #999999;
+}
+</style>
 <style scoped lang="less">
 .message-list {
     //margin: 60px 0;
