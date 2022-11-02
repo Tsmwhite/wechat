@@ -29,4 +29,5 @@ export const VideoCallStatus = {
     candidate: 5,
     createConn: 10,
     createConnConfirm: 11,
+    close: 12,
 }

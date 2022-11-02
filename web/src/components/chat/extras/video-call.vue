@@ -83,6 +83,8 @@ export default {
                         this.$Log("收到对方应答", this.videoCallMsg)
                         this.videoCallAnswerHandle()
                         break
+                    case VideoCallStatus.close:
+                        this.close()
                 }
             }
         },
@@ -105,6 +107,10 @@ export default {
         },
         close() {
             this.flag = false
+            let message = this.$Chat.videoCall(VideoCallStatus.close)
+            this.send(message)
+            this.peerMap[this.roomData['object']].RTC.close()
+            this.localStream.close()
         },
         handleRemoteStream(event, pc) {
             console.log("handleRemoteStream", event, pc)
