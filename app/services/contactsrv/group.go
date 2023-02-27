@@ -73,7 +73,7 @@ func CreateGroup(req *CreateGroupRequest, currentUser *model.User) error {
 		contactsRelation = append(contactsRelation, model.Contact{
 			Room:       roomData.Uuid,
 			User:       user,
-			Object:     roomData.Uuid,
+			Friend:     roomData.Uuid,
 			Name:       roomData.Title,
 			Type:       model.IsGroup,
 			LastTime:   now,

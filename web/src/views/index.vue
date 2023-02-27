@@ -28,7 +28,7 @@
                     <div class="left">
                         <div :class="['avatar',{unread:item.unreadCount > 0},{'only-tip':item.onlyTip}]"
                              :data-unread="item.unreadCount > 99 ? 99 : item.unreadCount">
-                            <img v-if="item.avatar" v-lazy="$getAvatar(item.avatar)">
+                            <img v-if="item.avatar" v-lazy="item.avatar">
                             <img v-else v-lazy="groupDefaultAvatar">
                         </div>
                     </div>
@@ -109,6 +109,7 @@ export default {
 
 <style scoped lang="less">
 .contact-list {
+    padding-bottom: 60px;
     .contact-option {
         max-width: 100%;
         overflow: hidden;

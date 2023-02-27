@@ -26,7 +26,7 @@ func GetContactInfoByRoom(roomUuid string, user *model.User) *model.Contact {
 	condition := &model.Condition{
 		Table:  "contacts",
 		Fields: []string{"contacts.*", "rooms.member_num"},
-		Joins:  []string{"LEFT JOIN rooms ON contacts.object = rooms.uuid"},
+		Joins:  []string{"LEFT JOIN rooms ON contacts.room = rooms.uuid"},
 		Where: map[string]interface{}{
 			"user": user.Uuid,
 			"room": roomUuid,
@@ -48,7 +48,7 @@ func GetContacts(req *GetContactsRequest, user *model.User) []map[string]interfa
 	condition := &model.Condition{
 		Table:  "contacts",
 		Fields: []string{"contacts.*", "rooms.member_num"},
-		Joins:  []string{"LEFT JOIN rooms ON contacts.object = rooms.uuid"},
+		Joins:  []string{"LEFT JOIN rooms ON contacts.room = rooms.uuid"},
 		Where: map[string]interface{}{
 			"user": user.Uuid,
 		},
@@ -91,7 +91,7 @@ func CreateContactTx(user, contacts *model.User, tx *gorm.DB) error {
 	c := &model.Contact{}
 	where := map[string]interface{}{
 		"user":   user.Uuid,
-		"object": contacts.Uuid,
+		"friend": contacts.Uuid,
 	}
 	// 查询是否存在联系人
 	model.First(&model.Condition{
@@ -116,7 +116,7 @@ func CreateContactTx(user, contacts *model.User, tx *gorm.DB) error {
 		}
 	} else {
 		c.User = user.Uuid
-		c.Object = contacts.Uuid
+		c.Friend = contacts.Uuid
 		c.Room = CreateRoomKey(user, contacts)
 		return tx.Create(c).Error
 	}

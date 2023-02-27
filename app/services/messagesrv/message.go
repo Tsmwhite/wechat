@@ -44,12 +44,13 @@ func History(req *HistoryRequest) ([]map[string]interface{}, error) {
 		query.Where("content LIKE ?", "%"+req.Keyword+"%")
 	}
 	query.Limit(req.Size).Order("id DESC").Find(&result)
+	setSenderInfo(result)
 	return result, nil
 }
 
 // FriendNotice 查询添加好友通知
 func FriendNotice(pagination *services.Pagination, user *model.User) ([]map[string]interface{}, error) {
-	result := services.NewResult()
+	var result []map[string]interface{}
 	if pagination.Size == 0 {
 		pagination.Size = 50
 	}
@@ -83,5 +84,40 @@ func FriendNotice(pagination *services.Pagination, user *model.User) ([]map[stri
 	}
 	args = append(args, message.TypeAddFriendReq, user.Uuid, timeLimit, pagination.Size)
 	model.DB().Raw(sql, args...).Scan(&result)
+	setSenderInfo(result)
 	return result, nil
+}
+
+func setSenderInfo(data []map[string]interface{}) {
+	// 查询发送者信息
+	var senders []string
+	for _, item := range data {
+		sender, ok := item["sender"]
+		if ok {
+			if val, ok := sender.(string); ok {
+				senders = append(senders, val)
+			}
+		}
+	}
+	var userList []*model.User
+	model.Find(&model.Condition{
+		Table:  "users",
+		Fields: []string{"avatar", "uuid", "name", "mail"},
+		Where: map[string]interface{}{
+			"uuid": senders,
+		},
+	}, &userList)
+	userMap := make(map[string]*model.User)
+	for _, u := range userList {
+		userMap[u.Uuid] = u
+	}
+	for i, item := range data {
+		if sender, ok := item["sender"].(string); ok {
+			if val, ok := userMap[sender]; ok {
+				data[i]["avatar"] = val.Avatar
+				data[i]["name"] = val.Name
+				data[i]["mail"] = val.Mail
+			}
+		}
+	}
 }

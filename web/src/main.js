@@ -9,7 +9,6 @@ import WEB_SOCKET from "./library/socket/web-socket";
 import {Chat, setRecipient} from "./library/message/chat"
 import store from "./stores/index"
 import {GetCurrentUuid, HasLogin} from "./utis/cache";
-import {renderAvatar} from "./utis/tools";
 
 Vue.use(Lazyload);
 Vue.use(Vant);
@@ -19,9 +18,6 @@ Vue.prototype.$SetR = setRecipient
 Vue.prototype.$CurrentUuid = HasLogin() ? GetCurrentUuid() : 0
 Vue.prototype.$Log = (...data) => {
     console.log("[system]:", ...data)
-}
-Vue.prototype.$getAvatar = (avatar="") => {
-    return renderAvatar(avatar)
 }
 Vue.config.productionTip = false
 /* eslint-disable no-new */

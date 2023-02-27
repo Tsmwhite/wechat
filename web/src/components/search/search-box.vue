@@ -23,15 +23,15 @@
                     <template v-for="(item,index) in list">
                         <contact-item :contact="item" :key="index">
                             <template #extra>
-                              <template  v-if="active === 1 && !item.fid" >
-                                <van-button  type="info" size="small" @click="addFriend(item)">加好友</van-button>
-                              </template>
-                              <template  v-else-if="active === 2" >
-                                <van-button type="info" size="small" @click="addGroup(item)">加群</van-button>
-                              </template>
-                              <template v-else>
-                                <van-button type="info" size="small" @click="linkChat(item)">发消息</van-button>
-                              </template>
+                                <template v-if="active === 1 && !item.fid">
+                                    <van-button type="info" size="small" @click="addFriend(item)">加好友</van-button>
+                                </template>
+                                <template v-else-if="active === 2">
+                                    <van-button type="info" size="small" @click="addGroup(item)">加群</van-button>
+                                </template>
+                                <template v-else>
+                                    <van-button type="info" size="small" @click="linkChat(item)">发消息</van-button>
+                                </template>
                             </template>
                         </contact-item>
                     </template>
@@ -110,28 +110,40 @@ export default {
             }
         },
         searchFriends() {
+            this.$toast.loading({
+                message: "加载中...",
+                duration: 0,
+            })
             searchFriends({
                 keyword: this.keyword
             }).then(res => {
                 this.friends = res.data || []
                 this.existSearchMap[0] = this.keyword
-            })
+            }).finally(() => this.$toast.clear())
         },
         searchUser() {
+            this.$toast.loading({
+                message: "加载中...",
+                duration: 0,
+            })
             searchUser({
                 keyword: this.keyword
             }).then(res => {
                 this.users = res.data || []
                 this.existSearchMap[1] = this.keyword
-            })
+            }).finally(() => this.$toast.clear())
         },
         searchRoom() {
+            this.$toast.loading({
+                message: "加载中...",
+                duration: 0,
+            })
             searchRoom({
                 keyword: this.keyword
             }).then(res => {
                 this.rooms = res.data || []
                 this.existSearchMap[2] = this.keyword
-            })
+            }).finally(() => this.$toast.clear())
         },
         addFriend(user) {
             this.addUserInfo = user
@@ -141,11 +153,11 @@ export default {
 
         },
         linkChat(item) {
-          console.log("chatRoom", item)
-          SetLocalStorage(CurrentContactCachetKey, JSON.stringify(item))
-          this.$router.push({
-            path: "/chat"
-          })
+            console.log("chatRoom", item)
+            SetLocalStorage(CurrentContactCachetKey, JSON.stringify(item))
+            this.$router.push({
+                path: "/chat"
+            })
         },
     }
 }

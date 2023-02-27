@@ -22,7 +22,7 @@
                          :class="['message-box',{right:item.sender === currentUuid() }]">
                         <div v-if="item.sender !== currentUuid()"
                              class="avatar">
-                            <img :src="getAvatar(item)">
+                            <img :src="item.avatar || 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'">
                         </div>
                         <!--消息前置提示@start消息状态-发送中、发送失败-->
                         <div v-if="item.sender === currentUuid()"
@@ -82,7 +82,7 @@ export default {
     },
     computed: {
         meAvatar() {
-            return this.$getAvatar(GetUserInfo().avatar) || 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
+            return GetUserInfo().avatar || 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
         },
         messages() {
             let storeData = this.$store.state
@@ -92,17 +92,6 @@ export default {
                 return []
             }
             return list
-        },
-        getAvatar() {
-            return (item) => {
-                let storeData = this.$store.state
-                let user = storeData.friend.FriendMap[item.sender]
-                if (!user) {
-                    GetUserByUuid({user_id: item.sender})
-                    return 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
-                }
-                return this.$getAvatar(user.avatar) || 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
-            }
         },
     },
     mounted() {

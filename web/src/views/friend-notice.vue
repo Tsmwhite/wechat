@@ -15,8 +15,8 @@
                     <div class="header">
                         <div class="left">
                             <div class="user-info">
-                                <img class="avatar" :src="$getAvatar(getUserInfo(item).avatar)"/>
-                                <span class="name">{{ getUserInfo(item).name }} </span>
+                                <img class="avatar" :src="item.avatar || defaultAvatar"/>
+                                <span class="name">{{ item.name || '--' }} </span>
                             </div>
                         </div>
                         <div class="right">
@@ -69,7 +69,7 @@
                     </template>
                 </div>
             </van-list>
-            <van-empty description="暂无消息"></van-empty>
+            <van-empty v-if="messages.length < 1" description="暂无消息"></van-empty>
         </div>
     </div>
 </template>
@@ -77,7 +77,6 @@
 <script>
 import ChatHeader from "../components/chat/base/chat-header";
 import {getFriendNotice, handleAddFriendApply} from "../api/common";
-import {GetUserByUuid} from "../utis/cookie";
 import {renderAvatar} from "../utis/tools";
 
 export default {
@@ -104,24 +103,12 @@ export default {
             },
         }
     },
-    computed: {
-        getUserInfo() {
-            return (item) => {
-                let storeData = this.$store.state
-                let user = storeData.friend.FriendMap[item.sender]
-                if (!user) {
-                    GetUserByUuid({user_id: item.sender})
-                    return {
-                        avatar: this.defaultAvatar,
-                        name: '...',
-                    }
-                }
-                return user
-            }
-        },
-    },
     methods: {
         loadHistory() {
+            this.$toast.loading({
+                message: "加载中...",
+                duration: 0,
+            })
             getFriendNotice({
                 size: this.pagination.pageSize,
                 last_id: this.pagination.loadLastId,
@@ -153,7 +140,8 @@ export default {
 
             }).catch(() => {
                 this.loading = false
-            })
+                this.finished = true
+            }).finally(() => this.$toast.clear())
         },
         handleApply(item, status) {
             handleAddFriendApply({

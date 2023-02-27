@@ -92,7 +92,7 @@ export default {
     methods: {
         init() {
             this.localVideo = this.$refs.localVideoRef
-            this.memberKeys.push(this.roomData['object'])
+            this.memberKeys.push(this.roomData['friend'])
         },
         open() {
             if (this.videoCallMsg) {
@@ -109,7 +109,7 @@ export default {
             this.flag = false
             let message = this.$Chat.videoCall(VideoCallStatus.close)
             this.send(message)
-            this.peerMap[this.roomData['object']].RTC.close()
+            this.peerMap[this.roomData['friend']].RTC.close()
             this.localStream.close()
         },
         handleRemoteStream(event, pc) {
@@ -129,7 +129,7 @@ export default {
                     sdpMLineIndex: message.label,
                     candidate: message.candidate
                 })
-                this.peerMap[this.roomData['object']].RTC.addIceCandidate(candidate).catch(err => {
+                this.peerMap[this.roomData['friend']].RTC.addIceCandidate(candidate).catch(err => {
                     console.log('addIceCandidate-error', err)
                 })
             }
@@ -169,8 +169,8 @@ export default {
             // @2、生成offer
             // @3、设置本地会话描述
             // @4、向对方发送信令（offer）
-            const PC = this.createPeerConn(this.roomData['object'], true)
-            this.peerMap[this.roomData['object']] = PC
+            const PC = this.createPeerConn(this.roomData['friend'], true)
+            this.peerMap[this.roomData['friend']] = PC
         },
         videoCallAnswerHandle() {
             // 处理对方应答
@@ -206,12 +206,12 @@ export default {
                 if (this.videoCallMsg && this.videoCallMsg.status === VideoCallStatus.createConn) {
                     const offerDescription = JSON.parse(this.videoCallMsg.content)
                     this.flag = true
-                    const PC = this.createPeerConn(this.roomData['object'], false)
-                    this.peerMap[this.roomData['object']] = PC
+                    const PC = this.createPeerConn(this.roomData['friend'], false)
+                    this.peerMap[this.roomData['friend']] = PC
                     this.localStream.getTracks().map(track => {
                         PC.RTC.addTrack(track, this.localStream)
                     })
-                    this.peerMap[this.roomData['object']].HandleOffer(offerDescription, (answerDescription) => {
+                    this.peerMap[this.roomData['friend']].HandleOffer(offerDescription, (answerDescription) => {
                         this.$Log("videoCallOfferHandle -> createAnswer -> description:", answerDescription)
                         let message = this.$Chat.videoCall(VideoCallStatus.createConnConfirm)
                         message.content = JSON.stringify(answerDescription)

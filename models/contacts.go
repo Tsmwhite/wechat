@@ -6,7 +6,7 @@ type Contact struct {
 	Id         int64  `json:"id"`
 	Room       string `json:"room"`
 	User       string `json:"user"`
-	Object     string `json:"object"`
+	Friend     string `json:"friend"`
 	Avatar     string `json:"avatar"`
 	Remark     string `json:"remark"`
 	Name       string `json:"name"`
