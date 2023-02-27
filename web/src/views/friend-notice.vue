@@ -15,7 +15,7 @@
                     <div class="header">
                         <div class="left">
                             <div class="user-info">
-                                <img class="avatar" :src="getUserInfo(item).avatar || defaultAvatar"/>
+                                <img class="avatar" :src="$getAvatar(getUserInfo(item).avatar)"/>
                                 <span class="name">{{ getUserInfo(item).name }} </span>
                             </div>
                         </div>
@@ -69,6 +69,7 @@
                     </template>
                 </div>
             </van-list>
+            <van-empty description="暂无消息"></van-empty>
         </div>
     </div>
 </template>
@@ -77,6 +78,7 @@
 import ChatHeader from "../components/chat/base/chat-header";
 import {getFriendNotice, handleAddFriendApply} from "../api/common";
 import {GetUserByUuid} from "../utis/cookie";
+import {renderAvatar} from "../utis/tools";
 
 export default {
     name: "friend-notice",
@@ -85,6 +87,7 @@ export default {
     },
     data() {
         return {
+            renderAvatar,
             defaultAvatar: 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png',
             currentRoom: {
                 type: 0,
@@ -158,6 +161,7 @@ export default {
                 status: status,
                 remark: item._remark,
             }).then(res => {
+                item.status = status
                 this.$toast.success(res.msg)
             })
         },

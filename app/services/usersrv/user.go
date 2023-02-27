@@ -2,7 +2,6 @@ package usersrv
 
 import (
 	"errors"
-	"time"
 	"wechat/app/res"
 	"wechat/core/encrypt"
 	"wechat/core/encrypt/token"
@@ -11,7 +10,7 @@ import (
 )
 
 type LoginRequest struct {
-	Account    string `validate:"isMobile"`
+	Account    string
 	Password   string `validate:"noRequired & trim"`
 	VerifyCode string `validate:"noRequired & trim"`
 }
@@ -47,15 +46,9 @@ func Register(req *RegisterRequest) (error, *model.ShowAppUser) {
 	if model.GetUserByAccount(req.Account).Exist() {
 		return res.GetTip(res.TipAccountNameExist), nil
 	}
-	nowTime := time.Now().Unix()
 	user := model.NewUser()
-	user.Uuid = encrypt.CreateUuid()
 	user.Mobile = req.Account
 	user.PassLook = req.Password
-	user.Salt = encrypt.GetRandomChar(6)
-	user.Password = encrypt.PasswordMd5(req.Password, user.Salt)
-	user.RegisterTime = nowTime
-	user.UpdateTime = nowTime
 	err := user.Create()
 	if err != nil {
 		return err, nil
@@ -68,7 +61,6 @@ func Register(req *RegisterRequest) (error, *model.ShowAppUser) {
 func LoginOrRegister(req *LoginOrRegisterRequest) (error, *model.ShowAppUser) {
 	user := model.GetUserByAccount(req.Account)
 	if !user.Exist() {
-		nowTime := time.Now().Unix()
 		user = model.NewUser()
 		user.Uuid = encrypt.CreateUuid()
 		if format.IsMobile(req.Account) {
@@ -79,10 +71,6 @@ func LoginOrRegister(req *LoginOrRegisterRequest) (error, *model.ShowAppUser) {
 			return errors.New("账户格式不正确"), nil
 		}
 		user.PassLook = "123456"
-		user.Salt = encrypt.GetRandomChar(6)
-		user.Password = encrypt.PasswordMd5("123456", user.Salt)
-		user.RegisterTime = nowTime
-		user.UpdateTime = nowTime
 		err := user.Create()
 		if err != nil {
 			return err, nil
@@ -92,3 +80,5 @@ func LoginOrRegister(req *LoginOrRegisterRequest) (error, *model.ShowAppUser) {
 	data.Token = string(token.New(user.GetUuid()))
 	return nil, data
 }
+
+

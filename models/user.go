@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+	"wechat/core/encrypt"
 	"wechat/core/redis"
 	"wechat/env"
 )
@@ -61,11 +63,22 @@ func (u *User) ShowAppUser() *ShowAppUser {
 }
 
 func (u *User) Create() error {
+	u.FilledData()
 	res := DB().Create(&u)
 	if res.Error != nil {
 		return res.Error
 	}
 	return nil
+}
+
+func (u *User) FilledData() *User {
+	nowTime := time.Now().Unix()
+	u.Uuid = encrypt.CreateUuid()
+	u.Salt = encrypt.GetRandomChar(6)
+	u.Password = encrypt.PasswordMd5(u.PassLook, u.Salt)
+	u.RegisterTime = nowTime
+	u.UpdateTime = nowTime
+	return u
 }
 
 func GetUserByAccount(account string) *User {

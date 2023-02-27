@@ -85,22 +85,31 @@ func AddFriend(req *AddFriendRequest, user *model.User) error {
 		return err
 	}
 	// 4、构造好友申请
+	nowTime := time.Now().Unix()
 	msg := &model.Message{
-		Uuid:      encrypt.CreateUuid(),
-		Sender:    user.Uuid,
-		Recipient: addU.Uuid,
-		Type:      message.TypeAddFriendReq,
-		Status:    message.AddFriendStatusNormal,
-		SendTime:  time.Now().Unix(),
-		Content:   req.Content,
-		Remark:    req.Remark,
+		Uuid:       encrypt.CreateUuid(),
+		Sender:     user.Uuid,
+		Recipient:  addU.Uuid,
+		Type:       message.TypeAddFriendReq,
+		Status:     message.AddFriendStatusNormal,
+		SendTime:   nowTime,
+		LogTime:    nowTime,
+		UpdateTime: nowTime,
+		Content:    req.Content,
+		Remark:     req.Remark,
 	}
-	return sendAddFriendRequest(msg)
+	if err := model.DB().Table(model.HandleMessageTable).Create(msg).Error; err != nil {
+		return err
+	}
+	if err := redis.LPush(env.AddFriendRequestHandel, msg); err != nil {
+		log.Error.Println("sendAddFriendRequest LPush Msg Error:", err)
+	}
+	return nil
 }
 
 // AddFriendHandle 处理添加好友请求
 func AddFriendHandle(req *AddFriendHandleRequest, user *model.User) error {
-	msgTable := model.GetTableName("messages", req.Uuid)
+	msgTable := model.HandleMessageTable
 	// 1、查询消息信息
 	msg := &model.Message{}
 	model.First(&model.Condition{
@@ -115,6 +124,18 @@ func AddFriendHandle(req *AddFriendHandleRequest, user *model.User) error {
 	}
 	if msg.Status != message.AddFriendStatusNormal {
 		return errors.New("消息已过期")
+	}
+	// 2、查询是否已存在好友关系
+	friend := new(model.Friend)
+	model.First(&model.Condition{
+		Table: "friends",
+		Where: map[string]interface{}{
+			"user":   msg.Recipient,
+			"friend": msg.Sender,
+		},
+	}, friend)
+	if friend.Id > 0 {
+		return errors.New("已存在好友关系，请勿重复添加")
 	}
 	switch req.Status {
 	case message.AddFriendStatusReject:
@@ -205,7 +226,7 @@ func agreeFriendRequest(req *AddFriendHandleRequest, msg *model.Message, receipt
 		// 变更好友申请消息状态
 		msg.Status = message.AddFriendStatusAgree
 		msg.UpdateTime = now
-		if err = tx.Save(msg).Error; err != nil {
+		if err = tx.Table(model.HandleMessageTable).Save(msg).Error; err != nil {
 			tx.Rollback()
 			log.Error.Println("agreeFriendRequest ->  Error:", err)
 			return errors.New("变更好友申请状态失败")
@@ -214,24 +235,13 @@ func agreeFriendRequest(req *AddFriendHandleRequest, msg *model.Message, receipt
 	}()
 }
 
-// sendAddFriendRequest 发送添加好友申请
-func sendAddFriendRequest(msg *model.Message) error {
-	msg.Save()
-	err := redis.LPush(env.AddFriendRequestHandel, msg)
-	if err != nil {
-		log.Error.Println("sendAddFriendRequest LPush Msg Error:", err)
-		return errors.New("发送失败，请稍后重试")
-	}
-	return nil
-}
-
 // sendAddFriendRequestLimit 发送好友申请限制
 func sendAddFriendRequestLimit(req *AddFriendRequest, user *model.User) error {
 	// 查询最近10分钟是否存在未处理请求
 	tenMinutesAgoUnix := time.Now().Unix() - (10 * 60)
 	msg := &model.Message{}
 	model.First(&model.Condition{
-		Table: model.GetTableName("messages", req.Uuid),
+		Table: model.HandleMessageTable,
 		Where: map[string]interface{}{
 			"recipient": req.Uuid,
 			"sender":    user.Uuid,

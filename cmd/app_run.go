@@ -1,6 +1,8 @@
 package main
 
-import "wechat/app"
+import (
+	"wechat/app"
+)
 
 func main() {
 	app.Run()

@@ -76,6 +76,7 @@ func (c *WsClient) read() {
 			c.Pong()
 			continue
 		}
+		msg.Format()
 		if msg.GetContent() == "" || msg.GetRecipientsUuid() == nil {
 			continue
 		}

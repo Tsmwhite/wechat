@@ -55,7 +55,7 @@ func FriendNotice(pagination *services.Pagination, user *model.User) ([]map[stri
 	}
 	// 仅支持查询近3个月消息
 	timeLimit := services.TimeLimit()
-	table := model.GetTableName("messages", user.Uuid)
+	table := model.HandleMessageTable
 	var sql string
 	var args []interface{}
 	if pagination.LastId > 0 {

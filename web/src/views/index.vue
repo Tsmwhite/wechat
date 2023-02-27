@@ -28,7 +28,8 @@
                     <div class="left">
                         <div :class="['avatar',{unread:item.unreadCount > 0},{'only-tip':item.onlyTip}]"
                              :data-unread="item.unreadCount > 99 ? 99 : item.unreadCount">
-                            <img v-lazy="item.avatar || groupDefaultAvatar">
+                            <img v-if="item.avatar" v-lazy="$getAvatar(item.avatar)">
+                            <img v-else v-lazy="groupDefaultAvatar">
                         </div>
                     </div>
                     <div class="right">
@@ -53,6 +54,7 @@ import ChatHeader from "../components/chat/base/chat-header";
 import SearchBox from "../components/search/search-box";
 import groupDefaultAvatar from "../assets/default-group-avatar.jpeg"
 import {CurrentContactCachetKey, SetLocalStorage} from "../utis/cache";
+import {renderAvatar} from "../utis/tools"
 
 export default {
     name: "index",
@@ -60,6 +62,7 @@ export default {
     data() {
         return {
             groupDefaultAvatar,
+            renderAvatar,
             value: "",
             loading: true,
             finished: false,

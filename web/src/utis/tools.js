@@ -60,6 +60,10 @@ export const copyObject = (obj) => {
     return JSON.parse(JSON.stringify(obj))
 }
 
+export const renderAvatar = (path) => {
+    return 'http://whiteme2020testcnrunrun.oss-cn-beijing.aliyuncs.com/wechat/avatar/' + path
+}
+
 export default {
     getUrlParam,
     replaceParamVal,

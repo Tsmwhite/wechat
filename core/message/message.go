@@ -20,5 +20,6 @@ type Messenger interface {
 	SetReceiveTime()
 	Save()
 	WhetherToRecord() bool
+	Format()
 	//Handle(*wsClient.WsClient)
 }

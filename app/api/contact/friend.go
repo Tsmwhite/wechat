@@ -36,7 +36,7 @@ func AddFriendsHandle(ctx *gin.Context) {
 		res.Error(ctx, err)
 		return
 	}
-	res.Success(ctx, res.Nil)
+	res.Success(ctx, res.Nil, "已添加")
 }
 
 func FriendsList(ctx *gin.Context) {

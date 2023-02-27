@@ -52,7 +52,6 @@ import {isEmail} from "../utis/tools";
 import {loginRegisterReq, sendCodeReq} from "../api/base";
 import {LoginAfterCache} from "../utis/cache";
 import {LoginAfterStore} from "../stores";
-import {SetToken} from "../api/request";
 
 export default {
     name: "login",
@@ -99,6 +98,8 @@ export default {
                     }
                 }, 1000)
                 return this.$toast.success("发送完成")
+            }).catch(() => {
+                this.sendCodeWait = 0
             })
         },
         onSubmit(values) {

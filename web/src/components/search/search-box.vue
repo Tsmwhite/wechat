@@ -23,9 +23,15 @@
                     <template v-for="(item,index) in list">
                         <contact-item :contact="item" :key="index">
                             <template #extra>
-                                <van-button v-if="active === 1" type="info" size="small" @click="addFriend(item)">加好友</van-button>
-                                <van-button v-else-if="active === 2" type="info" size="small" @click="addGroup(item)">加群</van-button>
-                                <van-button v-else type="info" size="small" @click="linkChat">发消息</van-button>
+                              <template  v-if="active === 1 && !item.fid" >
+                                <van-button  type="info" size="small" @click="addFriend(item)">加好友</van-button>
+                              </template>
+                              <template  v-else-if="active === 2" >
+                                <van-button type="info" size="small" @click="addGroup(item)">加群</van-button>
+                              </template>
+                              <template v-else>
+                                <van-button type="info" size="small" @click="linkChat(item)">发消息</van-button>
+                              </template>
                             </template>
                         </contact-item>
                     </template>
@@ -41,6 +47,7 @@
 import ContactItem from "../chat/base/contact-item";
 import {searchFriends, searchRoom, searchUser} from "../../api/common";
 import AddFriendModal from "../add-friend-modal";
+import {CurrentContactCachetKey, SetLocalStorage} from "../../utis/cache";
 
 export default {
     name: "search-box",
@@ -133,8 +140,12 @@ export default {
         addGroup() {
 
         },
-        linkChat() {
-
+        linkChat(item) {
+          console.log("chatRoom", item)
+          SetLocalStorage(CurrentContactCachetKey, JSON.stringify(item))
+          this.$router.push({
+            path: "/chat"
+          })
         },
     }
 }

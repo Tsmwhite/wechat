@@ -8,34 +8,27 @@ type SearchRequest struct {
 	Keyword string
 }
 
-func SearchFriends(req *SearchRequest, currentUser *model.User) []*model.Friend {
-	var friends []*model.Friend
+func SearchFriends(req *SearchRequest, currentUser *model.User) []map[string]interface{} {
 	likeKeyword := "%" + req.Keyword + "%"
-	model.DB().
-		Table("friends").
-		Select([]string{"user", "friend", "remark", "remark", "name", "avatar", "type"}).
-		Where("is_del = 0").
-		Where("user = ?", currentUser.Uuid).
-		Where("name LIKE ? OR remark LIKE ?", likeKeyword, likeKeyword).
-		Limit(1000).Find(&friends)
-	return friends
+	var data []map[string]interface{}
+	model.DB().Table("users u").
+		Select("u.avatar,u.uuid,u.name,f.id as fid,c.user,c.object,c.remark,c.type").
+		Joins("INNER JOIN `friends` f ON u.uuid = f.friend AND f.user = ? ", currentUser.Uuid).
+		Joins("INNER JOIN `contacts` c ON u.uuid = c.object AND c.user = ? ", currentUser.Uuid).
+		Where("(u.mail = ? OR f.name LIKE ? OR f.remark LIKE ?) AND u.is_del = 0", req.Keyword,likeKeyword,likeKeyword).
+		Scan(&data)
+	return data
 }
 
-func SearchUser(req *SearchRequest, currentUser *model.User) []*model.ShowAppUser {
-	var users []*model.User
-	var resList []*model.ShowAppUser
-	model.Find(&model.Condition{
-		Table: "users",
-		Where: map[string]interface{}{
-			"mail": req.Keyword,
-		},
-	}, &users)
-	if len(users) > 0 {
-		for _, user := range users {
-			resList = append(resList, user.ShowAppUser())
-		}
-	}
-	return resList
+func SearchUser(req *SearchRequest, currentUser *model.User) []map[string]interface{} {
+	var data []map[string]interface{}
+	model.DB().Table("users u").
+		Select("u.avatar,u.uuid,u.name,f.id as fid,c.user,c.object,c.remark,c.type").
+		Joins("LEFT JOIN `friends` f ON u.uuid = f.friend AND f.user = ? ", currentUser.Uuid).
+		Joins("LEFT JOIN `contacts` c ON u.uuid = c.object AND c.user = ?", currentUser.Uuid).
+		Where("u.mail = ? AND u.is_del = 0", req.Keyword).
+		Scan(&data)
+	return data
 }
 
 func SearchRoom(req *SearchRequest, currentUser *model.User) []*model.Room {

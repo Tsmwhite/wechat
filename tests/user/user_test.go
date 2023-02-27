@@ -4,20 +4,28 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
+	"runtime"
+	"strconv"
+	"sync"
 	"testing"
+	"time"
+	"wechat/config"
 	"wechat/core/encrypt/token"
+	model "wechat/models"
 )
 
 var account = flag.String("acc", "", "用户账户")
 var password = flag.String("pwd", "123456", "用户密码")
-var uuid =  flag.String("uuid", "", "uuid")
+var uuid = flag.String("uuid", "", "uuid")
 
-func TestGetToken(t *testing.T)  {
+func TestGetToken(t *testing.T) {
 	flag.Parse()
-	fmt.Println("uuid",*uuid)
+	fmt.Println("uuid", *uuid)
 	fmt.Println(token.New(*uuid))
 }
 
@@ -81,4 +89,143 @@ func TestLogin(t *testing.T) {
 	if data["err_code"] != "0" {
 		t.Error("Request Error:", data["err_msg"])
 	}
+}
+
+func TestMergeNames(t *testing.T) {
+	nameMap := make(map[string]bool)
+	for i := 1; i < 4; i++ {
+		res, err := ioutil.ReadFile("names0" + strconv.Itoa(i) + ".json")
+		if err != nil {
+			fmt.Println("ReadFile Error:", err)
+			continue
+		}
+		var names []string
+		err = json.Unmarshal(res, &names)
+		if err != nil {
+			fmt.Println("Json Unmarshal Error:", err)
+			continue
+		}
+		for _, name := range names {
+			nameMap[name] = true
+		}
+	}
+	var names []string
+	for name := range nameMap {
+		names = append(names, name)
+	}
+	fmt.Println("names len", len(names))
+	namesJson, err := json.Marshal(names)
+	if err != nil {
+		fmt.Println("JSON Marshal Error:", err)
+		return
+	}
+	err = ioutil.WriteFile("names.json", namesJson, os.FileMode(0755))
+	if err != nil {
+		fmt.Println("WriteFile Error:", err)
+		return
+	}
+}
+
+func TestRandomNames(t *testing.T) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	wait := sync.WaitGroup{}
+	nameMap := make(map[string]bool)
+	nameWriteCh := make(chan string, 1000)
+	go func() {
+		for name := range nameWriteCh {
+			if name != "" {
+				nameMap[name] = true
+			}
+		}
+	}()
+	for i := 0; i < 10000; i++ {
+		wait.Add(1)
+		go func() {
+			defer wait.Done()
+			res, err := http.Get("https://www.qmsjmfb.com/")
+			if err != nil {
+				fmt.Println("Request Error:", err)
+				return
+			}
+			defer res.Body.Close()
+			if res.StatusCode != 200 {
+				fmt.Println("status code error: ", res.StatusCode, res.Status)
+			}
+			doc, err := goquery.NewDocumentFromReader(res.Body)
+			doc.Find(".name_box.container ul li").Each(func(i int, s *goquery.Selection) {
+				nameWriteCh <- s.Text()
+			})
+		}()
+	}
+	wait.Wait()
+	for len(nameWriteCh) > 0 {
+	}
+	var names []string
+	for name := range nameMap {
+		names = append(names, name)
+	}
+	fmt.Println("names len", len(names))
+	namesJson, err := json.Marshal(names)
+	if err != nil {
+		fmt.Println("JSON Marshal Error:", err)
+		return
+	}
+	err = ioutil.WriteFile("names.json", namesJson, os.FileMode(0755))
+	if err != nil {
+		fmt.Println("WriteFile Error:", err)
+		return
+	}
+}
+
+func TestMaxLoginReq(t *testing.T) {
+	config.DBEnv.Dsn = "root:lxy196914@tcp(127.0.0.1:3306)/thewhite?charset=utf8&multiStatements=true"
+	var users []*model.User
+	model.Find(&model.Condition{
+		Table: "users",
+		Limit: 100000,
+	}, &users)
+
+	okCounter := make(chan int)
+	wait := sync.WaitGroup{}
+	for i := 0; i < len(users); i++ {
+		wait.Add(1)
+		go func(index int) {
+			defer wait.Done()
+			user := users[index]
+			res, err := http.PostForm(
+				"http://127.0.0.1:8099/login",
+				url.Values{
+					"account":  {user.Mail},
+					"password": {user.PassLook},
+				},
+			)
+			if err != nil {
+				fmt.Println("http Error:", err)
+				return
+			}
+			defer res.Body.Close()
+			body, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				fmt.Println("body Read Error:", err)
+				return
+			}
+			data := make(map[string]interface{})
+			err = json.Unmarshal(body, &data)
+			resStatus := data["ok"].(bool)
+			if !resStatus {
+				fmt.Println("Request Error:", data["err_msg"])
+				return
+			}
+			okCounter <- 1
+		}(i)
+	}
+	okC := 0
+	go func() {
+		for range okCounter {
+			okC += 1
+		}
+	}()
+	wait.Wait()
+	time.Sleep(5 * time.Second)
+	fmt.Println("okC", okC)
 }

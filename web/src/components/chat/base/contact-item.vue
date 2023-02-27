@@ -3,7 +3,8 @@
         <div class="left">
             <div :class="['avatar',{unread:contact.unread_count > 0},{'only-tip':contact.only_tip}]"
                  :data-unread="contact.unread_count > 99 ? 99 : contact.unread_count">
-                <img v-if="contact.avatar" :src="contact.avatar">
+                <img v-if="contact.avatar"
+                     :src="$getAvatar(contact.avatar)">
                 <img v-else src="@/assets/default-group-avatar.jpeg"/>
             </div>
         </div>
@@ -22,6 +23,7 @@
 </template>
 
 <script>
+import {renderAvatar} from '../../../utis/tools';
 export default {
     name: "contact-item",
     props: {
@@ -37,6 +39,11 @@ export default {
                     last_time: "",
                 }
             }
+        }
+    },
+    data() {
+        return {
+            renderAvatar,
         }
     },
     methods: {

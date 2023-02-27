@@ -3,12 +3,16 @@ package model
 import (
 	"encoding/json"
 	"gorm.io/gorm"
+	"strings"
 	"time"
 	"wechat/core/encrypt"
 	"wechat/core/log"
 	"wechat/core/message"
 	"wechat/core/roomer"
 )
+
+// HandleMessageTable  非聊天消息表
+const HandleMessageTable = "messages_handle"
 
 type Message struct {
 	Id          int    `json:"id"`
@@ -115,7 +119,12 @@ func (m *Message) Save() {
 func (m *Message) WhetherToRecord() bool {
 	// 视频通话WEBRTC中间建立通信信令不进入数据库
 	if m.Type == message.TypeChatDefault && m.SecondType == message.TypeVideoCall && m.Status != message.VideoCallStatusWait {
-		return  false
+		return false
 	}
 	return true
+}
+
+func (m *Message) Format() {
+	m.Content = strings.TrimSpace(m.Content)
+	m.SendTime = time.Now().Unix()
 }

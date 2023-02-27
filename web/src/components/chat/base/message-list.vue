@@ -6,6 +6,7 @@
                   finished-text="没有更多了"
                   @load="loadHistory"
                   :offset="80"
+                  :immediate-check="false"
                   direction="up">
             <template v-for="(item,index) in messages">
                 <div v-if="item.second_type === MessageTypes.videoCall"
@@ -81,7 +82,7 @@ export default {
     },
     computed: {
         meAvatar() {
-            return GetUserInfo().avatar || 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
+            return this.$getAvatar(GetUserInfo().avatar) || 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
         },
         messages() {
             let storeData = this.$store.state
@@ -100,12 +101,16 @@ export default {
                     GetUserByUuid({user_id: item.sender})
                     return 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
                 }
-                return user.avatar || 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
+                return this.$getAvatar(user.avatar) || 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
             }
         },
     },
     mounted() {
         //this.init()
+        if (this.messages.length > 0) {
+            this.loadLastId = this.messages[0].id
+        }
+        this.loadHistory()
     },
     methods: {
         init() {
