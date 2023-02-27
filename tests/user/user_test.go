@@ -14,8 +14,10 @@ import (
 	"sync"
 	"testing"
 	"time"
+	"wechat/app/services/contactsrv"
 	"wechat/config"
 	"wechat/core/encrypt/token"
+	"wechat/core/message"
 	model "wechat/models"
 )
 
@@ -228,4 +230,57 @@ func TestMaxLoginReq(t *testing.T) {
 	wait.Wait()
 	time.Sleep(5 * time.Second)
 	fmt.Println("okC", okC)
+}
+
+func TestCreateFriendRelation(t *testing.T) {
+	config.DBEnv.Dsn = "root:lxy196914@tcp(127.0.0.1:3306)/thewhite?charset=utf8&multiStatements=true"
+	user := model.GetUserByAccount("thesmallwhiteme@163.com")
+	friends := []string{
+		"thesmallwhiteme@gmail.com",
+		"testMail3@163.com",
+		"testMail4@163.com",
+		"testMail5@163.com",
+		"testMail6@163.com",
+		"testMail7@163.com",
+		"testMail8@163.com",
+		"testMail9@163.com",
+		"testMail10@163.com",
+		"testMail11@163.com",
+		"testMail12@163.com",
+		"testMail13@163.com",
+		"testMail14@163.com",
+		"testMail15@163.com",
+		"testMail16@163.com",
+		"testMail17@163.com",
+	}
+	//发送好友申请
+	for _, account := range friends {
+		u := model.GetUserByAccount(account)
+		err := contactsrv.AddFriend(&contactsrv.AddFriendRequest{
+			Uuid:    user.Uuid,
+			Content: "洛 Long time no see," + u.Name,
+		}, u)
+		if err != nil {
+			t.Log("AddFriend Err", err)
+		}
+	}
+	// 处理好友申请
+	var applyList []model.Message
+	model.Find(&model.Condition{
+		Table: model.HandleMessageTable,
+		Where: map[string]interface{}{
+			"recipient":   user.Uuid,
+			"status": message.AddFriendStatusNormal,
+		},
+	}, &applyList)
+
+	for _, msg := range applyList {
+		err := contactsrv.AddFriendHandle(&contactsrv.AddFriendHandleRequest{
+			Uuid:   msg.Uuid,
+			Status: message.AddFriendStatusAgree,
+		}, user)
+		if err != nil {
+			t.Log("AddFriendHandle Err", err)
+		}
+	}
 }
