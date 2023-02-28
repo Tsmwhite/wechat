@@ -234,8 +234,10 @@ func TestMaxLoginReq(t *testing.T) {
 
 func TestCreateFriendRelation(t *testing.T) {
 	config.DBEnv.Dsn = "root:lxy196914@tcp(127.0.0.1:3306)/thewhite?charset=utf8&multiStatements=true"
-	user := model.GetUserByAccount("thesmallwhiteme@163.com")
+	user := model.GetUserByAccount("577689878@qq.com")
 	friends := []string{
+		"thesmallwhiteme@163.com",
+		//"577689878@qq.com",
 		"thesmallwhiteme@gmail.com",
 		"testMail3@163.com",
 		"testMail4@163.com",
@@ -264,6 +266,7 @@ func TestCreateFriendRelation(t *testing.T) {
 			t.Log("AddFriend Err", err)
 		}
 	}
+
 	// 处理好友申请
 	var applyList []model.Message
 	model.Find(&model.Condition{
