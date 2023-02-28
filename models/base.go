@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/json"
+	"fmt"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"wechat/core/database"
@@ -16,6 +17,11 @@ const StatusNormal = 0
 func DB() *gorm.DB {
 	return database.GetDB()
 }
+
+func NewDB() *gorm.DB {
+	return database.NewDB()
+}
+
 
 const RecordDel = 1
 const RecordNoDel = 0
@@ -52,12 +58,15 @@ func (m *BaseModal) UnmarshalBinary(data []byte) error {
 
 func First(option *Condition, dest interface{}) {
 	if err := option.Parse(DB()).First(dest).Error; err != nil {
-		log.Error.Println("Find Error:", err, "\noption:", option)
+		if err != gorm.ErrRecordNotFound {
+			log.Error.Println("Find Error:", err, "\noption:", option)
+		}
 	}
 }
 
 func Find(option *Condition, dest interface{}) {
 	if err := option.Parse(DB()).Find(dest).Error; err != nil {
+		fmt.Println("Find", err)
 		log.Error.Println("FindAll Error:", err, "\noption:", option)
 	}
 }

@@ -7,9 +7,9 @@ type Contact struct {
 	Room       string `json:"room"`
 	User       string `json:"user"`
 	Friend     string `json:"friend"`
-	Avatar     string `json:"avatar"`
 	Remark     string `json:"remark"`
 	Name       string `json:"name"`
+	Avatar     string `json:"avatar"`
 	Type       int64  `json:"type"`
 	Sort       int64  `json:"sort"`
 	LastTime   int64  `json:"last_time"`

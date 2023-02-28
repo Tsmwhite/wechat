@@ -195,7 +195,7 @@ func agreeFriendRequest(req *AddFriendHandleRequest, msg *model.Message, receipt
 	}
 	// 查询二人是否存在房间
 	room := GetPrivateRoom(sender, receipt)
-	tx := model.DB().Begin()
+	tx := model.NewDB().Begin()
 	return func() error {
 		defer func() {
 			if e := recover(); e != nil {
