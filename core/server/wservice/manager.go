@@ -75,5 +75,7 @@ func (m *ClientManager) DelClient(uuid string) {
 
 func (m *ClientManager) Run() {
 	go m.Handle()
-	go m.Log()
+	for i := 0; i < 10; i++ {
+		go m.Log()
+	}
 }

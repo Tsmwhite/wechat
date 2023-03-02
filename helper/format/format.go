@@ -47,12 +47,18 @@ func StructToMap(obj interface{}) map[string]interface{} {
 
 // HashCutTable 获取分表名
 func HashCutTable(table, uuid string, total int) string {
+	if total == 0 {
+		return table
+	}
 	hashVal := crc32.ChecksumIEEE([]byte(uuid))
 	val := int(hashVal)
 	if val > 2147483647 {
 		val -= 4294967296
 	}
 	number := int(math.Abs(float64(val % total)))
+	if number == 0 {
+		return table
+	}
 	if number < 10 {
 		return fmt.Sprintf("%s_0%d", table, number)
 	} else {

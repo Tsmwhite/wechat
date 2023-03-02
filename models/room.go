@@ -2,6 +2,7 @@ package model
 
 import (
 	"strings"
+	"wechat/core/log"
 	"wechat/core/member"
 	"wechat/core/redis"
 	"wechat/env"
@@ -24,14 +25,6 @@ type Room struct {
 	IsDel       int    `json:"is_del"`
 	MemberNum   int    `json:"member_num"`
 }
-
-//func (m *Room) MarshalBinary() ([]byte, error) {
-//	return json.Marshal(m)
-//}
-//
-//func (m *Room) UnmarshalBinary(data []byte) error {
-//	return json.Unmarshal(data, m)
-//}
 
 func GetRoomBuyUuid(roomId string) *Room {
 	room := new(Room)
@@ -61,4 +54,31 @@ func (r *Room) Join(m member.Member) error {
 
 func (r *Room) Quit(m member.Member) error {
 	return nil
+}
+
+func (r *Room) GetUnreadMsgCountByUser(u *User) int64 {
+	if r.Type == IsPrivate {
+		return getPrivateRoomUnreadMsgCount(r, u)
+	} else {
+		return getGroupRoomUnreadMsgCount(r, u)
+	}
+}
+
+func getPrivateRoomUnreadMsgCount(r *Room, u *User) int64 {
+	table := GetTableName("messages", r.Uuid)
+	var count int64
+	err := DB().Table(table).
+		Where("id > ANY (SELECT IFNULL(MAX(id),0) FROM `"+table+"` WHERE `recipient` = ?  AND `sender` = ?)", r.Uuid, u.Uuid).
+		Where("recipient = ?", r.Uuid).
+		Where("sender <> ?", u.Uuid).
+		Where("`reads` <> ?", u.Uuid).
+		Count(&count).Error
+	if err != nil {
+		log.Error.Println("getPrivateRoomUnreadMsgCount Error:", err)
+	}
+	return count
+}
+
+func getGroupRoomUnreadMsgCount(r *Room, u *User) int64 {
+	return 0
 }

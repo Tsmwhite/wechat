@@ -11,7 +11,7 @@ const WEB_SOCKET = {
     _heartTimer: null, // 保持心跳
     _closeTimer: null, // 延时关闭
     _closeFlag: false, // 主动关闭
-    _reConnMax: 10,    // 重连限制
+    _reConnMax: 20,    // 重连限制
     _reConnCounter: 0, // 重连计数
     Socket() {
         if (this._socket === null) {

@@ -54,7 +54,6 @@ import ChatHeader from "../components/chat/base/chat-header";
 import SearchBox from "../components/search/search-box";
 import groupDefaultAvatar from "../assets/default-group-avatar.jpeg"
 import {CurrentContactCachetKey, SetLocalStorage} from "../utis/cache";
-import {renderAvatar} from "../utis/tools"
 
 export default {
     name: "index",
@@ -62,7 +61,6 @@ export default {
     data() {
         return {
             groupDefaultAvatar,
-            renderAvatar,
             value: "",
             loading: true,
             finished: false,

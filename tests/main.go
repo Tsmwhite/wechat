@@ -1,27 +1,32 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
 	"wechat/config"
 	"wechat/core/encrypt"
 	model "wechat/models"
+	"wechat/tests/socket"
 )
 
 func main() {
-	question := bufio.NewScanner(os.Stdin)
-	fmt.Println("what can i do for you")
-	for question.Scan() {
-		line := question.Text()
-		ReqChatGPT(line)
-	}
+	//question := bufio.NewScanner(os.Stdin)
+	//fmt.Println("what can i do for you")
+	//for question.Scan() {
+	//	line := question.Text()
+	//	ReqChatGPT(line)
+	//}
+	config.DBEnv.Dsn = "root:lxy196914@tcp(127.0.0.1:3306)/thewhite?charset=utf8&multiStatements=true"
+	//r := model.GetRoomBuyUuid("f272932fb0b5d52a4eec97d2d00b5d23")
+	//u := model.GetUserByUuid("91dc76fd6b8b4a7e8965fe5c7859db01")
+	//c := r.GetUnreadMsgCountByUser(u)
+	//fmt.Println("c", c)
+	socket.Run()
 }
 
 func ReqChatGPT(question string) {
@@ -33,7 +38,7 @@ func ReqChatGPT(question string) {
 		fmt.Println("Request Error:", err)
 	}
 	request.Header.Add("Content-Type", "application/json")
-	request.Header.Add("Authorization", "Bearer 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")
+	request.Header.Add("Authorization", "Bearer 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")
 	resp, err := http.DefaultClient.Do(request)
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)

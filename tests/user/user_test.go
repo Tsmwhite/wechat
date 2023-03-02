@@ -272,8 +272,8 @@ func TestCreateFriendRelation(t *testing.T) {
 	model.Find(&model.Condition{
 		Table: model.HandleMessageTable,
 		Where: map[string]interface{}{
-			"recipient":   user.Uuid,
-			"status": message.AddFriendStatusNormal,
+			"recipient": user.Uuid,
+			"status":    message.AddFriendStatusNormal,
 		},
 	}, &applyList)
 
@@ -286,4 +286,12 @@ func TestCreateFriendRelation(t *testing.T) {
 			t.Log("AddFriendHandle Err", err)
 		}
 	}
+}
+
+func TestGetUserUnreadMsgCount(t *testing.T) {
+	config.DBEnv.Dsn = "root:lxy196914@tcp(127.0.0.1:3306)/thewhite?charset=utf8&multiStatements=true"
+	r := model.GetRoomBuyUuid("f272932fb0b5d52a4eec97d2d00b5d23")
+	u := model.GetUserByUuid("91dc76fd6b8b4a7e8965fe5c7859db01")
+	c := r.GetUnreadMsgCountByUser(u)
+	fmt.Println("c", c)
 }

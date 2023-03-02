@@ -77,7 +77,6 @@
 <script>
 import ChatHeader from "../components/chat/base/chat-header";
 import {getFriendNotice, handleAddFriendApply} from "../api/common";
-import {renderAvatar} from "../utis/tools";
 
 export default {
     name: "friend-notice",
@@ -86,7 +85,6 @@ export default {
     },
     data() {
         return {
-            renderAvatar,
             defaultAvatar: 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png',
             currentRoom: {
                 type: 0,

@@ -53,6 +53,15 @@ export default {
     },
     mounted() {
         this.$SetR(this.roomData.room)
+        // let count = 1
+        // const timer = setInterval(() => {
+        //     this.message = "第"+count+"条消息"
+        //     this.sendTextMessage()
+        //     if (count > 100000) {
+        //         clearInterval(timer)
+        //     }
+        //     count += 1
+        // },100)
     },
     methods: {
         showExtra() {
