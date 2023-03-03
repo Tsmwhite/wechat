@@ -1,7 +1,6 @@
 package model
 
 type VerifyCode struct {
-	BaseModal
 	Id         int64  `json:"id"`
 	Account    string `json:"account"`
 	Code       string `json:"code"`

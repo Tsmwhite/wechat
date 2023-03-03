@@ -128,3 +128,4 @@ func (m *Message) Format() {
 	m.Content = strings.TrimSpace(m.Content)
 	m.SendTime = time.Now().Unix()
 }
+

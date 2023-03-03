@@ -1,7 +1,6 @@
 package model
 
 import (
-	"encoding/json"
 	"fmt"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -44,16 +43,6 @@ type Condition struct {
 	Distinct   []string
 	Joins      []string
 	IncludeDel bool
-}
-
-type BaseModal struct{}
-
-func (m *BaseModal) MarshalBinary() ([]byte, error) {
-	return json.Marshal(m)
-}
-
-func (m *BaseModal) UnmarshalBinary(data []byte) error {
-	return json.Unmarshal(data, m)
 }
 
 func First(option *Condition, dest interface{}) {
