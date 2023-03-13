@@ -140,14 +140,28 @@ func AddFriendHandle(req *AddFriendHandleRequest, user *model.User) error {
 	switch req.Status {
 	case message.AddFriendStatusReject:
 		// 存在历史申请变更为失效状态
-		model.DB().Table(msgTable).
+		err := model.DB().Table(msgTable).
+			Where("id < ?", msg.Id).
 			Where("recipient = ?", user.Uuid).
-			Where("sender = ?", msg.Sender).Update("status", message.AddFriendStatusLose)
+			Where("sender = ?", msg.Sender).
+			Update("status", message.AddFriendStatusLose).Error
+		if err != nil {
+			log.Error.Println("AddFriendHandle -> AddFriendStatusReject -> Update history Error:", err)
+			return errors.New("操作失败，请重试")
+		}
 
 		// 变更好友申请消息状态
-		msg.Status = message.AddFriendStatusReject
-		msg.UpdateTime = time.Now().Unix()
-		msg.Save()
+		err = model.DB().Table(model.HandleMessageTable).
+			Where("id = ?", msg.Id).
+			Updates(map[string]interface{}{
+				"status":      message.AddFriendStatusReject,
+				"update_time": time.Now().Unix(),
+			}).Error
+		if err != nil {
+			log.Error.Println("AddFriendHandle -> AddFriendStatusReject -> Update current Error:", err)
+			return errors.New("操作失败，请重试")
+		}
+
 	case message.AddFriendStatusAgree:
 		if err := agreeFriendRequest(req, msg, user); err != nil {
 			return err
@@ -224,9 +238,11 @@ func agreeFriendRequest(req *AddFriendHandleRequest, msg *model.Message, receipt
 			return errors.New("建立联系人失败")
 		}
 		// 变更好友申请消息状态
-		msg.Status = message.AddFriendStatusAgree
-		msg.UpdateTime = now
-		if err = tx.Table(model.HandleMessageTable).Save(msg).Error; err != nil {
+		err = tx.Table(model.HandleMessageTable).Updates(map[string]interface{}{
+			"status":      message.AddFriendStatusAgree,
+			"update_time": time.Now().Unix(),
+		}).Error
+		if err != nil {
 			tx.Rollback()
 			log.Error.Println("agreeFriendRequest ->  Error:", err)
 			return errors.New("变更好友申请状态失败")

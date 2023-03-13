@@ -3,11 +3,11 @@ package model
 import "wechat/helper/format"
 
 const MessageTableCount = 10
-const ReceiveMessageTableCount = 10
+const ReceiveMessageTableCount = 20
 
 var tableCountMap = map[string]int{
-	"messages":         MessageTableCount,
-	"receive_messages": ReceiveMessageTableCount,
+	"messages":         MessageTableCount, //根据接收房间分表
+	"receive_messages": ReceiveMessageTableCount, //根据接收者分表
 }
 
 func GetTableName(sourceTable, uuid string) string {

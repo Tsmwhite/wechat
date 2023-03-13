@@ -14,7 +14,7 @@ func GetHistory(ctx *gin.Context) {
 		res.Error(ctx, err)
 		return
 	}
-	result, err := messagesrv.History(req)
+	result, err := messagesrv.History(req, api.GetCurrentUser(ctx))
 	if err != nil {
 		res.Error(ctx, err)
 	} else {

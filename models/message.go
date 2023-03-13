@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"gorm.io/gorm"
 	"strings"
+	"sync"
 	"time"
 	"wechat/core/encrypt"
 	"wechat/core/log"
@@ -24,7 +25,6 @@ type Message struct {
 	Status      int    `json:"status"`
 	Content     string `json:"content"`
 	Parent      string `json:"parent"`
-	Deletes     string `json:"deletes"`
 	Reads       string `json:"reads"`
 	SendTime    int64  `json:"send_time"`    //客户端发送时间
 	ReceiveTime int64  `json:"receive_time"` //服务端接收时间
@@ -80,7 +80,7 @@ func (m *Message) GetSenderUuid() string {
 }
 
 func (m *Message) GetRoom() roomer.Roomer {
-	return nil
+	return GetRoomBuyUuid(m.Recipient)
 }
 
 func (m *Message) SetSenderUuid(uuid string) {
@@ -101,18 +101,61 @@ func (m *Message) SetReceiveTime() {
 
 func (m *Message) Save() {
 	now := time.Now().Unix()
-	var err error
-	if m.Id > 0 {
-		m.UpdateTime = now
-		err = m.SetTable().Save(m).Error
-	} else {
-		m.Uuid = encrypt.CreateUuid()
-		m.LogTime = now
-		m.UpdateTime = now
-		err = m.SetTable().Create(m).Error
-	}
+	m.Uuid = encrypt.CreateUuid()
+	m.LogTime = now
+	m.UpdateTime = now
+	err := m.SetTable().Create(m).Error
 	if err != nil {
 		log.Error.Println("Message Save Error:", err, "\n", "data:", m)
+	}
+	room := GetRoomBuyUuid(m.Recipient)
+	rMsg := new(ReceiveMessage)
+	rMsg.Id = now
+	rMsg.MsgUuid = m.Uuid
+	rMsg.Room = m.Recipient
+	rMsg.Sender = m.Sender
+	rMsg.SecondType = m.SecondType
+	rMsg.Content = m.Content
+	members := room.GetMembers()
+	// 录入接收消息表
+	mLen := len(members)
+	if mLen > 20 {
+		saveCh := make(chan *ReceiveMessage, 200)
+		defer close(saveCh)
+		for _, mUid := range members {
+			temp := new(ReceiveMessage)
+			temp = rMsg
+			temp.Recipient = mUid
+			saveCh <- temp
+		}
+		wait := sync.WaitGroup{}
+		wait.Add(mLen)
+		for i := 0; i < mLen/20; i++ {
+			go func() {
+				for {
+					select {
+					case rM, ok := <-saveCh:
+						if !ok {
+							return
+						}
+						err = rM.SetTable().Create(rM).Error
+						if err != nil {
+							log.Error.Println("Message Save Error 01", err)
+						}
+						wait.Done()
+					}
+				}
+			}()
+		}
+		wait.Wait()
+	} else {
+		for _, mUid := range members {
+			rMsg.Recipient = mUid
+			err = rMsg.SetTable().Create(rMsg).Error
+			if err != nil {
+				log.Error.Println("Message Save Error 02", err)
+			}
+		}
 	}
 }
 
@@ -128,4 +171,3 @@ func (m *Message) Format() {
 	m.Content = strings.TrimSpace(m.Content)
 	m.SendTime = time.Now().Unix()
 }
-

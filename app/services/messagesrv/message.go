@@ -2,6 +2,7 @@ package messagesrv
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 	"wechat/app/services"
 	"wechat/core/message"
@@ -17,25 +18,29 @@ type HistoryRequest struct {
 }
 
 // History 查询历史消息
-func History(req *HistoryRequest) ([]map[string]interface{}, error) {
+func History(req *HistoryRequest, user *model.User) ([]map[string]interface{}, error) {
 	result := services.NewResult()
 	room := model.GetRoomBuyUuid(req.RoomUuid)
 	if room.Id == 0 {
 		return result, errors.New("房间不存在或状态异常")
 	}
-	msg := &model.Message{
-		Recipient: req.RoomUuid,
+
+	rmsg := &model.ReceiveMessage{
+		Recipient: user.Uuid,
 	}
 	if req.Size == 0 {
 		req.Size = 50
 	}
 
+	var rMsgs []*model.ReceiveMessage
 	// 仅支持查询近3个月消息
-	timeLimit := services.TimeLimit()
-	query := msg.SetTable().
-		Where("recipient = ?", req.RoomUuid).
-		Where("is_del = ?", 0).
-		Where("send_time > ?", timeLimit)
+	//timeLimit := services.TimeLimit()
+	query := rmsg.SetTable().
+		Select("id", "msg_uuid").
+		Where("room = ?", req.RoomUuid).
+		Where("recipient = ?", user.Uuid).
+		Where("is_del = ?", 0)
+	//Where("send_time > ?", timeLimit)
 	if req.LastId > 0 {
 		query.Where("id < ?", req.LastId)
 	}
@@ -43,7 +48,26 @@ func History(req *HistoryRequest) ([]map[string]interface{}, error) {
 	if keyword != "" {
 		query.Where("content LIKE ?", "%"+req.Keyword+"%")
 	}
-	query.Limit(req.Size).Order("id DESC").Find(&result)
+	query.Limit(req.Size).Order("id DESC").Find(&rMsgs)
+	if len(rMsgs) < 1 {
+		return result, nil
+	}
+	var msgIds []string
+	msgMap := make(map[string]int64)
+	for _, msg := range rMsgs {
+		msgIds = append(msgIds, msg.MsgUuid)
+		msgMap[msg.MsgUuid] = msg.Id
+	}
+	msg := &model.Message{
+		Recipient: req.RoomUuid,
+	}
+	msg.SetTable().
+		Where("uuid IN ?", msgIds).
+		Order("id DESC").
+		Find(&result)
+	for i, record := range result {
+		result[i]["id"] = msgMap[fmt.Sprint(record["uuid"])]
+	}
 	setSenderInfo(result)
 	return result, nil
 }
