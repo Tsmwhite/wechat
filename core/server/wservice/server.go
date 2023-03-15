@@ -7,13 +7,15 @@ import (
 	"wechat/config"
 	wsClient "wechat/core/client"
 	"wechat/core/log"
+	"wechat/core/message"
 	"wechat/core/redis"
 	"wechat/env"
 	model "wechat/models"
 )
 
 type Config struct {
-	router, port string
+	router, port            string
+	tlsCertFile, tlsCertKey string
 }
 
 type Option struct {
@@ -21,6 +23,7 @@ type Option struct {
 	Config       *Config
 	CheckToken   func(string) (ok bool, uuid string)
 	CheckOrigin  func(*http.Request) bool
+	NewMessage   func() message.Messenger
 }
 
 var _option *Option
@@ -31,8 +34,10 @@ func NewOption() *Option {
 	return &Option{
 		ClientManage: NewManager(),
 		Config: &Config{
-			router: config.ServerEnv.Router,
-			port:   config.ServerEnv.Port,
+			router:      config.ServerEnv.Router,
+			port:        config.ServerEnv.Port,
+			tlsCertFile: config.ServerEnv.CertFile,
+			tlsCertKey:  config.ServerEnv.KeyFile,
 		},
 		CheckToken: func(s string) (ok bool, uuid string) {
 			return
@@ -57,9 +62,9 @@ func Run(option *Option) {
 	//注册默认路由为 /ws ，并使用wsHandler这个方法
 	http.HandleFunc(_config.router, wsHandler)
 	//监听端口
-	if config.WebSrvEnv.Tls {
+	if config.ServerEnv.Tls {
 		fmt.Println("Wss Listen:", _config.port, _config.router)
-		if err := http.ListenAndServeTLS(_config.port, "./web/certs/certificate.crt", "./web/certs/private.key", nil); err != nil {
+		if err := http.ListenAndServeTLS(_config.port, _config.tlsCertFile, _config.tlsCertKey, nil); err != nil {
 			log.Error.Println("ListenAndServe Error:", err)
 		}
 	} else {
@@ -100,9 +105,9 @@ func wsHandler(res http.ResponseWriter, req *http.Request) {
 	if token == "" {
 		return
 	}
-	var _uuid string
+	var userUid string
 	var ok bool
-	if ok, _uuid = _option.CheckToken(token); !ok {
+	if ok, userUid = _option.CheckToken(token); !ok {
 		return
 	}
 
@@ -115,7 +120,13 @@ func wsHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	//每一次连接都会新开一个client
-	client := wsClient.NewClient(conn, _uuid, &model.Message{}, _manager.GetBroadcastChan(), _manager.GetUnregisterChan())
+	client := wsClient.NewClient(
+		conn,
+		userUid,
+		_option.NewMessage(),
+		_manager.GetBroadcastChan(),
+		_manager.GetUnregisterChan(),
+	)
 	//注册一个新的链接
 	_manager.Register(client)
 }

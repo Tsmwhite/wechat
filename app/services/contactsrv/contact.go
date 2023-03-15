@@ -60,6 +60,36 @@ func GetContacts(req *GetContactsRequest, user *model.User) []map[string]interfa
 	}
 	result := services.NewResult()
 	model.Find(condition, &result)
+	if len(result) > 0 {
+		var rooms []string
+		for _, item := range result {
+			rooms = append(rooms, fmt.Sprint(item["room"]))
+		}
+		// 未读消息
+		var unread []map[string]interface{}
+		table := model.GetTableName("receive_messages", user.Uuid)
+		model.DB().Table(table).
+			Select("room", "COUNT(`msg_uuid`) as unread_count").
+			Where("room in ?", rooms).
+			Where("recipient = ?", user.Uuid).
+			Where("sender <> ?", user.Uuid).
+			Where("is_del = 0").
+			Where("is_read = 0").
+			Group("room").
+			Find(&unread)
+		unreadMap := make(map[interface{}]interface{})
+		for _, item := range unread {
+			unreadMap[item["room"]] = item["unread_count"]
+		}
+
+		for _, item := range result {
+			if val, ok := unreadMap[item["room"]]; ok {
+				item["unread_count"] = val
+			} else {
+				item["unread_count"] = 0
+			}
+		}
+	}
 	return result
 }
 

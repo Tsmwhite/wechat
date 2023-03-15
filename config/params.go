@@ -29,11 +29,16 @@ type Server struct {
 	Router      string
 	Port        string
 	PingTimeOut int
+	Tls         bool
+	CertFile    string
+	KeyFile     string
 }
 
 type WebServer struct {
-	Port string
-	Tls  bool
+	Port     string
+	Tls      bool
+	CertFile string
+	KeyFile  string
 }
 
 type Message struct {

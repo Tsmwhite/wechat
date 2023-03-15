@@ -60,7 +60,7 @@ func Run() error {
 	}
 	_init()
 	if config.WebSrvEnv.Tls {
-		return  ginEngine.RunTLS(":443","./web/certs/certificate.crt", "./web/certs/private.key")
+		return ginEngine.RunTLS(":"+config.WebSrvEnv.Port, config.WebSrvEnv.CertFile, config.WebSrvEnv.KeyFile)
 	} else {
 		fmt.Println("Listen:", config.WebSrvEnv.Port)
 	}

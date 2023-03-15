@@ -26,8 +26,8 @@
                      @click="openChat(item)"
                      :key="index">
                     <div class="left">
-                        <div :class="['avatar',{unread:item.unreadCount > 0},{'only-tip':item.onlyTip}]"
-                             :data-unread="item.unreadCount > 99 ? 99 : item.unreadCount">
+                        <div :class="['avatar',{unread:item.unread_count > 0},{'only-tip':item.onlyTip}]"
+                             :data-unread="item.unread_count > 99 ? 99 : item.unread_count">
                             <img v-if="item.avatar" v-lazy="item.avatar">
                             <img v-else v-lazy="groupDefaultAvatar">
                         </div>

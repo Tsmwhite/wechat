@@ -6,6 +6,7 @@ import (
 	"wechat/config"
 	"wechat/core/encrypt/token"
 	"wechat/core/log"
+	"wechat/core/message"
 	"wechat/core/server/wservice"
 	model "wechat/models"
 )
@@ -25,6 +26,9 @@ func main()  {
 		}
 		fmt.Println("ok", ok, uuid)
 		return
+	}
+	option.NewMessage = func() message.Messenger {
+		return new(model.Message)
 	}
 	wservice.Run(option)
 }
