@@ -30,5 +30,6 @@ func main()  {
 	option.NewMessage = func() message.Messenger {
 		return new(model.Message)
 	}
+	log.RunAsync()
 	wservice.Run(option)
 }
