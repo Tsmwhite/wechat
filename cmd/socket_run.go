@@ -15,7 +15,7 @@ func main()  {
 	runtime.GOMAXPROCS(runtime.NumCPU() - 1)
 	err := config.SetupServer()
 	if err != nil {
-		log.Error.Println("setup error:", err)
+		log.PrintlnErr("setup error:", err)
 	}
 	option := wservice.NewOption()
 	option.CheckToken = func(s string) (ok bool, uuid string) {

@@ -47,7 +47,7 @@ func NewSetting(configFileName string) (*Setting, error) {
 	vp.SetConfigType("yaml")
 	err := vp.ReadInConfig()
 	if err != nil {
-		log.Error.Println("NewSetting ReadInConfig Error:", err)
+		log.PrintlnErr("NewSetting ReadInConfig Error:", err)
 		return nil, err
 	}
 	return &Setting{vp}, nil
@@ -55,7 +55,7 @@ func NewSetting(configFileName string) (*Setting, error) {
 
 func (set *Setting) UnmarshalKey(key string, configOption interface{}) error {
 	if err := set.ViperInstance.UnmarshalKey(key, configOption); err != nil {
-		log.Error.Println("Config Setting Error", err)
+		log.PrintlnErr("Config Setting Error", err)
 		return err
 	}
 	return nil

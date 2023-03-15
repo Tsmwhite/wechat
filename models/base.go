@@ -48,7 +48,7 @@ type Condition struct {
 func First(option *Condition, dest interface{}) {
 	if err := option.Parse(DB()).First(dest).Error; err != nil {
 		if err != gorm.ErrRecordNotFound {
-			log.Error.Println("Find Error:", err, "\noption:", option)
+			log.PrintlnErr("Find Error:", err, "\noption:", option)
 		}
 	}
 }
@@ -56,7 +56,7 @@ func First(option *Condition, dest interface{}) {
 func Find(option *Condition, dest interface{}) {
 	if err := option.Parse(DB()).Find(dest).Error; err != nil {
 		fmt.Println("Find", err)
-		log.Error.Println("FindAll Error:", err, "\noption:", option)
+		log.PrintlnErr("FindAll Error:", err, "\noption:", option)
 	}
 }
 

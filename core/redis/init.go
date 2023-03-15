@@ -25,7 +25,7 @@ func Init() *redis.Client {
 func Lock(key string) bool {
 	ok, err := rdb.SetNX(Ctx, "lock:"+key, 1, time.Minute).Result()
 	if err != nil {
-		log.Error.Println("redis lock error:" + err.Error())
+		log.PrintlnErr("redis lock error:" + err.Error())
 	}
 	return ok
 }

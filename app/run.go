@@ -8,9 +8,9 @@ import (
 
 func Run() {
 	if err := config.SetupServer(); err != nil {
-		log.Error.Println("setup error:", err)
+		log.PrintlnErr("setup error:", err)
 	}
 	if err := route.Run(); err != nil {
-		log.Error.Println("run error:", err)
+		log.PrintlnErr("run error:", err)
 	}
 }

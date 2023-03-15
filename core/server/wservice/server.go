@@ -51,7 +51,7 @@ func NewOption() *Option {
 func Run(option *Option) {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Error.Println("Run Panic:", err)
+			log.PrintlnErr("Run Panic:", err)
 		}
 	}()
 	_option = option
@@ -65,12 +65,12 @@ func Run(option *Option) {
 	if config.ServerEnv.Tls {
 		fmt.Println("Wss Listen:", _config.port, _config.router)
 		if err := http.ListenAndServeTLS(_config.port, _config.tlsCertFile, _config.tlsCertKey, nil); err != nil {
-			log.Error.Println("ListenAndServe Error:", err)
+			log.PrintlnErr("ListenAndServe Error:", err)
 		}
 	} else {
 		fmt.Println("Listen:", _config.port, _config.router)
 		if err := http.ListenAndServe(_config.port, nil); err != nil {
-			log.Error.Println("ListenAndServe Error:", err)
+			log.PrintlnErr("ListenAndServe Error:", err)
 		}
 	}
 }
@@ -80,7 +80,7 @@ func addFriendsRequestHandel() {
 		func() {
 			defer func() {
 				if err := recover(); err != nil {
-					log.Error.Println("addFriendsRequestHandel recover error", err)
+					log.PrintlnErr("addFriendsRequestHandel recover error", err)
 				}
 			}()
 			count := redis.LLen(env.AddFriendRequestHandel)
@@ -90,7 +90,7 @@ func addFriendsRequestHandel() {
 			msg := &model.Message{}
 			err := redis.LPop(env.AddFriendRequestHandel, msg)
 			if err != nil {
-				log.Error.Println("addFriendsRequestHandel error", err)
+				log.PrintlnErr("addFriendsRequestHandel error", err)
 				return
 			}
 			if msg.Id > 0 {

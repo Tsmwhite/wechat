@@ -74,7 +74,7 @@ func getPrivateRoomUnreadMsgCount(r *Room, u *User) int64 {
 		Where("`reads` <> ?", u.Uuid).
 		Count(&count).Error
 	if err != nil {
-		log.Error.Println("getPrivateRoomUnreadMsgCount Error:", err)
+		log.PrintlnErr("getPrivateRoomUnreadMsgCount Error:", err)
 	}
 	return count
 }

@@ -106,7 +106,7 @@ func (m *Message) Save() {
 	m.UpdateTime = now
 	err := m.SetTable().Create(m).Error
 	if err != nil {
-		log.Error.Println("Message Save Error:", err, "\n", "data:", m)
+		log.PrintlnErr("Message Save Error:", err, "\n", "data:", m)
 	}
 	room := GetRoomBuyUuid(m.Recipient)
 	rMsg := new(ReceiveMessage)
@@ -140,7 +140,7 @@ func (m *Message) Save() {
 						}
 						err = rM.SetTable().Create(rM).Error
 						if err != nil {
-							log.Error.Println("Message Save Error 01", err)
+							log.PrintlnErr("Message Save Error 01", err)
 						}
 						wait.Done()
 					}
@@ -153,7 +153,7 @@ func (m *Message) Save() {
 			rMsg.Recipient = mUid
 			err = rMsg.SetTable().Create(rMsg).Error
 			if err != nil {
-				log.Error.Println("Message Save Error 02", err)
+				log.PrintlnErr("Message Save Error 02", err)
 			}
 		}
 	}

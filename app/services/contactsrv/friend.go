@@ -102,7 +102,7 @@ func AddFriend(req *AddFriendRequest, user *model.User) error {
 		return err
 	}
 	if err := redis.LPush(env.AddFriendRequestHandel, msg); err != nil {
-		log.Error.Println("sendAddFriendRequest LPush Msg Error:", err)
+		log.PrintlnErr("sendAddFriendRequest LPush Msg Error:", err)
 	}
 	return nil
 }
@@ -146,7 +146,7 @@ func AddFriendHandle(req *AddFriendHandleRequest, user *model.User) error {
 			Where("sender = ?", msg.Sender).
 			Update("status", message.AddFriendStatusLose).Error
 		if err != nil {
-			log.Error.Println("AddFriendHandle -> AddFriendStatusReject -> Update history Error:", err)
+			log.PrintlnErr("AddFriendHandle -> AddFriendStatusReject -> Update history Error:", err)
 			return errors.New("操作失败，请重试")
 		}
 
@@ -158,7 +158,7 @@ func AddFriendHandle(req *AddFriendHandleRequest, user *model.User) error {
 				"update_time": time.Now().Unix(),
 			}).Error
 		if err != nil {
-			log.Error.Println("AddFriendHandle -> AddFriendStatusReject -> Update current Error:", err)
+			log.PrintlnErr("AddFriendHandle -> AddFriendStatusReject -> Update current Error:", err)
 			return errors.New("操作失败，请重试")
 		}
 
@@ -221,20 +221,20 @@ func agreeFriendRequest(req *AddFriendHandleRequest, msg *model.Message, receipt
 		if room.Id == 0 {
 			if err = CreatePrivateRoomTx(tx, sender, receipt); err != nil {
 				tx.Rollback()
-				log.Error.Println("agreeFriendRequest -> CreatePrivateRoomTx Error:", err)
+				log.PrintlnErr("agreeFriendRequest -> CreatePrivateRoomTx Error:", err)
 				return errors.New("建立房间失败")
 			}
 		}
 		// 添加好友关系
 		if err = tx.Create(&friends).Error; err != nil {
 			tx.Rollback()
-			log.Error.Println("agreeFriendRequest ->  Error:", err)
+			log.PrintlnErr("agreeFriendRequest ->  Error:", err)
 			return errors.New("建立好友关系失败")
 		}
 		// 建立双方联系人
 		if err = CreateContactsTx(sender, receipt, tx); err != nil {
 			tx.Rollback()
-			log.Error.Println("agreeFriendRequest -> CreateContactsTx Error:", err)
+			log.PrintlnErr("agreeFriendRequest -> CreateContactsTx Error:", err)
 			return errors.New("建立联系人失败")
 		}
 		// 变更好友申请消息状态
@@ -244,7 +244,7 @@ func agreeFriendRequest(req *AddFriendHandleRequest, msg *model.Message, receipt
 		}).Error
 		if err != nil {
 			tx.Rollback()
-			log.Error.Println("agreeFriendRequest ->  Error:", err)
+			log.PrintlnErr("agreeFriendRequest ->  Error:", err)
 			return errors.New("变更好友申请状态失败")
 		}
 		return tx.Commit().Error

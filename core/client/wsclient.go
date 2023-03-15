@@ -56,7 +56,7 @@ func (c *WsClient) MessageProcess() {
 func (c *WsClient) Close() {
 	c.UnregisterChan <- c
 	if err := c.conn.Close(); err != nil {
-		log.Error.Println("WsClient Close Error:", err)
+		log.PrintlnErr("WsClient Close Error:", err)
 	}
 }
 
@@ -97,11 +97,11 @@ func (c *WsClient) write() {
 		select {
 		case msg, ok := <-c.PullMsgChan:
 			if !ok {
-				log.Error.Println("client -> write -> WriteMessage", c)
+				log.PrintlnErr("client -> write -> WriteMessage", c)
 				return
 			}
 			if err := c.conn.WriteJSON(msg); err != nil {
-				log.Error.Println("client -> write -> WriteJSON", err, c)
+				log.PrintlnErr("client -> write -> WriteJSON", err, c)
 				return
 			}
 		}
@@ -115,6 +115,6 @@ func (c *WsClient) Pong() {
 	}
 	err := c.conn.WriteJSON(pongMsg)
 	if err != nil {
-		log.Error.Println("Connect Pong Error:", err)
+		log.PrintlnErr("Connect Pong Error:", err)
 	}
 }

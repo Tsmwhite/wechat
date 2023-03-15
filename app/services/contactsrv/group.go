@@ -63,7 +63,7 @@ func CreateGroup(req *CreateGroupRequest, currentUser *model.User) error {
 	}
 	err := model.DB().Create(roomData).Error
 	if err != nil {
-		log.Error.Println("CreateGroup CreateRoom Error:", err)
+		log.PrintlnErr("CreateGroup CreateRoom Error:", err)
 		return errors.New("创建群聊失败")
 	}
 
@@ -82,7 +82,7 @@ func CreateGroup(req *CreateGroupRequest, currentUser *model.User) error {
 	}
 	err = model.DB().Create(&contactsRelation).Error
 	if err != nil {
-		log.Error.Println("CreateGroup ContactsRelation Error:", err)
+		log.PrintlnErr("CreateGroup ContactsRelation Error:", err)
 		return errors.New("邀请好友入群失败")
 	}
 	return nil
