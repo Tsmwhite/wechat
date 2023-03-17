@@ -48,10 +48,17 @@ export const handleAddFriendApply = (data) => {
     return request.post('/chat/addFriendsHandle', data)
 }
 
+// 消息已读（消除红点）
+export const readMsgMark = (data) => {
+    return request.post('/chat/readMsgMark',data)
+}
+
+
 export default {
     getContacts,
     getUserInfo,
     getHistory,
     getFriendNotice,
     handleAddFriendApply,
+    readMsgMark,
 }

@@ -11,6 +11,21 @@ export const MessageTypes = {
     videoCall: 406
 }
 
+export const MessageShowTag = (type, content) => {
+    switch (type) {
+        case MessageTypes.text:
+            if (content.length > 10) {
+                return content.substr(0, 10) + "..."
+            }
+            return content
+
+        case MessageTypes.image:
+            return "【图片】"
+        case MessageTypes.videoCall:
+            return "【通话】"
+    }
+}
+
 // 视频通话
 // 0 发起视频请求
 // 1 取消视频请求

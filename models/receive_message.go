@@ -2,6 +2,8 @@ package model
 
 import "gorm.io/gorm"
 
+const MessageReadStatus = 1
+
 type ReceiveMessage struct {
 	Id         int64  `json:"id"`
 	MsgUuid    string `json:"msg_uuid"`

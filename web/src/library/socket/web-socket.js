@@ -11,8 +11,9 @@ const WEB_SOCKET = {
     _heartTimer: null, // 保持心跳
     _closeTimer: null, // 延时关闭
     _closeFlag: false, // 主动关闭
-    _reConnMax: 20,    // 重连限制
+    _reConnMax: 60,    // 重连限制
     _reConnCounter: 0, // 重连计数
+    _waitSendMessages: [],
     Socket() {
         if (this._socket === null) {
             this.Init()
@@ -70,6 +71,11 @@ const WEB_SOCKET = {
             console.log('OPEN', e)
             this._reConnCounter = 0
             this.heart()
+            if (this._waitSendMessages.length > 0) {
+                for (let msg of this._waitSendMessages) {
+                    this.send(msg)
+                }
+            }
         }
         this._CLOSE = (e) => {
             console.log('CLOSE', e)
@@ -99,8 +105,10 @@ const WEB_SOCKET = {
             if (this._reConnCounter > this._reConnMax) {
                 return
             }
-            clearInterval(this._heartTimer)
-            this.WsInit()
+            setTimeout(() => {
+                clearInterval(this._heartTimer)
+                this.WsInit()
+            }, 1000)
         }
         this.send = (message) => {
             switch (this.Socket().readyState) {
@@ -115,6 +123,7 @@ const WEB_SOCKET = {
                     break
                 case WebSocket.CLOSED:
                 case WebSocket.CLOSING:
+                    this._waitSendMessages.push(message)
                     this.Socket().close()
                     break
                 default:

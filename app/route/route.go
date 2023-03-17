@@ -51,6 +51,7 @@ func _init() {
 
 		chatApi.POST("/getHistory", message.GetHistory)
 		chatApi.POST("/getFriendNotice", message.GetFriendNotice)
+		chatApi.POST("/readMsgMark", message.ReadMark)
 	}
 }
 

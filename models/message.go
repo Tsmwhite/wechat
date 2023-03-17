@@ -99,6 +99,19 @@ func (m *Message) SetReceiveTime() {
 	m.ReceiveTime = time.Now().Unix()
 }
 
+func (m *Message) WhetherToRecord() bool {
+	// 视频通话WEBRTC中间建立通信信令不进入数据库
+	if m.Type == message.TypeChatDefault && m.SecondType == message.TypeVideoCall && m.Status != message.VideoCallStatusWait {
+		return false
+	}
+	return true
+}
+
+func (m *Message) Format() {
+	m.Content = strings.TrimSpace(m.Content)
+	m.SendTime = time.Now().Unix()
+}
+
 func (m *Message) Save() {
 	now := time.Now().Unix()
 	m.Uuid = encrypt.CreateUuid()
@@ -108,9 +121,35 @@ func (m *Message) Save() {
 	if err != nil {
 		log.PrintlnErr("Message Save Error:", err, "\n", "data:", m)
 	}
+	updateContactLastMsg(m)
+	writeReceiveTable(m)
+}
+
+func updateContactLastMsg(m *Message) {
+	content := m.Content
+	if len(content) > 255 {
+		rs := []rune(content)
+		content = string(rs[1:255])
+	}
+	lastMsg := make(map[string]interface{})
+	lastMsg["last_time"] = m.LogTime
+	lastMsg["msg_type"] = m.SecondType
+	lastMsg["content"] = m.Content
+	val, err := json.Marshal(lastMsg)
+	if err != nil {
+		log.PrintlnErr("updateContactLastMsg -> json.Marshal -> Error", err)
+		return
+	}
+	DB().Table("contacts").Where("room = ?", m.Recipient).Updates(map[string]interface{}{
+		"last_time": m.LogTime,
+		"last_msg":  val,
+	})
+}
+
+func writeReceiveTable(m *Message) {
 	room := GetRoomBuyUuid(m.Recipient)
 	rMsg := new(ReceiveMessage)
-	rMsg.Id = now
+	rMsg.Id = m.LogTime
 	rMsg.MsgUuid = m.Uuid
 	rMsg.Room = m.Recipient
 	rMsg.Sender = m.Sender
@@ -138,7 +177,7 @@ func (m *Message) Save() {
 						if !ok {
 							return
 						}
-						err = rM.SetTable().Create(rM).Error
+						err := rM.SetTable().Create(rM).Error
 						if err != nil {
 							log.PrintlnErr("Message Save Error 01", err)
 						}
@@ -151,23 +190,10 @@ func (m *Message) Save() {
 	} else {
 		for _, mUid := range members {
 			rMsg.Recipient = mUid
-			err = rMsg.SetTable().Create(rMsg).Error
+			err := rMsg.SetTable().Create(rMsg).Error
 			if err != nil {
 				log.PrintlnErr("Message Save Error 02", err)
 			}
 		}
 	}
-}
-
-func (m *Message) WhetherToRecord() bool {
-	// 视频通话WEBRTC中间建立通信信令不进入数据库
-	if m.Type == message.TypeChatDefault && m.SecondType == message.TypeVideoCall && m.Status != message.VideoCallStatusWait {
-		return false
-	}
-	return true
-}
-
-func (m *Message) Format() {
-	m.Content = strings.TrimSpace(m.Content)
-	m.SendTime = time.Now().Unix()
 }

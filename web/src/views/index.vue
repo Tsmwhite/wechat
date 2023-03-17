@@ -35,10 +35,10 @@
                     <div class="right">
                         <div class="info">
                             <div class="nickname">{{ item.name }}</div>
-                            <div class="last-msg">{{ item.lastMsg }}</div>
+                            <div class="last-msg" v-if="item.last_msg_show">{{ item.last_msg_show }}</div>
                         </div>
                         <div class="extra">
-                            <div class="last-time">{{ item.lastTime }}</div>
+                            <div class="last-time">{{ item.last_time || "" }}</div>
                         </div>
                     </div>
                 </div>
@@ -48,12 +48,14 @@
 </template>
 
 <script>
-import api from "../api/common"
+import dayjs from "dayjs";
+import api from "../api/common";
 import ChatBox from "../components/chat/base/chat-box";
 import ChatHeader from "../components/chat/base/chat-header";
 import SearchBox from "../components/search/search-box";
 import groupDefaultAvatar from "../assets/default-group-avatar.jpeg"
 import {CurrentContactCachetKey, SetLocalStorage} from "../utis/cache";
+import {MessageShowTag} from "../library/message/const";
 
 export default {
     name: "index",
@@ -84,7 +86,15 @@ export default {
         },
         loadData() {
             api.getContacts().then(res => {
-                this.data = res.data
+                let list = res.data || []
+                list.map(item => {
+                    if (item.last_msg) {
+                        item.last_msg = JSON.parse(item.last_msg)
+                        item.last_time = dayjs(item.last_msg.last_time * 1000).format("YYYY/MM/DD HH:mm")
+                        item.last_msg_show = MessageShowTag(item.last_msg.msg_type,item.last_msg.content)
+                    }
+                })
+                this.data = list
                 this.loading = false
                 this.finished = true
             })
@@ -108,6 +118,7 @@ export default {
 <style scoped lang="less">
 .contact-list {
     padding-bottom: 60px;
+
     .contact-option {
         max-width: 100%;
         overflow: hidden;

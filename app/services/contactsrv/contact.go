@@ -54,6 +54,7 @@ func GetContacts(req *GetContactsRequest, user *model.User) []map[string]interfa
 		},
 		Limit:  (req.Page - 1) * req.Size,
 		Offset: req.Size,
+		Order: "last_time DESC",
 	}
 	if req.Keyword != "" {
 		condition.SqlStr = fmt.Sprintf("`name` LIKE '%%%s%%' OR remark LIKE '%%%s%%'", req.Keyword, req.Keyword)

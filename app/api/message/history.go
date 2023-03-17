@@ -35,3 +35,17 @@ func GetFriendNotice(ctx *gin.Context) {
 		res.Success(ctx, result)
 	}
 }
+
+func ReadMark(ctx *gin.Context) {
+	req := new(messagesrv.ReadMarkRequest)
+	if err := api.VerifyParams(ctx, req, nil); err != nil {
+		res.Error(ctx, err)
+		return
+	}
+	err := messagesrv.ReadMark(req, api.GetCurrentUser(ctx))
+	if err != nil {
+		res.Error(ctx, err)
+	} else {
+		res.Success(ctx, res.Nil, "ok")
+	}
+}

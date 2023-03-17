@@ -17,6 +17,11 @@ type HistoryRequest struct {
 	LastId   int    `validate:"noRequired"`
 }
 
+type ReadMarkRequest struct {
+	RoomUuid   string
+	FriendUuid string
+}
+
 // History 查询历史消息
 func History(req *HistoryRequest, user *model.User) ([]map[string]interface{}, error) {
 	result := services.NewResult()
@@ -144,4 +149,14 @@ func setSenderInfo(data []map[string]interface{}) {
 			}
 		}
 	}
+}
+
+// ReadMark 标记已读消息
+func ReadMark(req *ReadMarkRequest, user *model.User) error {
+	table := model.GetTableName("receive_messages", user.Uuid)
+	return model.DB().
+		Table(table).
+		Where("room = ?", req.RoomUuid).
+		Where("sender = ?", req.FriendUuid).
+		Update("is_read", model.MessageReadStatus).Error
 }
