@@ -157,6 +157,8 @@ func ReadMark(req *ReadMarkRequest, user *model.User) error {
 	return model.DB().
 		Table(table).
 		Where("room = ?", req.RoomUuid).
+		Where("recipient = ?", user.Uuid).
 		Where("sender = ?", req.FriendUuid).
+		Where("is_read = ?", model.MessageUnreadStatus).
 		Update("is_read", model.MessageReadStatus).Error
 }

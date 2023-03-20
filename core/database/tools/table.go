@@ -40,11 +40,15 @@ import (
 
 const TableIdentifier = "$table"
 
-func CreateTable(sourceSql, table string, total int) {
+func ExecSql(sourceSql, table string, total int) {
 	var tableCopy string
-	for i := 1; i <= total; i++ {
+	for i := 0; i < total; i++ {
 		if i < 10 {
-			tableCopy = fmt.Sprintf("%s_0%d", table, i)
+			if i == 0 {
+				tableCopy = table
+			} else {
+				tableCopy = fmt.Sprintf("%s_0%d", table, i)
+			}
 		} else {
 			tableCopy = fmt.Sprintf("%s_%d", table, i)
 		}

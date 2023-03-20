@@ -3,6 +3,7 @@ package model
 import "gorm.io/gorm"
 
 const MessageReadStatus = 1
+const MessageUnreadStatus = 0
 
 type ReceiveMessage struct {
 	Id         int64  `json:"id"`
