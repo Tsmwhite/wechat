@@ -8,8 +8,8 @@ export const getContactInfo = (data) => {
     return request.post('/chat/getContactInfo', data)
 }
 
-export const getUserInfo = (data) => {
-    return request.get('/getUserInfo', {
+export const getUserInfoByUserid = (data) => {
+    return request.get('/getUserInfoByUserid', {
         params: data,
     })
 }
@@ -56,7 +56,7 @@ export const readMsgMark = (data) => {
 
 export default {
     getContacts,
-    getUserInfo,
+    getUserInfoByUserid,
     getHistory,
     getFriendNotice,
     handleAddFriendApply,

@@ -71,11 +71,11 @@ const WEB_SOCKET = {
             console.log('OPEN', e)
             this._reConnCounter = 0
             this.heart()
-            if (this._waitSendMessages.length > 0) {
-                for (let msg of this._waitSendMessages) {
-                    this.send(msg)
-                }
-            }
+            // if (this._waitSendMessages.length > 0) {
+            //     for (let msg of this._waitSendMessages) {
+            //         this.send(msg)
+            //     }
+            // }
         }
         this._CLOSE = (e) => {
             console.log('CLOSE', e)

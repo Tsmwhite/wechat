@@ -22,7 +22,7 @@
                          :class="['message-box',{right:item.sender === currentUuid() }]">
                         <div v-if="item.sender !== currentUuid()"
                              class="avatar">
-                            <img :src="item.avatar || 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'">
+                            <img :src="item.avatar || DefaultAvatar">
                         </div>
                         <!--消息前置提示@start消息状态-发送中、发送失败-->
                         <div v-if="item.sender === currentUuid()"
@@ -52,11 +52,10 @@
 
 <script>
 import {GetCurrentUuid, GetUserInfo} from "../../../utis/cache";
-import {GetUserByUuid} from "../../../utis/cookie";
-import {getHistory} from "../../../api/common";
+import {getHistory, getUserInfoByUserid} from "../../../api/common";
 import {MessageTypes} from "../../../library/message/const";
 import dayjs from "dayjs";
-
+const DefaultAvatar =  'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
 export default {
     name: "message-list",
     props: {
@@ -66,6 +65,7 @@ export default {
     },
     data() {
         return {
+            DefaultAvatar,
             MessageTypes,
             loading: false,
             loadingController: false,
@@ -82,7 +82,7 @@ export default {
     },
     computed: {
         meAvatar() {
-            return GetUserInfo().avatar || 'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
+            return GetUserInfo().avatar || DefaultAvatar
         },
         messages() {
             let storeData = this.$store.state
@@ -90,6 +90,11 @@ export default {
             let list = storeData.msg.MessageMapList[roomId]
             if (!list) {
                 return []
+            }
+            if (this.roomData.type < 1) {
+                list.map(item => {
+                    item.avatar = this.roomData.avatar
+                })
             }
             return list
         },
@@ -271,6 +276,7 @@ export default {
         }
     }
 }
+
 .video-call-box {
     margin-bottom: 20px;
 }

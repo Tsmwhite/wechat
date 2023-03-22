@@ -238,7 +238,7 @@ func agreeFriendRequest(req *AddFriendHandleRequest, msg *model.Message, receipt
 			return errors.New("建立联系人失败")
 		}
 		// 变更好友申请消息状态
-		err = tx.Table(model.HandleMessageTable).Updates(map[string]interface{}{
+		err = tx.Table(model.HandleMessageTable).Where("uuid = ?", msg.Uuid).Updates(map[string]interface{}{
 			"status":      message.AddFriendStatusAgree,
 			"update_time": time.Now().Unix(),
 		}).Error

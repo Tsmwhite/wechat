@@ -5,7 +5,7 @@
     </div>
     <div class="center">
       <div class="title" v-if="roomData.type === 1">{{ roomData.name }}（{{ roomData.member_num }}）</div>
-      <div class="title" v-else>{{ roomData.name }}</div>
+      <div class="title" v-else>{{ roomData.remark || roomData.name }}</div>
     </div>
     <div class="right">
       <van-icon v-if="showMoreBtn" class="icon" name="ellipsis"/>

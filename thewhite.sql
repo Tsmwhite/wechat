@@ -11,7 +11,7 @@
  Target Server Version : 100508 (10.5.8-MariaDB)
  File Encoding         : 65001
 
- Date: 20/03/2023 10:02:25
+ Date: 22/03/2023 19:03:48
 */
 
 SET NAMES utf8mb4;
@@ -38,7 +38,7 @@ CREATE TABLE `contacts` (
   PRIMARY KEY (`id`),
   KEY `friend` (`friend`),
   KEY `user` (`user`)
-) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COMMENT='联系人关系';
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COMMENT='联系人关系';
 
 -- ----------------------------
 -- Table structure for files
@@ -76,7 +76,7 @@ CREATE TABLE `friends` (
   PRIMARY KEY (`id`),
   KEY `friend` (`friend`),
   KEY `user` (`user`)
-) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COMMENT='好友关系';
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COMMENT='好友关系';
 
 -- ----------------------------
 -- Table structure for messages
@@ -108,7 +108,7 @@ CREATE TABLE `messages` (
   KEY `recipient_sender` (`recipient`,`sender`),
   KEY `recipient_type` (`recipient`,`type`) USING BTREE,
   KEY `recipient_second_type` (`recipient`,`second_type`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=833 DEFAULT CHARSET=utf8mb4 COMMENT='发送消息表';
+) ENGINE=InnoDB AUTO_INCREMENT=856 DEFAULT CHARSET=utf8mb4 COMMENT='发送消息表';
 
 -- ----------------------------
 -- Table structure for messages_01
@@ -412,15 +412,12 @@ CREATE TABLE `messages_handle` (
   `status` tinyint(1) NOT NULL DEFAULT 0,
   `content` varchar(2500) NOT NULL DEFAULT '',
   `parent` char(32) NOT NULL DEFAULT '',
-  `deletes` varchar(2500) NOT NULL DEFAULT '',
-  `reads` varchar(2500) NOT NULL DEFAULT '',
   `send_time` int(11) NOT NULL DEFAULT 0,
-  `receive_time` int(11) NOT NULL DEFAULT 0,
-  `forward_time` int(11) NOT NULL DEFAULT 0,
   `log_time` int(11) NOT NULL DEFAULT 0,
   `update_time` int(11) NOT NULL DEFAULT 0,
   `remark` varchar(50) NOT NULL DEFAULT '',
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
+  `is_read` tinyint(1) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`uuid`) USING BTREE,
   KEY `sender` (`sender`) USING BTREE,
   KEY `recipient` (`recipient`) USING BTREE,
@@ -430,7 +427,7 @@ CREATE TABLE `messages_handle` (
   KEY `parent` (`parent`) USING BTREE,
   KEY `send_time` (`send_time`) USING BTREE,
   KEY `is_del` (`is_del`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COMMENT='好友消息处理';
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COMMENT='好友消息处理';
 
 -- ----------------------------
 -- Table structure for receive_messages
@@ -820,7 +817,7 @@ CREATE TABLE `rooms` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uuid` char(32) NOT NULL DEFAULT '',
   `title` varchar(255) NOT NULL DEFAULT '',
-  `type` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `type` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '0 单聊；1 群聊',
   `members` varchar(2500) NOT NULL DEFAULT '',
   `creator` char(32) NOT NULL DEFAULT '',
   `description` varchar(255) NOT NULL DEFAULT '',
@@ -829,7 +826,7 @@ CREATE TABLE `rooms` (
   `member_num` int(5) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `uuid` (`uuid`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COMMENT='聊天房间';
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COMMENT='聊天房间';
 
 -- ----------------------------
 -- Table structure for users
@@ -877,6 +874,6 @@ CREATE TABLE `verify_codes` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `status` (`status`) USING BTREE,
   KEY `account` (`account`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
 
 SET FOREIGN_KEY_CHECKS = 1;

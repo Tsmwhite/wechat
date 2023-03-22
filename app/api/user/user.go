@@ -101,8 +101,8 @@ func SendVerifyCode(ctx *gin.Context) {
 	}
 }
 
-func GetUserInfo(ctx *gin.Context) {
-	userUuid := ctx.Query("user_id")
+func GetUserInfoByUserid(ctx *gin.Context) {
+	userUuid := ctx.Query("userid")
 	if userUuid == "" {
 		res.Error(ctx, errors.New("missing user key"))
 		return

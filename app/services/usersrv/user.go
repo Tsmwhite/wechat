@@ -81,4 +81,3 @@ func LoginOrRegister(req *LoginOrRegisterRequest) (error, *model.ShowAppUser) {
 	return nil, data
 }
 
-

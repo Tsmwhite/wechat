@@ -34,7 +34,7 @@
                     </div>
                     <div class="right">
                         <div class="info">
-                            <div class="nickname">{{ item.name }}</div>
+                            <div class="nickname">{{ item.remark || item.name }}</div>
                             <div class="last-msg" v-if="item.last_msg_show">{{ item.last_msg_show }}</div>
                         </div>
                         <div class="extra">
