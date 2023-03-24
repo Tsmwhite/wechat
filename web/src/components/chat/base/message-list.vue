@@ -52,7 +52,7 @@
 
 <script>
 import {GetCurrentUuid, GetUserInfo} from "../../../utis/cache";
-import {getHistory, getUserInfoByUserid} from "../../../api/common";
+import {getHistory, readMsgMark} from "../../../api/common";
 import {MessageTypes} from "../../../library/message/const";
 import dayjs from "dayjs";
 const DefaultAvatar =  'https://wwcdn.weixin.qq.com/node/wework/images/kf_head_image_url_4.png'
@@ -77,7 +77,7 @@ export default {
                 pageSize: 20,
                 total: 0,
             },
-            lastSendMsgTime: null,
+            readMarking: false,
         }
     },
     computed: {
@@ -99,6 +99,11 @@ export default {
             return list
         },
     },
+    watch: {
+        messages() {
+            this.read()
+        }
+    },
     mounted() {
         //this.init()
         if (this.messages.length > 0) {
@@ -117,6 +122,16 @@ export default {
             } else {
                 this.finished = true
             }
+        },
+        read() {
+            if (this.readMarking) {
+                return
+            }
+            this.readMarking = true
+            readMsgMark({
+                room_uuid: this.roomData.room,
+                friend_uuid: this.roomData.friend,
+            }).finally(() => this.readMarking = false)
         },
         currentUuid() {
             return GetCurrentUuid()
@@ -159,7 +174,6 @@ export default {
                         this.loading = false
                     }, 3000)
                 })
-
             }).catch(() => {
                 this.loading = false
             })
