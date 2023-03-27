@@ -11,7 +11,7 @@ import (
 func CreatePrivateRoomTx(tx *gorm.DB, u1, u2 *model.User) error {
 	room := &model.Room{}
 	room.Uuid = CreateRoomKey(u1, u2)
-	room.Type = model.IsPrivate
+	room.Type = model.IsPrivateRoom
 	// 成员uuid逗哈分割
 	room.Members = u1.Uuid + "," + u2.Uuid
 	room.CreateTime = time.Now().Unix()
@@ -37,7 +37,7 @@ func GetPrivateRoom(u1, u2 *model.User) *model.Room {
 		Table: "rooms",
 		Where: map[string]interface{}{
 			"uuid": roomUuid,
-			"type": model.IsPrivate,
+			"type": model.IsPrivateRoom,
 		},
 	}, room)
 	return room

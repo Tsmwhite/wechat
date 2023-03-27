@@ -11,7 +11,7 @@
  Target Server Version : 100508 (10.5.8-MariaDB)
  File Encoding         : 65001
 
- Date: 22/03/2023 19:03:48
+ Date: 27/03/2023 18:58:35
 */
 
 SET NAMES utf8mb4;
@@ -38,7 +38,7 @@ CREATE TABLE `contacts` (
   PRIMARY KEY (`id`),
   KEY `friend` (`friend`),
   KEY `user` (`user`)
-) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COMMENT='联系人关系';
+) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8mb4 COMMENT='联系人关系';
 
 -- ----------------------------
 -- Table structure for files
@@ -79,6 +79,21 @@ CREATE TABLE `friends` (
 ) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COMMENT='好友关系';
 
 -- ----------------------------
+-- Table structure for group_members
+-- ----------------------------
+DROP TABLE IF EXISTS `group_members`;
+CREATE TABLE `group_members` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `room` char(32) NOT NULL DEFAULT '',
+  `user` char(32) NOT NULL DEFAULT '',
+  `create_time` int(11) NOT NULL DEFAULT 0,
+  `update_time` int(11) NOT NULL DEFAULT 0,
+  `is_del` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `room` (`room`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
 -- Table structure for messages
 -- ----------------------------
 DROP TABLE IF EXISTS `messages`;
@@ -108,7 +123,7 @@ CREATE TABLE `messages` (
   KEY `recipient_sender` (`recipient`,`sender`),
   KEY `recipient_type` (`recipient`,`type`) USING BTREE,
   KEY `recipient_second_type` (`recipient`,`second_type`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=856 DEFAULT CHARSET=utf8mb4 COMMENT='发送消息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1233 DEFAULT CHARSET=utf8mb4 COMMENT='发送消息表';
 
 -- ----------------------------
 -- Table structure for messages_01
@@ -445,7 +460,8 @@ CREATE TABLE `receive_messages` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='接受消息表';
 
 -- ----------------------------
@@ -464,7 +480,8 @@ CREATE TABLE `receive_messages_01` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -483,7 +500,8 @@ CREATE TABLE `receive_messages_02` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -502,7 +520,8 @@ CREATE TABLE `receive_messages_03` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -521,7 +540,8 @@ CREATE TABLE `receive_messages_04` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -540,7 +560,8 @@ CREATE TABLE `receive_messages_05` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -559,7 +580,8 @@ CREATE TABLE `receive_messages_06` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -578,7 +600,8 @@ CREATE TABLE `receive_messages_07` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -597,7 +620,8 @@ CREATE TABLE `receive_messages_08` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -616,7 +640,8 @@ CREATE TABLE `receive_messages_09` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -635,7 +660,8 @@ CREATE TABLE `receive_messages_10` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -654,7 +680,8 @@ CREATE TABLE `receive_messages_11` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -673,7 +700,8 @@ CREATE TABLE `receive_messages_12` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -692,7 +720,8 @@ CREATE TABLE `receive_messages_13` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -711,7 +740,8 @@ CREATE TABLE `receive_messages_14` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -730,7 +760,8 @@ CREATE TABLE `receive_messages_15` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -749,7 +780,8 @@ CREATE TABLE `receive_messages_16` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -768,7 +800,8 @@ CREATE TABLE `receive_messages_17` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -787,7 +820,8 @@ CREATE TABLE `receive_messages_18` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -806,7 +840,8 @@ CREATE TABLE `receive_messages_19` (
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`msg_uuid`,`recipient`) USING BTREE,
   KEY `recipient_type` (`room`,`recipient`,`second_type`),
-  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE
+  KEY `recipient_sender` (`room`,`recipient`,`sender`,`is_read`) USING BTREE,
+  KEY `recipient_read_status` (`room`,`recipient`,`is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -826,7 +861,7 @@ CREATE TABLE `rooms` (
   `member_num` int(5) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `uuid` (`uuid`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COMMENT='聊天房间';
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COMMENT='聊天房间';
 
 -- ----------------------------
 -- Table structure for users
@@ -874,6 +909,6 @@ CREATE TABLE `verify_codes` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `status` (`status`) USING BTREE,
   KEY `account` (`account`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4;
 
 SET FOREIGN_KEY_CHECKS = 1;

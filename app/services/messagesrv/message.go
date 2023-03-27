@@ -154,11 +154,18 @@ func setSenderInfo(data []map[string]interface{}) {
 // ReadMark 标记已读消息
 func ReadMark(req *ReadMarkRequest, user *model.User) error {
 	table := model.GetTableName("receive_messages", user.Uuid)
-	return model.DB().
+	room := model.GetRoomBuyUuid(req.RoomUuid)
+	if room.Id < 1 {
+		return nil
+	}
+	sqlTx := model.DB().
 		Table(table).
 		Where("room = ?", req.RoomUuid).
-		Where("recipient = ?", user.Uuid).
-		Where("sender = ?", req.FriendUuid).
-		Where("is_read = ?", model.MessageUnreadStatus).
+		Where("recipient = ?", user.Uuid)
+	if room.Type == model.IsPrivateRoom {
+		sqlTx.Where("sender = ?", req.FriendUuid)
+	}
+	return sqlTx.Where("is_read = ?", model.MessageUnreadStatus).
 		Update("is_read", model.MessageReadStatus).Error
+
 }

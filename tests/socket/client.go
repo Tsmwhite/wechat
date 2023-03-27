@@ -43,7 +43,8 @@ func sendMsg(room *model.Room, user *model.User) {
 				"recipient":   room.Uuid,
 				"sender":      user.Uuid,
 				"send_time":   time.Now().Unix(),
-				"content":     "hi, i'm " + user.Name + ", now the time is " + time.Now().Format("2006/01/02 15:04:05"),
+				"content":     "打卡",
+				//"content":     "hi, i'm " + user.Name + ", now the time is " + time.Now().Format("2006/01/02 15:04:05"),
 			})
 			if err != nil {
 				log.Println("WriteJSON Err: ", err)
@@ -54,13 +55,16 @@ func sendMsg(room *model.Room, user *model.User) {
 
 func Run() {
 	var rooms []*model.Room
-	model.DB().Table("rooms").Limit(100).Find(&rooms)
+	model.DB().Table("rooms").Where("type = 1").Limit(100).Find(&rooms)
 	for _, r := range rooms {
 		members := r.GetMembers()
-		go sendMsg(r, model.GetUserByUuid(members[0]))
-		//for _, m := range members {
-		//	go sendMsg(r, model.GetUserByUuid(m))
-		//}
+		//go sendMsg(r, model.GetUserByUuid(members[0]))
+		for i, m := range members {
+			if i == 1 {
+				continue
+			}
+			go sendMsg(r, model.GetUserByUuid(m))
+		}
 	}
 	for {
 	}

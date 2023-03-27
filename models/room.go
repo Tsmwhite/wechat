@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	IsPrivate = iota
-	IsGroup
+	IsPrivateRoom = iota
+	IsGroupRoom
 )
 
 type Room struct {
@@ -57,7 +57,7 @@ func (r *Room) Quit(m member.Member) error {
 }
 
 func (r *Room) GetUnreadMsgCountByUser(u *User) int64 {
-	if r.Type == IsPrivate {
+	if r.Type == IsPrivateRoom {
 		return getPrivateRoomUnreadMsgCount(r, u)
 	} else {
 		return getGroupRoomUnreadMsgCount(r, u)

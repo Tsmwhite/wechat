@@ -24,7 +24,7 @@ const (
 // 3 对方拒绝视频请求
 // 4 等待超时
 
-// 10 建立通话（传输webrtc description传输）
+// 10 建立通话（传输webrtc description）
 const (
 	VideoCallStatusWait = iota
 	VideoCallStatusCancel = iota

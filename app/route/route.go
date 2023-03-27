@@ -17,7 +17,7 @@ func _init() {
 	ginEngine = gin.Default()
 	ginEngine.Use(middleware.AccessLog)
 
-	//web入口 home
+	//web入口
 	ginEngine.Static("/static", "./web/dist/static")
 	ginEngine.Static("/.well-known", "./web/public/.well-known")
 	ginEngine.LoadHTMLFiles("./web/dist/index.html")
@@ -62,8 +62,7 @@ func Run() error {
 	_init()
 	if config.WebSrvEnv.Tls {
 		return ginEngine.RunTLS(":"+config.WebSrvEnv.Port, config.WebSrvEnv.CertFile, config.WebSrvEnv.KeyFile)
-	} else {
-		fmt.Println("Listen:", config.WebSrvEnv.Port)
 	}
+	fmt.Println("Listen:", config.WebSrvEnv.Port)
 	return ginEngine.Run(":" + config.WebSrvEnv.Port)
 }

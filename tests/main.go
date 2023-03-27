@@ -8,25 +8,20 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"wechat/app/services/contactsrv"
 	"wechat/config"
 	"wechat/core/encrypt"
 	model "wechat/models"
-	"wechat/tests/socket"
 )
 
 func main() {
-	//question := bufio.NewScanner(os.Stdin)
-	//fmt.Println("what can i do for you")
-	//for question.Scan() {
-	//	line := question.Text()
-	//	ReqChatGPT(line)
-	//}
+	initDB()
+	createOverallGroup()
+	//socket.Run()
+}
+
+func initDB() {
 	config.DBEnv.Dsn = "root:lxy196914@tcp(127.0.0.1:3306)/thewhite?charset=utf8&multiStatements=true"
-	//r := model.GetRoomBuyUuid("f272932fb0b5d52a4eec97d2d00b5d23")
-	//u := model.GetUserByUuid("91dc76fd6b8b4a7e8965fe5c7859db01")
-	//c := r.GetUnreadMsgCountByUser(u)
-	//fmt.Println("c", c)
-	socket.Run()
 }
 
 func ReqChatGPT(question string) {
@@ -105,4 +100,22 @@ func getNames() (names []string) {
 		return
 	}
 	return
+}
+
+func createOverallGroup() {
+	creator := new(model.User)
+	model.DB().Table("users").Where("id = 1").First(&creator)
+	var members []*model.User
+	model.DB().Table("users").Where("id > 1").Limit(70).Find(&members)
+	fmt.Println(members)
+	var users []string
+	for _, mem := range members {
+		users = append(users, mem.Uuid)
+	}
+	fmt.Println("users",len(users))
+	err := contactsrv.CreateGroup(&contactsrv.CreateGroupRequest{
+		Title:   "尬聊啊！！！",
+		Friends: strings.Join(users, ","),
+	}, creator)
+	println("err", err)
 }

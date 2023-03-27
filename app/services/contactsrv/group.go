@@ -55,9 +55,9 @@ func CreateGroup(req *CreateGroupRequest, currentUser *model.User) error {
 	roomData := &model.Room{
 		Uuid:       encrypt.CreateUuid(),
 		Title:      req.Title,
-		Members:    req.Friends,
-		Creator:    currentUser.Uuid + "," + currentUser.Uuid,
-		Type:       model.IsGroup,
+		Members:    currentUser.Uuid + "," + req.Friends,
+		Creator:    currentUser.Uuid,
+		Type:       model.IsGroupRoom,
 		CreateTime: time.Now().Unix(),
 		MemberNum:  len(users),
 	}
@@ -75,7 +75,7 @@ func CreateGroup(req *CreateGroupRequest, currentUser *model.User) error {
 			User:       user,
 			Friend:     roomData.Uuid,
 			Name:       roomData.Title,
-			Type:       model.IsGroup,
+			Type:       model.IsGroupRoom,
 			LastTime:   now,
 			UpdateTime: now,
 		})
